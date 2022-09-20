@@ -1,43 +1,44 @@
 import 'package:flutter/material.dart';
 
-abstract class CardType {
-  static const savings = "Poupança";
-  static const checking = "Corrente";
-}
+// abstract class CardType {
+//   static const elo = "Elo";
+//   static const visa = "Corrente";
+//   static const mastercard = "MasterCard";
+//   static const hipercard = "HiperCard";
+//   static const americanExpress = "AmericanExpress";
+// }
 
-class CardTypeDropDown extends StatefulWidget {
-  // final void Function(dynamic)? onChanged;
-  const CardTypeDropDown({Key? key}) : super(key: key);
+class CardTypeDropDown extends StatelessWidget {
+  // final List<String> cardType = [
+  //   "Visa",
+  //   "MasterCard",
+  //   "Elo",
+  //   "HiperCard",
+  //   "AmericanExpress"
+  // ];
+  // String dropdownValue = "Visa";
 
-  @override
-  State<CardTypeDropDown> createState() => _CardTypeDropDownState();
-}
-
-class _CardTypeDropDownState extends State<CardTypeDropDown> {
-  final List<String> CardType = [
-    "Visa",
-    "MasterCard",
-    "Elo",
-    "HiperCard",
-    "AmericanExpress"
-  ];
-  String dropdownValue = "Visa";
+  final void Function(String?)? onChanged;
+  final List<String> cardType;
+  final String dropdownValue;
+  const CardTypeDropDown({
+    required this.onChanged,
+    required this.cardType,
+    required this.dropdownValue,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField(
       value: dropdownValue,
-      items: CardType.map((type) {
+      items: cardType.map((type) {
         return DropdownMenuItem(
           value: type,
           child: Text(type),
         );
       }).toList(),
-      onChanged: (object) {
-        setState(() {
-          dropdownValue = object.toString();
-        });
-      },
+      onChanged: onChanged,
     );
   }
 }

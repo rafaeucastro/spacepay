@@ -1,5 +1,7 @@
 import 'package:banksys/views/components.dart/card_type.dart';
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AddExistingCard extends StatefulWidget {
   const AddExistingCard({Key? key}) : super(key: key);
@@ -12,10 +14,22 @@ class _AddExistingCardState extends State<AddExistingCard> {
   final String dica =
       "Dica: você pode encontrar essas informações na frente ou no verso do seu cartão físico."
       "Caso seja um cartão virtal, consulte os dados no aplicativo do seu banco";
+
   final _cardNumberController = TextEditingController();
   final _nameController = TextEditingController();
   final _expiryDateController = TextEditingController();
   final _cVcController = TextEditingController();
+
+  final List<String> _cardType = [
+    "Elo",
+    "Visa",
+    "HiperCard",
+    "MasterCard",
+    "AmericanExpress"
+  ];
+  String _dropdownValue = "Visa";
+  String _cardTypeImage = "";
+  double _imageScale = 4.0;
 
   void _showDialog() {
     showDialog(
@@ -36,6 +50,32 @@ class _AddExistingCardState extends State<AddExistingCard> {
         );
       },
     );
+  }
+
+  void _defineCardIdentificationImage(String identification) {
+    switch (identification) {
+      case "Elo":
+        _cardTypeImage = "assets/images/elo_logo.png";
+        _imageScale = 4;
+        break;
+      case "Visa":
+        _cardTypeImage = "assets/images/visa_logo.png";
+        _imageScale = 4;
+        break;
+      case "HiperCard":
+        _cardTypeImage = "assets/images/hipercard_logo.png";
+        _imageScale = 28;
+        break;
+      case "MasterCard":
+        _cardTypeImage = "assets/images/mastercard_logo.png";
+        _imageScale = 24;
+        break;
+      case "AmericanExpress":
+        _cardTypeImage = "assets/images/American_Express_Logo_Text.png";
+        _imageScale = 10;
+        break;
+      default:
+    }
   }
 
   @override
@@ -67,6 +107,10 @@ class _AddExistingCardState extends State<AddExistingCard> {
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
                         controller: _cardNumberController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          CartaoBancarioInputFormatter(),
+                        ],
                         onChanged: (value) {
                           setState(() {});
                         },
@@ -93,6 +137,10 @@ class _AddExistingCardState extends State<AddExistingCard> {
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.number,
                               controller: _expiryDateController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                ValidadeCartaoInputFormatter(),
+                              ],
                               onChanged: (value) {
                                 setState(() {});
                               },
@@ -103,10 +151,15 @@ class _AddExistingCardState extends State<AddExistingCard> {
                             child: TextFormField(
                               decoration: const InputDecoration(
                                 labelText: 'CVC',
+                                counterText: "",
                               ),
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.number,
                               controller: _cVcController,
+                              maxLength: 3,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
                               onChanged: (value) {
                                 setState(() {});
                               },
@@ -114,7 +167,16 @@ class _AddExistingCardState extends State<AddExistingCard> {
                           ),
                         ],
                       ),
-                      const CardTypeDropDown(),
+                      CardTypeDropDown(
+                        cardType: _cardType,
+                        dropdownValue: _dropdownValue,
+                        onChanged: (object) {
+                          _defineCardIdentificationImage(object.toString());
+                          setState(() {
+                            _dropdownValue = object.toString();
+                          });
+                        },
+                      ),
                       Text(
                         dica,
                         style: theme.textTheme.bodySmall,
@@ -144,7 +206,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 58, bottom: 10),
+                          padding: const EdgeInsets.only(left: 67, bottom: 10),
                           child: Row(
                             children: [
                               Text(_nameController.text.toUpperCase()),
@@ -152,7 +214,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 58),
+                          padding: const EdgeInsets.only(left: 67),
                           child: Row(
                             children: [
                               if (_expiryDateController.text.isNotEmpty)
@@ -169,11 +231,12 @@ class _AddExistingCardState extends State<AddExistingCard> {
                       bottom: 15,
                       child: Text(_cVcController.text),
                     ),
-                    const Positioned(
-                      right: 15,
-                      bottom: 15,
-                      child: Icon(Icons.masks),
-                    ),
+                    if (_cardTypeImage.isNotEmpty)
+                      Positioned(
+                        right: 15,
+                        bottom: 15,
+                        child: Image.asset(_cardTypeImage, scale: _imageScale),
+                      ),
                   ],
                 ),
               ),

@@ -25,9 +25,9 @@ class _LoginState extends State<Login> {
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
-          // elevation: 0,
-          // backgroundColor: Colors.transparent,
-          ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

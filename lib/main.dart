@@ -1,8 +1,8 @@
 import 'package:banksys/util/routes.dart';
-import 'package:banksys/views/add_existing_card.dart';
-import 'package:banksys/views/home.dart';
-import 'package:banksys/views/login.dart';
-import 'package:banksys/views/sign-up.dart';
+import 'package:banksys/views/screens/add_existing_card.dart';
+import 'package:banksys/views/screens/home.dart';
+import 'package:banksys/views/screens/login.dart';
+import 'package:banksys/views/screens/sign-up.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const SpacePay());

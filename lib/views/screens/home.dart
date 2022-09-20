@@ -29,75 +29,78 @@ class _DashBoardState extends State<DashBoard> {
       backgroundColor: theme.backgroundColor,
       body: Column(
         children: [
-          SizedBox(
-            height: size.height * 0.1,
-            child: Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      _showModal();
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      margin: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: theme.colorScheme.onSecondary,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.add_card),
-                          Text("Criar cartão"),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.of(context)
-                          .pushNamed(AppRoutes.ADD_EXISTING_CARD);
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      margin: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: theme.colorScheme.onSecondary,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.add_card),
-                          Text("Cadastrar novo cartão"),
-                        ],
+          Padding(
+            padding: const EdgeInsets.only(top: 9.0),
+            child: SizedBox(
+              height: size.height * 0.1,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        _showModal();
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: theme.colorScheme.onSecondary,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.add_card),
+                            Text("Criar cartão"),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: InkWell(
-                    child: Container(
-                      alignment: Alignment.center,
-                      margin: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: theme.colorScheme.onSecondary,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(Icons.credit_card),
-                          Text("Meus cartões"),
-                        ],
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed(AppRoutes.ADD_EXISTING_CARD);
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: theme.colorScheme.onSecondary,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.add_card),
+                            Text("  Cadastrar\nnovo cartão"),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: InkWell(
+                      child: Container(
+                        alignment: Alignment.center,
+                        margin: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: theme.colorScheme.onSecondary,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.credit_card),
+                            Text("Meus cartões"),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           //SizedBox(

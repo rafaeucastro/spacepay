@@ -11,6 +11,10 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  bool _isADM = false;
+  final List<String> upperTextList = ["Sou ADM", "Sou cliente"];
+  String upperText = "Sou ADM";
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -23,6 +27,16 @@ class _SignUpState extends State<SignUp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _isADM = !_isADM;
+                      _isADM
+                          ? upperText = upperTextList[1]
+                          : upperText = upperTextList[0];
+                    });
+                  },
+                  child: Text(upperText)),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: SizedBox(
@@ -37,12 +51,13 @@ class _SignUpState extends State<SignUp> {
                           ),
                           textInputAction: TextInputAction.next,
                         ),
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            labelText: 'E-mail',
+                        if (!_isADM)
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: 'E-mail',
+                            ),
+                            textInputAction: TextInputAction.next,
                           ),
-                          textInputAction: TextInputAction.next,
-                        ),
                         TextFormField(
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
@@ -54,17 +69,25 @@ class _SignUpState extends State<SignUp> {
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.number,
                         ),
-                        TextFormField(
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            TelefoneInputFormatter(),
-                          ],
-                          decoration: const InputDecoration(
-                            labelText: 'Telefone',
+                        if (!_isADM)
+                          TextFormField(
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              TelefoneInputFormatter(),
+                            ],
+                            decoration: const InputDecoration(
+                              labelText: 'Telefone',
+                            ),
+                            textInputAction: TextInputAction.next,
+                            keyboardType: TextInputType.number,
                           ),
-                          textInputAction: TextInputAction.next,
-                          keyboardType: TextInputType.number,
-                        ),
+                        if (_isADM)
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: 'Estado',
+                            ),
+                            textInputAction: TextInputAction.next,
+                          ),
                         TextFormField(
                           decoration: const InputDecoration(
                             labelText: 'Endereço',
@@ -83,12 +106,12 @@ class _SignUpState extends State<SignUp> {
                           ),
                           textInputAction: TextInputAction.done,
                         ),
+                        if (!_isADM) const AccountTypeDropDown(),
                       ],
                     ),
                   ),
                 ),
               ),
-              const AccountTypeDropDown(),
               ElevatedButton(
                 //TODO
                 onPressed: () {},
