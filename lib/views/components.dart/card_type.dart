@@ -1,27 +1,33 @@
 import 'package:flutter/material.dart';
 
-abstract class AccountType {
+abstract class CardType {
   static const savings = "Poupança";
   static const checking = "Corrente";
 }
 
-class AccountTypeDropDown extends StatefulWidget {
+class CardTypeDropDown extends StatefulWidget {
   // final void Function(dynamic)? onChanged;
-  const AccountTypeDropDown({Key? key}) : super(key: key);
+  const CardTypeDropDown({Key? key}) : super(key: key);
 
   @override
-  State<AccountTypeDropDown> createState() => _AccountTypeDropDownState();
+  State<CardTypeDropDown> createState() => _CardTypeDropDownState();
 }
 
-class _AccountTypeDropDownState extends State<AccountTypeDropDown> {
-  final List<String> accountType = ["Poupança", "Corrente"];
-  String dropdownValue = "Poupança";
+class _CardTypeDropDownState extends State<CardTypeDropDown> {
+  final List<String> CardType = [
+    "Visa",
+    "MasterCard",
+    "Elo",
+    "HiperCard",
+    "AmericanExpress"
+  ];
+  String dropdownValue = "Visa";
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField(
       value: dropdownValue,
-      items: accountType.map((type) {
+      items: CardType.map((type) {
         return DropdownMenuItem(
           value: type,
           child: Text(type),

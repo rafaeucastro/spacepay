@@ -88,7 +88,7 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
               ),
-              AccountTypeDropDown((p0) {}),
+              const AccountTypeDropDown(),
               ElevatedButton(
                 //TODO
                 onPressed: () {},

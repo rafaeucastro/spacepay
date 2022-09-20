@@ -1,4 +1,5 @@
 import 'package:banksys/util/routes.dart';
+import 'package:banksys/views/add_existing_card.dart';
 import 'package:banksys/views/home.dart';
 import 'package:banksys/views/login.dart';
 import 'package:banksys/views/sign-up.dart';
@@ -14,8 +15,8 @@ class SpacePay extends StatelessWidget {
     ThemeData theme = ThemeData.dark();
     final Color primary = Colors.blue.shade300;
     final Color onPrimary = Colors.blue.shade900;
-    final Color secondary = Colors.white;
-    final Color onSecondary = Colors.white70;
+    const Color secondary = Colors.white;
+    const Color onSecondary = Colors.white70;
 
     return MaterialApp(
       theme: theme.copyWith(
@@ -39,7 +40,7 @@ class SpacePay extends StatelessWidget {
           button: TextStyle(
             color: primary,
           ),
-          headline6: TextStyle(
+          headline6: const TextStyle(
             color: onSecondary,
             fontSize: 15.0,
           ),
@@ -59,6 +60,7 @@ class SpacePay extends StatelessWidget {
         AppRoutes.LOGIN: (context) => const Login(),
         AppRoutes.SIGN_UP: (context) => const SignUp(),
         AppRoutes.DASHBOARD: (context) => const DashBoard(),
+        AppRoutes.ADD_EXISTING_CARD: (context) => const AddExistingCard(),
       },
     );
   }
