@@ -17,7 +17,7 @@ class _LoginState extends State<Login> {
   bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
   bool _formIsValid = false;
-  bool _isSignUp = false;
+  bool _isADM = false;
   Map<String, String> _authData = {
     'email': '',
     'password': '',
@@ -36,8 +36,8 @@ class _LoginState extends State<Login> {
 
     Auth auth = Provider.of(context, listen: false);
 
-    if (!_isSignUp) {
-      await auth.signUp("castrorafael456@gmail.com", "faelzin");
+    if (_isADM) {
+      // await auth.signUp("castrorafael456@gmail.com", "faelzin");
     } else {}
   }
 

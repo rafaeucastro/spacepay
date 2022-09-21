@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
 
 class CardFlagDropDown extends StatelessWidget {
-  // final List<String> cardFlag = [
-  //   "Visa",
-  //   "MasterCard",
-  //   "Elo",
-  //   "HiperCard",
-  //   "AmericanExpress"
-  // ];
-  // String dropdownValue = "Visa";
-
   final void Function(String?)? onChanged;
   final List<String> cardFlag;
   final String dropdownValue;

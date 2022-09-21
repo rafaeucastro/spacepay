@@ -1,5 +1,17 @@
 class Validator {
-  String? emailValidator(String? userInput) {
+  static String? Function(String?)? mandatoryFieldValidator = _mandatoryField;
+  static String? Function(String?)? emailValidator = _email;
+  static String? Function(String?)? alfaNumericValidator = _alfanumericPassword;
+
+  static String? _mandatoryField(String? userInput) {
+    String email = userInput ?? "";
+    if (email.isEmpty) {
+      return "Campo obrigatório!";
+    }
+    return null;
+  }
+
+  static String? _email(String? userInput) {
     String email = userInput ?? "";
     final emailPattern =
         RegExp('^([\\w\\-]+\\.)*[\\w\\- ]+@([\\w\\- ]+\\.)+([\\w\\-]{2,3})\$');
@@ -11,7 +23,7 @@ class Validator {
     return null;
   }
 
-  String? sixDigitCodeValidator(String? userInput) {
+  static String? _sixDigitCode(String? userInput) {
     final code = userInput ?? "";
     final digitPattern = RegExp('^\\d\\d\\d\\d\\d\\d\$');
     if (code.isEmpty) {
@@ -22,7 +34,7 @@ class Validator {
     return null;
   }
 
-  String? newPasswordValidator(String? userInput) {
+  static String? _newPassword(String? userInput) {
     final password = userInput ?? "";
     if (password.isEmpty) {
       return "Considere digitar algo!";
@@ -30,7 +42,7 @@ class Validator {
     return null;
   }
 
-  String? alfanumericPasswordValidator(String? userInput) {
+  static String? _alfanumericPassword(String? userInput) {
     final password = userInput ?? "";
     final alfanumericPattern = RegExp(
         '^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\$*&@#])[0-9a-zA-Z\$*&@#]{8,}\$');
