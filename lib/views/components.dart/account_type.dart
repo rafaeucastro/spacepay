@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 
-abstract class AccountType {
-  static const savings = "Poupança";
-  static const checking = "Corrente";
-}
-
 class AccountTypeDropDown extends StatefulWidget {
   // final void Function(dynamic)? onChanged;
   const AccountTypeDropDown({Key? key}) : super(key: key);

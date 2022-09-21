@@ -1,15 +1,7 @@
 import 'package:flutter/material.dart';
 
-// abstract class CardType {
-//   static const elo = "Elo";
-//   static const visa = "Corrente";
-//   static const mastercard = "MasterCard";
-//   static const hipercard = "HiperCard";
-//   static const americanExpress = "AmericanExpress";
-// }
-
-class CardTypeDropDown extends StatelessWidget {
-  // final List<String> cardType = [
+class CardFlagDropDown extends StatelessWidget {
+  // final List<String> cardFlag = [
   //   "Visa",
   //   "MasterCard",
   //   "Elo",
@@ -19,11 +11,11 @@ class CardTypeDropDown extends StatelessWidget {
   // String dropdownValue = "Visa";
 
   final void Function(String?)? onChanged;
-  final List<String> cardType;
+  final List<String> cardFlag;
   final String dropdownValue;
-  const CardTypeDropDown({
+  const CardFlagDropDown({
     required this.onChanged,
-    required this.cardType,
+    required this.cardFlag,
     required this.dropdownValue,
     Key? key,
   }) : super(key: key);
@@ -32,10 +24,10 @@ class CardTypeDropDown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField(
       value: dropdownValue,
-      items: cardType.map((type) {
+      items: cardFlag.map((flag) {
         return DropdownMenuItem(
-          value: type,
-          child: Text(type),
+          value: flag,
+          child: Text(flag),
         );
       }).toList(),
       onChanged: onChanged,

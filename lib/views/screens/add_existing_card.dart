@@ -1,4 +1,4 @@
-import 'package:banksys/views/components.dart/card_type.dart';
+import 'package:banksys/views/components.dart/card_flag_dropdown.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,7 +20,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
   final _expiryDateController = TextEditingController();
   final _cVcController = TextEditingController();
 
-  final List<String> _cardType = [
+  final List<String> _cardFlag = [
     "Elo",
     "Visa",
     "HiperCard",
@@ -28,7 +28,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
     "AmericanExpress"
   ];
   String _dropdownValue = "Visa";
-  String _cardTypeImage = "";
+  String _cardFlagImage = "";
   double _imageScale = 4.0;
 
   void _showDialog() {
@@ -55,23 +55,23 @@ class _AddExistingCardState extends State<AddExistingCard> {
   void _defineCardIdentificationImage(String identification) {
     switch (identification) {
       case "Elo":
-        _cardTypeImage = "assets/images/elo_logo.png";
+        _cardFlagImage = "assets/images/elo_logo.png";
         _imageScale = 4;
         break;
       case "Visa":
-        _cardTypeImage = "assets/images/visa_logo.png";
+        _cardFlagImage = "assets/images/visa_logo.png";
         _imageScale = 4;
         break;
       case "HiperCard":
-        _cardTypeImage = "assets/images/hipercard_logo.png";
+        _cardFlagImage = "assets/images/hipercard_logo.png";
         _imageScale = 28;
         break;
       case "MasterCard":
-        _cardTypeImage = "assets/images/mastercard_logo.png";
+        _cardFlagImage = "assets/images/mastercard_logo.png";
         _imageScale = 24;
         break;
       case "AmericanExpress":
-        _cardTypeImage = "assets/images/American_Express_Logo_Text.png";
+        _cardFlagImage = "assets/images/American_Express_Logo_Text.png";
         _imageScale = 10;
         break;
       default:
@@ -167,8 +167,8 @@ class _AddExistingCardState extends State<AddExistingCard> {
                           ),
                         ],
                       ),
-                      CardTypeDropDown(
-                        cardType: _cardType,
+                      CardFlagDropDown(
+                        cardFlag: _cardFlag,
                         dropdownValue: _dropdownValue,
                         onChanged: (object) {
                           _defineCardIdentificationImage(object.toString());
@@ -231,11 +231,11 @@ class _AddExistingCardState extends State<AddExistingCard> {
                       bottom: 15,
                       child: Text(_cVcController.text),
                     ),
-                    if (_cardTypeImage.isNotEmpty)
+                    if (_cardFlagImage.isNotEmpty)
                       Positioned(
                         right: 15,
                         bottom: 15,
-                        child: Image.asset(_cardTypeImage, scale: _imageScale),
+                        child: Image.asset(_cardFlagImage, scale: _imageScale),
                       ),
                   ],
                 ),

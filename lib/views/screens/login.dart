@@ -1,5 +1,9 @@
+import 'package:banksys/models/auth.dart';
 import 'package:banksys/util/routes.dart';
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -10,6 +14,32 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final FocusNode _passwordFocus = FocusNode();
+  bool _isLoading = false;
+  final _formKey = GlobalKey<FormState>();
+  bool _formIsValid = false;
+  bool _isSignUp = false;
+  Map<String, String> _authData = {
+    'email': '',
+    'password': '',
+  };
+
+  void _submit() async {
+    _formIsValid = _formKey.currentState?.validate() ?? false;
+
+    if (!_formIsValid) {
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    _formKey.currentState?.save();
+
+    Auth auth = Provider.of(context, listen: false);
+
+    if (!_isSignUp) {
+      await auth.signUp("castrorafael456@gmail.com", "faelzin");
+    } else {}
+  }
 
   @override
   void dispose() {
@@ -50,6 +80,7 @@ class _LoginState extends State<Login> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
               child: Form(
+                key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(
@@ -59,8 +90,23 @@ class _LoginState extends State<Login> {
                         border: UnderlineInputBorder(),
                       ),
                       textInputAction: TextInputAction.next,
-                      onFieldSubmitted: ((value) =>
-                          FocusScope.of(context).requestFocus(_passwordFocus)),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        CpfInputFormatter()
+                      ],
+                      validator: (value) {
+                        final cpf = value ?? "";
+                        if (cpf.isEmpty) {
+                          return "Digite seu CPF!";
+                        }
+                        return null;
+                      },
+                      onSaved: (cpf) {
+                        _authData['cpf'] = cpf!;
+                      },
+                      // onFieldSubmitted: ((value) =>
+                      //     FocusScope.of(context).requestFocus(_passwordFocus)),
                     ),
                     TextFormField(
                       obscuringCharacter: '*',
@@ -71,6 +117,16 @@ class _LoginState extends State<Login> {
                         border: UnderlineInputBorder(),
                       ),
                       focusNode: _passwordFocus,
+                      validator: (value) {
+                        final password = value ?? "";
+                        if (password.isEmpty) {
+                          return "Digite sua senha!";
+                        }
+                        return null;
+                      },
+                      onSaved: (password) {
+                        _authData['password'] = password!;
+                      },
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -85,18 +141,25 @@ class _LoginState extends State<Login> {
                         ),
                       ],
                     ),
-                    ElevatedButton(
-                      //TODO
-                      onPressed: () {
-                        Navigator.of(context)
-                            .pushReplacementNamed(AppRoutes.DASHBOARD);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize:
-                            Size((size.width * .8), (size.height * .05)),
+                    if (_isLoading)
+                      const CircularProgressIndicator()
+                    else
+                      ElevatedButton(
+                        //TODO
+                        onPressed: () {
+                          _submit();
+                          if (_formIsValid) {
+                            Navigator.of(context)
+                                .pushReplacementNamed(AppRoutes.DASHBOARD);
+                            setState(() => _isLoading = false);
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize:
+                              Size((size.width * .8), (size.height * .05)),
+                        ),
+                        child: const Text("ENTRAR"),
                       ),
-                      child: const Text("ENTRAR"),
-                    ),
                   ],
                 ),
               ),
