@@ -82,6 +82,9 @@ class _DashBoardState extends State<DashBoard> {
                   ),
                   Expanded(
                     child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(AppRoutes.MYCARDS);
+                      },
                       child: Container(
                         alignment: Alignment.center,
                         margin: const EdgeInsets.all(5),
