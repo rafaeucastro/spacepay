@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CardFlagDropDown extends StatelessWidget {
+class CardTypeDropDown extends StatelessWidget {
   final void Function(String?)? onChanged;
-  final List<String> cardFlag;
+  final List<String> cardType;
   final String dropdownValue;
 
-  const CardFlagDropDown({
+  const CardTypeDropDown({
     required this.onChanged,
-    required this.cardFlag,
+    required this.cardType,
     required this.dropdownValue,
     Key? key,
   }) : super(key: key);
@@ -16,13 +16,19 @@ class CardFlagDropDown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField(
       value: dropdownValue,
-      items: cardFlag.map((flag) {
+      items: cardType.map((type) {
         return DropdownMenuItem(
-          value: flag,
-          child: Text(flag),
+          value: type,
+          child: Text(type),
         );
       }).toList(),
       onChanged: onChanged,
+      decoration: const InputDecoration(
+        label: Text(
+          "Tipo de cartão",
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:banksys/models/auth.dart';
+import 'package:banksys/models/cards.dart';
 import 'package:banksys/models/users.dart';
 import 'package:banksys/util/routes.dart';
 import 'package:banksys/views/screens/add_existing_card.dart';
@@ -29,6 +30,9 @@ class SpacePay extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => Users(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Cards(),
         ),
       ],
       child: MaterialApp(

@@ -1,7 +1,11 @@
+import 'package:banksys/models/card.dart';
+import 'package:banksys/models/cards.dart';
+import 'package:banksys/util/validators.dart';
 import 'package:banksys/views/components.dart/card_flag_dropdown.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class AddExistingCard extends StatefulWidget {
   const AddExistingCard({Key? key}) : super(key: key);
@@ -20,6 +24,12 @@ class _AddExistingCardState extends State<AddExistingCard> {
   final _expiryDateController = TextEditingController();
   final _cVcController = TextEditingController();
 
+  Map<String, String> _formData = {
+    CardAttributes.flag: "Visa",
+  };
+  final _formKey = GlobalKey<FormState>();
+  bool _formIsValid = false;
+  //TODO: trocar por uma lista no tipo CardFlag
   final List<String> _cardFlag = [
     "Elo",
     "Visa",
@@ -27,9 +37,23 @@ class _AddExistingCardState extends State<AddExistingCard> {
     "MasterCard",
     "AmericanExpress"
   ];
-  String _dropdownValue = "Visa";
+
+  String _dropdownValue = "Erro";
   String _cardFlagImage = "";
   double _imageScale = 4.0;
+
+  void _submit() {
+    _formIsValid = _formKey.currentState?.validate() ?? false;
+    if (!_formIsValid) {
+      return;
+    }
+
+    _formKey.currentState?.save();
+
+    final cards = Provider.of<Cards>(context, listen: false);
+    cards.addExistingCard(_formData);
+    _showDialog();
+  }
 
   void _showDialog() {
     showDialog(
@@ -52,30 +76,17 @@ class _AddExistingCardState extends State<AddExistingCard> {
     );
   }
 
-  void _defineCardIdentificationImage(String identification) {
-    switch (identification) {
-      case "Elo":
-        _cardFlagImage = "assets/images/elo_logo.png";
-        _imageScale = 4;
-        break;
-      case "Visa":
-        _cardFlagImage = "assets/images/visa_logo.png";
-        _imageScale = 4;
-        break;
-      case "HiperCard":
-        _cardFlagImage = "assets/images/hipercard_logo.png";
-        _imageScale = 28;
-        break;
-      case "MasterCard":
-        _cardFlagImage = "assets/images/mastercard_logo.png";
-        _imageScale = 24;
-        break;
-      case "AmericanExpress":
-        _cardFlagImage = "assets/images/American_Express_Logo_Text.png";
-        _imageScale = 10;
-        break;
-      default:
-    }
+  void _switchImage(Object? object) {
+    final result = CardFlag.switchFlagImage(
+      identification: object.toString(),
+      flagImage: _cardFlagImage,
+      imageScale: _imageScale,
+    );
+    _cardFlagImage = result.keys.first;
+    _imageScale = result.values.first;
+    setState(() {
+      _formData[CardAttributes.flag] = object.toString();
+    });
   }
 
   @override
@@ -94,9 +105,10 @@ class _AddExistingCardState extends State<AddExistingCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                height: size.height * 0.38,
+                height: size.height * 0.45,
                 padding: const EdgeInsets.all(15),
                 child: Form(
+                  key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -114,6 +126,10 @@ class _AddExistingCardState extends State<AddExistingCard> {
                         onChanged: (value) {
                           setState(() {});
                         },
+                        onSaved: (newValue) {
+                          _formData[CardAttributes.number] = newValue!;
+                        },
+                        validator: Validator.cardNumber,
                       ),
                       TextFormField(
                         decoration: const InputDecoration(
@@ -124,6 +140,10 @@ class _AddExistingCardState extends State<AddExistingCard> {
                         onChanged: (value) {
                           setState(() {});
                         },
+                        onSaved: (newValue) {
+                          _formData[CardAttributes.cardholderName] = newValue!;
+                        },
+                        validator: Validator.mandatoryFieldValidator,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -144,6 +164,11 @@ class _AddExistingCardState extends State<AddExistingCard> {
                               onChanged: (value) {
                                 setState(() {});
                               },
+                              onSaved: (newValue) {
+                                _formData[CardAttributes.expiryDate] =
+                                    newValue!;
+                              },
+                              validator: Validator.cardExpiryDate,
                             ),
                           ),
                           SizedBox(
@@ -163,19 +188,19 @@ class _AddExistingCardState extends State<AddExistingCard> {
                               onChanged: (value) {
                                 setState(() {});
                               },
+                              onSaved: (newValue) {
+                                _formData[CardAttributes.cvc] = newValue!;
+                              },
+                              validator: Validator.cardCVC,
                             ),
                           ),
                         ],
                       ),
                       CardFlagDropDown(
                         cardFlag: _cardFlag,
-                        dropdownValue: _dropdownValue,
-                        onChanged: (object) {
-                          _defineCardIdentificationImage(object.toString());
-                          setState(() {
-                            _dropdownValue = object.toString();
-                          });
-                        },
+                        dropdownValue:
+                            _formData[CardAttributes.flag] ?? _dropdownValue,
+                        onChanged: (object) => _switchImage(object),
                       ),
                       Text(
                         dica,
@@ -244,7 +269,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: ElevatedButton(
                   onPressed: () {
-                    _showDialog();
+                    _submit();
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(size.height * 0.4, size.height * 0.05),

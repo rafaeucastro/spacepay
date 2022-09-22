@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'auth.dart';
 
 class Users with ChangeNotifier {
-  final _keys = AttributesKeys();
+  final _keys = UserAttributes();
   List<Client> _clientList = [];
   List<Admin> _adminList = [];
 

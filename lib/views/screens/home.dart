@@ -51,7 +51,7 @@ class _DashBoardState extends State<DashBoard> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
                             Icon(Icons.add_card),
-                            Text("Criar cartão"),
+                            Text("Solicitar cartão"),
                           ],
                         ),
                       ),

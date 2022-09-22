@@ -4,7 +4,7 @@ abstract class AccountType {
   static const List<String> accountTypes = ["Poupança", "Corrente"];
 }
 
-class AttributesKeys {
+class UserAttributes {
   final fullName = "fullName";
   final email = "email";
   final cpf = "cpf";

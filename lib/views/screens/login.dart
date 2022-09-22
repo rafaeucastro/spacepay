@@ -133,7 +133,10 @@ class _LoginState extends State<Login> {
                       children: [
                         TextButton(
                           //TODO
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushNamed(AppRoutes.DASHBOARD);
+                          },
                           child: Text(
                             "Esqueceu a senha?",
                             style: theme.textTheme.button,

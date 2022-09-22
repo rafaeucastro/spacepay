@@ -1,6 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../models/card.dart';
+import '../../models/cards.dart';
 
 class MyCards extends StatefulWidget {
   const MyCards({Key? key}) : super(key: key);
@@ -11,11 +15,13 @@ class MyCards extends StatefulWidget {
 
 class _MyCardsState extends State<MyCards> {
   final String _cardTypeImage = "assets/images/elo_logo.png";
+  bool _isUnderAnalysis = true;
 
-  void _showCardInfo() {
+  void _showCardInfo(BankCard card) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
+        final textScale = MediaQuery.of(context).textScaleFactor;
         final size = MediaQuery.of(context).size;
 
         return Container(
@@ -28,15 +34,18 @@ class _MyCardsState extends State<MyCards> {
             children: [
               Text(
                 "Dados do cartão",
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: textScale * 20,
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("Nome"),
                   Text(
-                    "RAFAEL DE SOUSA CASTRO",
+                    card.cardholderName,
                     style: TextStyle(
                       color: Colors.blue.shade600,
                     ),
@@ -48,7 +57,7 @@ class _MyCardsState extends State<MyCards> {
                 children: [
                   Text("Número"),
                   Text(
-                    "0890 6734 4327 1122",
+                    card.numberAsString,
                     style: TextStyle(
                       color: Colors.blue.shade600,
                     ),
@@ -59,7 +68,7 @@ class _MyCardsState extends State<MyCards> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text("Validade"),
-                  Text("10/24",
+                  Text(card.expiryDate,
                       style: TextStyle(
                         color: Colors.blue.shade600,
                       )),
@@ -70,7 +79,7 @@ class _MyCardsState extends State<MyCards> {
                 children: [
                   Text("Código de Segurança"),
                   Text(
-                    "080",
+                    card.cvc.toString(),
                     style: TextStyle(
                       color: Colors.blue.shade600,
                     ),
@@ -102,6 +111,8 @@ class _MyCardsState extends State<MyCards> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
+    final cards = Provider.of<Cards>(context);
+    final cardList = Provider.of<Cards>(context).cardList;
 
     return Scaffold(
       appBar: AppBar(
@@ -148,17 +159,35 @@ class _MyCardsState extends State<MyCards> {
                       icon: Icon(Icons.settings, size: 20),
                       onPressed: () {},
                     ),
-                    onTap: _showCardInfo,
                   ),
-                  ListTile(
-                    leading: Icon(Icons.credit_card),
-                    title: Text("Franc. Franciscleidson F. Faminto"),
-                    subtitle: Text("**** 0865"),
-                    trailing: Text(
-                      "Em análise",
-                      style: TextStyle(
-                        color: Colors.red,
-                      ),
+                  SizedBox(
+                    height: size.height * 0.5,
+                    child: ListView.builder(
+                      itemCount: cardList.length,
+                      itemBuilder: (context, index) {
+                        final BankCard card = cardList.elementAt(index);
+
+                        return ListTile(
+                          leading: Icon(Icons.credit_card),
+                          title: Text(card.cardholderName),
+                          subtitle: Text("**** ${card.numberLastDigits}"),
+                          trailing: !_isUnderAnalysis
+                              ? Text(
+                                  "Em análise",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                )
+                              : IconButton(
+                                  icon: Icon(Icons.delete_forever),
+                                  onPressed: () {
+                                    setState(() {
+                                      cards.removeCard(card);
+                                    });
+                                  }),
+                          onTap: () => _showCardInfo(card),
+                        );
+                      },
                     ),
                   ),
                 ],

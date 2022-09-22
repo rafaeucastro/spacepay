@@ -66,10 +66,12 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-    - assets/images/American_Express_Logo_Text.png
+    - assets/images/american_express_logo_text.png
+    - assets/images/american_express_logo.png
     - assets/images/mastercard_logo.png
     - assets/images/hipercard_logo.png
     - assets/images/visa_logo.png
+    - assets/images/visa_logo_text.png
     - assets/images/elo_logo.png
     - assets/images/elo_logo_2.png
 
