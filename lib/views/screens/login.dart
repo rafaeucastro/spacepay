@@ -1,9 +1,14 @@
+import 'package:banksys/exceptions/auth_exception.dart';
+import 'package:banksys/exceptions/user_not_found_expection.dart';
 import 'package:banksys/models/auth.dart';
+import 'package:banksys/models/user.dart';
 import 'package:banksys/util/routes.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
+import '../../models/users.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -18,10 +23,8 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   bool _formIsValid = false;
   bool _isADM = false;
-  Map<String, String> _authData = {
-    'email': '',
-    'password': '',
-  };
+  // ignore: prefer_final_fields
+  Map<String, String> _authData = {Auth.password: '', UserAttributes.cpf: ''};
 
   void _submit() async {
     _formIsValid = _formKey.currentState?.validate() ?? false;
@@ -34,11 +37,30 @@ class _LoginState extends State<Login> {
 
     _formKey.currentState?.save();
 
-    Auth auth = Provider.of(context, listen: false);
+    final auth = Provider.of<Auth>(context, listen: false);
 
     if (_isADM) {
       // await auth.signUp("castrorafael456@gmail.com", "faelzin");
-    } else {}
+    } else {
+      try {
+        await auth.authenticate(_authData[UserAttributes.cpf]!,
+            _authData[Auth.password]!, AuthMode.signIn);
+      } on UserNotFoundException catch (error) {
+        _showErrorDialog(error.toString());
+      } on AuthException catch (error) {
+        _showErrorDialog(error.toString());
+      }
+    }
+
+    auth.isAuth ? print('authenticated') : print('not');
+  }
+
+  void _showErrorDialog(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+      ),
+    );
   }
 
   @override
@@ -51,6 +73,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
+    final auth = Provider.of<Auth>(context, listen: false);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
@@ -152,9 +175,14 @@ class _LoginState extends State<Login> {
                         onPressed: () {
                           _submit();
                           if (_formIsValid) {
-                            Navigator.of(context)
-                                .pushReplacementNamed(AppRoutes.DASHBOARD);
-                            setState(() => _isLoading = false);
+                            print('executando');
+                            auth.isAuth
+                                ? Navigator.of(context)
+                                    .pushReplacementNamed(AppRoutes.DASHBOARD)
+                                : null;
+                            setState(
+                              () => _isLoading = false,
+                            );
                           }
                         },
                         style: ElevatedButton.styleFrom(

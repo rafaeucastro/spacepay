@@ -16,6 +16,7 @@ class _DashBoardState extends State<DashBoard> {
       builder: (context) {
         return const NewCardForm();
       },
+      isScrollControlled: true,
     );
   }
 

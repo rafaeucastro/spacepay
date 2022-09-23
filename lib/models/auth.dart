@@ -1,15 +1,48 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:banksys/exceptions/auth_exception.dart';
+import 'package:banksys/exceptions/user_not_found_expection.dart';
+import 'package:banksys/models/constants.dart';
+import 'package:banksys/models/user.dart';
+import 'package:banksys/models/users.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+abstract class AuthMode {
+  static const signIn = "signIn";
+  static const signUp = "signUp";
+}
+
 class Auth with ChangeNotifier {
-  static const _baseUrl =
-      "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyByV3D72eMpkPN8oKa2XyIQoCXdFeiWvFM";
+  static const email = "email";
+  static const password = "password";
+  String? _token;
+  String? _email;
+  String? _userId;
+  DateTime? _expiryDate;
+  Timer? _logoutTimer;
+
+  bool get isAuth {
+    final isValid = _expiryDate?.isAfter(DateTime.now()) ?? false;
+    return _token != null && isValid;
+  }
+
+  String? get token {
+    return isAuth ? _token : null;
+  }
+
+  String? get eMail {
+    return isAuth ? _email : null;
+  }
+
+  String? get userId {
+    return isAuth ? _userId : null;
+  }
 
   static Future<void> signUp(String email, String password) async {
     final response = await http.post(
-      Uri.parse(_baseUrl),
+      Uri.parse(Constants.signUpUrl),
       body: jsonEncode({
         'email': email,
         'password': password,
@@ -18,5 +51,41 @@ class Auth with ChangeNotifier {
     );
 
     print(jsonDecode(response.body));
+  }
+
+  Future<void> authenticate(
+      String cpf, String password, String authMode) async {
+    Client? client;
+
+    try {
+      client = Users.clients.firstWhere((client) => client.cpf == cpf);
+    } on Exception {
+      return;
+    } catch (error) {
+      throw UserNotFoundException(error.toString());
+    }
+
+    final response = await http.post(
+      Uri.parse(Constants.signInUrl),
+      body: jsonEncode({
+        'email': client.email,
+        'password': password,
+        'returnSecureToken': true,
+      }),
+    );
+
+    final body = jsonDecode(response.body);
+    if (body['error'] != null) {
+      throw AuthException(body['error']['errors'][0]['message']);
+    } else {
+      _email = body['email'];
+      _userId = body['localId'];
+      _token = body['idToken'];
+      _expiryDate = DateTime.now().add(
+        Duration(seconds: int.parse(body['expiresIn'])),
+      );
+    }
+
+    notifyListeners();
   }
 }

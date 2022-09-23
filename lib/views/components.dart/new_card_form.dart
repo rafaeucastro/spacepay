@@ -1,6 +1,9 @@
 import 'package:banksys/models/card.dart';
+import 'package:banksys/models/cards.dart';
 import 'package:banksys/views/components.dart/card_type_dropdown.dart';
+import 'package:banksys/views/components.dart/personalized_dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class NewCardForm extends StatefulWidget {
   const NewCardForm({Key? key}) : super(key: key);
@@ -11,6 +14,10 @@ class NewCardForm extends StatefulWidget {
 
 class _NewCardFormState extends State<NewCardForm> {
   String _dropdownValue = CardType.credit;
+  String _yearDropdownValue = "2";
+  final _validYears = ["2", "4", "5", "6"];
+  String _name = "";
+  double _bottomKeyboardMargin = 0;
 
   void _showDialog() {
     showDialog(
@@ -37,10 +44,17 @@ class _NewCardFormState extends State<NewCardForm> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
+    final mediaQuery = MediaQuery.of(context);
+    final cards = Provider.of<Cards>(context);
 
     return Container(
-      height: size.height * 0.34,
-      padding: const EdgeInsets.all(10),
+      height: size.height * 0.34 + _bottomKeyboardMargin,
+      padding: EdgeInsets.only(
+        left: 10,
+        right: 10,
+        top: 10,
+        bottom: _bottomKeyboardMargin,
+      ),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -48,34 +62,68 @@ class _NewCardFormState extends State<NewCardForm> {
         ),
         color: theme.colorScheme.onSecondary,
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Text(
-            "Solicitar novo cartão",
-            style: theme.textTheme.headlineSmall,
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Nome completo do titular',
+      child: Form(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              "Solicitar novo cartão",
+              style: theme.textTheme.headlineSmall,
             ),
-            textInputAction: TextInputAction.next,
-          ),
-          CardTypeDropDown(
-            onChanged: (p0) {},
-            cardType: CardType.all,
-            dropdownValue: _dropdownValue,
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              minimumSize: Size(size.width * 0.4, size.height * 0.051),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  width: size.width * 0.60,
+                  child: CardTypeDropDown(
+                    cardType: CardType.all,
+                    dropdownValue: _dropdownValue,
+                    onChanged: (cardType) {
+                      _dropdownValue = cardType!;
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: size.width * 0.30,
+                  child: PersonalizedDropDown(
+                    list: _validYears,
+                    dropdownValue: _yearDropdownValue,
+                    label: "Validade",
+                    onChanged: (validity) {
+                      _yearDropdownValue = validity!;
+                    },
+                  ),
+                ),
+              ],
             ),
-            onPressed: () {
-              _showDialog();
-            },
-            child: const Text("Enviar"),
-          ),
-        ],
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: 'Nome completo do titular',
+              ),
+              textInputAction: TextInputAction.next,
+              onTap: () => setState(() {
+                _bottomKeyboardMargin = mediaQuery.viewInsets.bottom;
+              }),
+              onChanged: (value) {
+                _name = value;
+                setState(() {
+                  _bottomKeyboardMargin = mediaQuery.viewInsets.bottom;
+                });
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(size.width * 0.4, size.height * 0.051),
+              ),
+              onPressed: () {
+                _showDialog();
+                cards.createNewCard(_name, _dropdownValue, _yearDropdownValue);
+              },
+              child: const Text("Enviar"),
+            ),
+          ],
+        ),
       ),
     );
   }

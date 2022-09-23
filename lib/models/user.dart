@@ -4,19 +4,21 @@ abstract class AccountType {
   static const List<String> accountTypes = ["Poupança", "Corrente"];
 }
 
-class UserAttributes {
-  final fullName = "fullName";
-  final email = "email";
-  final cpf = "cpf";
-  final phone = "phone";
-  final address = "address";
-  final password = "password";
-  final accountType = "accountType";
-  final state = "state";
+abstract class UserAttributes {
+  static const fullName = "fullName";
+  static const email = "email";
+  static const cpf = "cpf";
+  static const phone = "phone";
+  static const address = "address";
+  static const password = "password";
+  static const accountType = "accountType";
+  static const state = "state";
+  static const databaseID = "databaseID";
 }
 
 abstract class User {
-  final int cpf;
+  final String? databaseID;
+  final String cpf;
   final String fullName;
   String address;
   String password;
@@ -26,6 +28,7 @@ abstract class User {
     required this.fullName,
     required this.address,
     required this.password,
+    this.databaseID,
   });
 }
 
@@ -38,15 +41,17 @@ class Client extends User {
     required this.email,
     required this.accountType,
     required this.phone,
-    required int cpf,
+    required String cpf,
     required String fullname,
     required String address,
     required String password,
+    final String? databaseID,
   }) : super(
           cpf: cpf,
           fullName: fullname,
           address: address,
           password: password,
+          databaseID: databaseID,
         );
 }
 
@@ -55,7 +60,7 @@ class Admin extends User {
 
   Admin({
     required this.state,
-    required int cpf,
+    required String cpf,
     required String fullname,
     required String address,
     required String password,

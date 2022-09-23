@@ -12,6 +12,7 @@ abstract class CardAttributes {
   static const expiryDate = "expiryDate";
   static const cvc = "cvc";
   static const flag = "flag";
+  static const databaseID = "databaseID";
 }
 
 //TODO: adicionar opção poupança/débito quando o usuário tiver conta poupança
@@ -38,6 +39,14 @@ abstract class CardFlag {
   static const americanExpressTextImage =
       "assets/images/american_express_logo_text.png";
   static const americanExpressImage = "assets/images/american_express_logo.png";
+
+  static const all = [
+    CardFlag.elo,
+    CardFlag.visa,
+    CardFlag.mastercard,
+    CardFlag.hipercard,
+    CardFlag.americanExpress,
+  ];
 
   // static CardFlag tryParse(String flag) {
   //   if (flag == "Elo") return CardFlag.elo;
@@ -82,6 +91,7 @@ class BankCard {
   final String expiryDate;
   final int cvc;
   final String flag;
+  String? databaseID;
   String flagImage = CardFlag.eloImage;
   double flagImageScale = 4.0;
 
@@ -91,6 +101,7 @@ class BankCard {
     required this.expiryDate,
     required this.cvc,
     required this.flag,
+    this.databaseID,
   }) {
     _defineCardFlagImage();
   }
@@ -110,7 +121,7 @@ class BankCard {
     return number;
   }
 
-  _defineCardFlagImage() {
+  void _defineCardFlagImage() {
     switch (flag) {
       case CardFlag.elo:
         flagImage = CardFlag.eloImage;

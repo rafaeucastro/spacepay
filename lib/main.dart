@@ -97,13 +97,16 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _navigateToHome();
+    Provider.of<Users>(context, listen: false).loadData();
   }
 
   _navigateToHome() async {
     await Future.delayed(
       const Duration(seconds: 2),
       () {
-        Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
+        Provider.of<Auth>(context, listen: false).isAuth
+            ? Navigator.of(context).pushReplacementNamed(AppRoutes.DASHBOARD)
+            : Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
       },
     );
   }

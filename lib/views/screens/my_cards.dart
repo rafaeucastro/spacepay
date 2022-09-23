@@ -16,6 +16,7 @@ class MyCards extends StatefulWidget {
 class _MyCardsState extends State<MyCards> {
   final String _cardTypeImage = "assets/images/elo_logo.png";
   bool _isUnderAnalysis = true;
+  bool _isLoading = true;
 
   void _showCardInfo(BankCard card) {
     showModalBottomSheet(
@@ -25,20 +26,39 @@ class _MyCardsState extends State<MyCards> {
         final size = MediaQuery.of(context).size;
 
         return Container(
-          height: size.height * 0.4,
+          height: size.height * 0.45,
           padding: EdgeInsets.all(20),
           color: Colors.black,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Dados do cartão",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: textScale * 20,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Dados do cartão",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: textScale * 20,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Provider.of<Cards>(context, listen: false)
+                          .removeExistingCard(card);
+                    },
+                    child: Text(
+                      "excluir cartão",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: textScale * 14,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -108,11 +128,20 @@ class _MyCardsState extends State<MyCards> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Provider.of<Cards>(context, listen: false)
+        .loadCardList()
+        .then((value) => _isLoading = false);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final cards = Provider.of<Cards>(context);
     final cardList = Provider.of<Cards>(context).cardList;
+    final userCreatedCards = Provider.of<Cards>(context).userCreatedCars;
 
     return Scaffold(
       appBar: AppBar(
@@ -120,35 +149,54 @@ class _MyCardsState extends State<MyCards> {
       ),
       backgroundColor: theme.backgroundColor,
       body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Column(
+        child: Column(
+          children: [
+            SizedBox(
+              height: size.height * 0.42,
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Padding(
-                    padding: EdgeInsets.only(left: 15.0, bottom: 10.0),
+                    padding:
+                        EdgeInsets.only(left: 15.0, bottom: 10.0, top: 15.0),
                     child: Text("Cartões criados"),
                   ),
-                  ListTile(
-                    leading: Icon(Icons.credit_card),
-                    title: Text("Lirio Souza Castro"),
-                    subtitle: Text("**** 4779"),
-                    trailing: Text(
-                      "Aprovado",
-                      style: TextStyle(
-                        color: Colors.green,
-                      ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: userCreatedCards.length,
+                      itemBuilder: (context, index) {
+                        final BankCard card = userCreatedCards.elementAt(index);
+
+                        return ListTile(
+                          leading: Icon(Icons.credit_card),
+                          title: Text(card.cardholderName),
+                          subtitle: Text("**** ${card.numberLastDigits}"),
+                          trailing: Text(
+                            "Aprovado",
+                            style: TextStyle(
+                              color: Colors.green,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            SizedBox(
+              height: size.height * 0.425,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(left: 15.0, bottom: 10.0),
-                    child: Text("Cartões cadastrados"),
+                    padding:
+                        EdgeInsets.only(left: 15.0, bottom: 10.0, top: 15.0),
+                    child: Row(
+                      children: const [
+                        Text("Cartões cadastrados"),
+                      ],
+                    ),
                   ),
                   ListTile(
                     leading:
@@ -160,40 +208,39 @@ class _MyCardsState extends State<MyCards> {
                       onPressed: () {},
                     ),
                   ),
-                  SizedBox(
-                    height: size.height * 0.5,
-                    child: ListView.builder(
-                      itemCount: cardList.length,
-                      itemBuilder: (context, index) {
-                        final BankCard card = cardList.elementAt(index);
+                  _isLoading
+                      ? CircularProgressIndicator()
+                      : Expanded(
+                          child: ListView.builder(
+                            itemCount: cardList.length,
+                            itemBuilder: (context, index) {
+                              final BankCard card = cardList.elementAt(index);
 
-                        return ListTile(
-                          leading: Icon(Icons.credit_card),
-                          title: Text(card.cardholderName),
-                          subtitle: Text("**** ${card.numberLastDigits}"),
-                          trailing: !_isUnderAnalysis
-                              ? Text(
-                                  "Em análise",
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                  ),
-                                )
-                              : IconButton(
-                                  icon: Icon(Icons.delete_forever),
-                                  onPressed: () {
-                                    setState(() {
-                                      cards.removeCard(card);
-                                    });
-                                  }),
-                          onTap: () => _showCardInfo(card),
-                        );
-                      },
-                    ),
-                  ),
+                              return ListTile(
+                                leading: Icon(Icons.credit_card),
+                                title: Text(card.cardholderName),
+                                subtitle: Text("**** ${card.numberLastDigits}"),
+                                trailing: _isUnderAnalysis
+                                    ? Text(
+                                        "Em análise",
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                        ),
+                                      )
+                                    : IconButton(
+                                        icon: Icon(Icons.delete_forever),
+                                        onPressed: () {
+                                          setState(() {});
+                                        }),
+                                onTap: () => _showCardInfo(card),
+                              );
+                            },
+                          ),
+                        ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -24,6 +24,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
   final _expiryDateController = TextEditingController();
   final _cVcController = TextEditingController();
 
+  // ignore: prefer_final_fields
   Map<String, String> _formData = {
     CardAttributes.flag: "Visa",
   };

@@ -1,8 +1,16 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:banksys/models/card.dart';
+import 'package:banksys/models/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Cards with ChangeNotifier {
+  // ignore: prefer_final_fields
+  List<BankCard> _userCreatedCards = [];
+  // ignore: prefer_final_fields
   List<BankCard> _cardList = [
     BankCard(
       cardholderName: "Rafael Castro",
@@ -14,23 +22,95 @@ class Cards with ChangeNotifier {
   ];
 
   List<BankCard> get cardList => [..._cardList];
+  List<BankCard> get userCreatedCars => [..._userCreatedCards];
 
-  void addExistingCard(Map<String, String> formData) {
+  void addExistingCard(Map<String, String> formData) async {
     final number = formData[CardAttributes.number]!.split(' ').join();
     final cvc = formData[CardAttributes.cvc]!;
+    final cardholderName = formData[CardAttributes.cardholderName]!;
+    final expiryDate = formData[CardAttributes.expiryDate]!;
+    final flag = formData[CardAttributes.flag]!;
+
+    final response = await http.post(
+      Uri.parse(Constants.urlExistingCards),
+      body: jsonEncode({
+        CardAttributes.cardholderName: cardholderName,
+        CardAttributes.number: number,
+        CardAttributes.expiryDate: expiryDate,
+        CardAttributes.cvc: cvc,
+        CardAttributes.flag: flag,
+      }),
+    );
+
+    final id = jsonDecode(response.body)['name'].toString();
 
     final newCard = BankCard(
-      cardholderName: formData[CardAttributes.cardholderName]!,
-      expiryDate: formData[CardAttributes.expiryDate]!,
-      flag: formData[CardAttributes.flag]!,
+      cardholderName: cardholderName,
+      expiryDate: expiryDate,
+      flag: flag,
       number: int.tryParse(number) ?? 0,
       cvc: int.parse(cvc),
+      databaseID: id,
     );
 
     _cardList.add(newCard);
+    notifyListeners();
   }
 
-  void removeCard(BankCard card) {
-    _cardList.remove(card);
+  void createNewCard(String name, String cardType, String validity) {
+    final cvc = Random().nextInt(899) + 100;
+    final int number1 = Random().nextInt(89999999) + 10000000;
+    final int number2 = Random().nextInt(89999999) + 10000000;
+
+    //TODO: gerar número do cartão e bandeira aleatório
+    final newCard = BankCard(
+      number: number1,
+      cardholderName: name,
+      expiryDate: validity,
+      cvc: cvc,
+      flag: CardFlag.all.elementAt(1),
+    );
+
+    _userCreatedCards.add(newCard);
+
+    notifyListeners();
+  }
+
+  Future<void> removeExistingCard(BankCard card) async {
+    final response = await http.delete(
+      Uri.parse('${Constants.baseUrl}/${card.databaseID}.json'),
+    );
+
+    if (response.statusCode == 200) {
+      _cardList.remove(card);
+    }
+
+    // print("id: ${card.databaseID}");
+    // print("response: ${jsonDecode(response.statusCode.toString())}");
+
+    notifyListeners();
+  }
+
+  Future<void> loadCardList() async {
+    _cardList.clear();
+
+    final response = await http.get(
+      Uri.parse(Constants.urlExistingCards),
+    );
+    if (response.body == 'null') return;
+
+    Map<String, dynamic> data = jsonDecode(response.body);
+    data.forEach((key, cards) {
+      _cardList.add(BankCard(
+        cardholderName: cards[CardAttributes.cardholderName],
+        expiryDate: cards[CardAttributes.expiryDate],
+        flag: cards[CardAttributes.flag],
+        number: int.parse(cards[CardAttributes.number]),
+        cvc: int.parse(cards[CardAttributes.cvc]),
+        databaseID: key,
+      ));
+    });
+
+    notifyListeners();
   }
 }

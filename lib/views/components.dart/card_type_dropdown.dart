@@ -6,7 +6,7 @@ class CardTypeDropDown extends StatelessWidget {
   final String dropdownValue;
 
   const CardTypeDropDown({
-    required this.onChanged,
+    this.onChanged,
     required this.cardType,
     required this.dropdownValue,
     Key? key,
