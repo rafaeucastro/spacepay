@@ -22,6 +22,11 @@ class Auth with ChangeNotifier {
   String? _userId;
   DateTime? _expiryDate;
   Timer? _logoutTimer;
+  bool _admIsLogged = false;
+
+  bool get admAuthenticated {
+    return _admIsLogged;
+  }
 
   bool get isAuth {
     final isValid = _expiryDate?.isAfter(DateTime.now()) ?? false;
@@ -53,37 +58,52 @@ class Auth with ChangeNotifier {
     print(jsonDecode(response.body));
   }
 
-  Future<void> authenticate(
-      String cpf, String password, String authMode) async {
+  Future<void> authenticate(String cpf, String password, bool isADM) async {
     Client? client;
+    Admin? admin;
 
-    try {
-      client = Users.clients.firstWhere((client) => client.cpf == cpf);
-    } on Exception {
-      return;
-    } catch (error) {
-      throw UserNotFoundException(error.toString());
-    }
+    if (isADM) {
+      try {
+        admin = Users.admins.firstWhere((adm) => adm.cpf == cpf);
+      } on Exception {
+        UserNotFoundException('ERRO');
+        return;
+      } catch (error) {
+        throw UserNotFoundException(error.toString());
+      }
 
-    final response = await http.post(
-      Uri.parse(Constants.signInUrl),
-      body: jsonEncode({
-        'email': client.email,
-        'password': password,
-        'returnSecureToken': true,
-      }),
-    );
-
-    final body = jsonDecode(response.body);
-    if (body['error'] != null) {
-      throw AuthException(body['error']['errors'][0]['message']);
+      admin.password == password
+          ? _admIsLogged = true
+          : throw AuthException('INVALID_PASSWORD');
     } else {
-      _email = body['email'];
-      _userId = body['localId'];
-      _token = body['idToken'];
-      _expiryDate = DateTime.now().add(
-        Duration(seconds: int.parse(body['expiresIn'])),
+      try {
+        client = Users.clients.firstWhere((client) => client.cpf == cpf);
+      } on Exception {
+        return;
+      } catch (error) {
+        throw UserNotFoundException(error.toString());
+      }
+
+      final response = await http.post(
+        Uri.parse(Constants.signInUrl),
+        body: jsonEncode({
+          'email': client.email,
+          'password': password,
+          'returnSecureToken': true,
+        }),
       );
+
+      final body = jsonDecode(response.body);
+      if (body['error'] != null) {
+        throw AuthException(body['error']['errors'][0]['message']);
+      } else {
+        _email = body['email'];
+        _userId = body['localId'];
+        _token = body['idToken'];
+        _expiryDate = DateTime.now().add(
+          Duration(seconds: int.parse(body['expiresIn'])),
+        );
+      }
     }
 
     notifyListeners();

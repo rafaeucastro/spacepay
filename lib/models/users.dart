@@ -8,9 +8,10 @@ import 'package:http/http.dart' as http;
 import 'auth.dart';
 
 class Users with ChangeNotifier {
+  static late final List<Client> clients;
+  static late final List<Admin> admins;
   // ignore: prefer_final_fields
   List<Client> _clientList = [];
-  static late final List<Client> clients;
   // ignore: prefer_final_fields
   List<Admin> _adminList = [];
 
@@ -19,10 +20,29 @@ class Users with ChangeNotifier {
 
   Future<void> loadData() async {
     _clientList.clear();
-    final response =
-        await http.get(Uri.parse('${Constants.baseUrl}/clients.json'));
+    late final http.Response response;
+    late final http.Response responseAdm;
+
+    //TODO: lidar com as exceções. ex: caso o usuário não tenha net
+    try {
+      response = await http.get(Uri.parse(Constants.clientsUrl));
+    } on http.ClientException {
+      return;
+    } catch (error) {
+      return;
+    }
+
+    try {
+      responseAdm = await http.get(Uri.parse(Constants.adminsUrl));
+    } on http.ClientException {
+      return;
+    } catch (error) {
+      return;
+    }
 
     final Map<String, dynamic> data = jsonDecode(response.body);
+    final Map<String, dynamic> dataAdm = jsonDecode(responseAdm.body) ?? {};
+
     data.forEach((userID, userData) {
       _clientList.add(
         Client(
@@ -38,7 +58,18 @@ class Users with ChangeNotifier {
       );
     });
 
+    dataAdm.forEach((userID, admData) {
+      _adminList.add(Admin(
+        state: admData[UserAttributes.state],
+        cpf: admData[UserAttributes.cpf],
+        fullname: admData[UserAttributes.fullName],
+        address: admData[UserAttributes.address],
+        password: admData[UserAttributes.password],
+      ));
+    });
+
     clients = _clientList;
+    admins = _adminList;
   }
 
   void addClient({required Map<String, String> clientData}) async {

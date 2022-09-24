@@ -1,3 +1,4 @@
+import 'package:banksys/views/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -92,8 +93,9 @@ class SpacePay extends StatelessWidget {
         routes: {
           AppRoutes.LOGIN: (context) => const Login(),
           AppRoutes.SIGN_UP: (context) => const SignUp(),
-          AppRoutes.DASHBOARD: (context) => const DashBoard(),
+          AppRoutes.HOME: (context) => const Home(),
           AppRoutes.ADD_EXISTING_CARD: (context) => const AddExistingCard(),
+          AppRoutes.DASHBOARD: (context) => const DashBoard(),
         },
       ),
     );
@@ -119,7 +121,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Future.delayed(const Duration(seconds: 0)).then((value) {
       Provider.of<Auth>(context, listen: false).isAuth
-          ? Navigator.of(context).pushReplacementNamed(AppRoutes.DASHBOARD)
+          ? Navigator.of(context).pushReplacementNamed(AppRoutes.HOME)
           : Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
     });
   }

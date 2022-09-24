@@ -26,7 +26,31 @@ class _LoginState extends State<Login> {
   // ignore: prefer_final_fields
   Map<String, String> _authData = {Auth.password: '', UserAttributes.cpf: ''};
 
-  void _submit() async {
+  void _authenticate() async {
+    final auth = Provider.of<Auth>(context, listen: false);
+
+    if (_isADM) {
+      try {
+        await auth.authenticate(
+            _authData[UserAttributes.cpf]!, _authData[Auth.password]!, _isADM);
+      } on UserNotFoundException catch (error) {
+        _showErrorDialog(error.toString());
+      } on AuthException catch (error) {
+        _showErrorDialog(error.toString());
+      }
+    } else {
+      try {
+        await auth.authenticate(
+            _authData[UserAttributes.cpf]!, _authData[Auth.password]!, _isADM);
+      } on UserNotFoundException catch (error) {
+        _showErrorDialog(error.toString());
+      } on AuthException catch (error) {
+        _showErrorDialog(error.toString());
+      }
+    }
+  }
+
+  void _submit() {
     _formIsValid = _formKey.currentState?.validate() ?? false;
 
     if (!_formIsValid) {
@@ -38,21 +62,19 @@ class _LoginState extends State<Login> {
     _formKey.currentState?.save();
 
     final auth = Provider.of<Auth>(context, listen: false);
+    _authenticate();
 
-    if (_isADM) {
-      // await auth.signUp("castrorafael456@gmail.com", "faelzin");
-    } else {
-      try {
-        await auth.authenticate(_authData[UserAttributes.cpf]!,
-            _authData[Auth.password]!, AuthMode.signIn);
-      } on UserNotFoundException catch (error) {
-        _showErrorDialog(error.toString());
-      } on AuthException catch (error) {
-        _showErrorDialog(error.toString());
-      }
+    if (auth.isAuth) {
+      Navigator.of(context).pushReplacementNamed(AppRoutes.HOME);
     }
 
-    auth.isAuth ? print('authenticated') : print('not');
+    if (auth.admAuthenticated) {
+      Navigator.of(context).pushReplacementNamed(AppRoutes.DASHBOARD);
+    }
+
+    setState(
+      () => _isLoading = false,
+    );
   }
 
   void _showErrorDialog(String msg) {
@@ -161,13 +183,25 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _isADM,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isADM = value ?? false;
+                                });
+                              },
+                            ),
+                            const Text("Sou admin"),
+                          ],
+                        ),
                         TextButton(
                           //TODO
                           onPressed: () {
-                            Navigator.of(context)
-                                .pushNamed(AppRoutes.DASHBOARD);
+                            Navigator.of(context).pushNamed(AppRoutes.HOME);
                           },
                           child: Text(
                             "Esqueceu a senha?",
@@ -183,15 +217,6 @@ class _LoginState extends State<Login> {
                         //TODO
                         onPressed: () {
                           _submit();
-                          if (_formIsValid) {
-                            auth.isAuth
-                                ? Navigator.of(context)
-                                    .pushReplacementNamed(AppRoutes.DASHBOARD)
-                                : null;
-                            setState(
-                              () => _isLoading = false,
-                            );
-                          }
                         },
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(

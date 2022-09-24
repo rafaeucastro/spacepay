@@ -7,14 +7,14 @@ import 'package:provider/provider.dart';
 
 import '../../models/cards.dart';
 
-class DashBoard extends StatefulWidget {
-  const DashBoard({Key? key}) : super(key: key);
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
 
   @override
-  State<DashBoard> createState() => _DashBoardState();
+  State<Home> createState() => _HomeState();
 }
 
-class _DashBoardState extends State<DashBoard> {
+class _HomeState extends State<Home> {
   final String _cardTypeImage = "assets/images/elo_logo.png";
   bool _isUnderAnalysis = true;
   bool _isLoading = true;
