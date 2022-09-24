@@ -87,15 +87,15 @@ class _LoginState extends State<Login> {
           children: [
             Icon(
               Icons.rocket_launch,
-              color: Colors.blue.shade300,
+              color: theme.colorScheme.primary,
               size: 45.0,
             ),
-            const Padding(
-              padding: EdgeInsets.only(bottom: 8.0),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 40.0),
               child: Text(
                 "SpacePay",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: theme.colorScheme.onPrimary,
                   fontSize: 32,
                 ),
               ),
@@ -107,10 +107,13 @@ class _LoginState extends State<Login> {
                 child: Column(
                   children: [
                     TextFormField(
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.person),
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.person,
+                          color: theme.colorScheme.onSecondary,
+                        ),
                         labelText: 'CPF',
-                        border: UnderlineInputBorder(),
+                        border: OutlineInputBorder(),
                       ),
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.number,
@@ -131,25 +134,31 @@ class _LoginState extends State<Login> {
                       // onFieldSubmitted: ((value) =>
                       //     FocusScope.of(context).requestFocus(_passwordFocus)),
                     ),
-                    TextFormField(
-                      obscuringCharacter: '*',
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.key),
-                        labelText: 'Senha',
-                        border: UnderlineInputBorder(),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 25),
+                      child: TextFormField(
+                        obscuringCharacter: '*',
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(
+                            Icons.key,
+                            color: theme.colorScheme.onSecondary,
+                          ),
+                          labelText: 'Senha',
+                          border: OutlineInputBorder(),
+                        ),
+                        focusNode: _passwordFocus,
+                        validator: (value) {
+                          final password = value ?? "";
+                          if (password.isEmpty) {
+                            return "Digite sua senha!";
+                          }
+                          return null;
+                        },
+                        onSaved: (password) {
+                          _authData['password'] = password!;
+                        },
                       ),
-                      focusNode: _passwordFocus,
-                      validator: (value) {
-                        final password = value ?? "";
-                        if (password.isEmpty) {
-                          return "Digite sua senha!";
-                        }
-                        return null;
-                      },
-                      onSaved: (password) {
-                        _authData['password'] = password!;
-                      },
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -175,7 +184,6 @@ class _LoginState extends State<Login> {
                         onPressed: () {
                           _submit();
                           if (_formIsValid) {
-                            print('executando');
                             auth.isAuth
                                 ? Navigator.of(context)
                                     .pushReplacementNamed(AppRoutes.DASHBOARD)
@@ -186,9 +194,12 @@ class _LoginState extends State<Login> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          minimumSize:
-                              Size((size.width * .8), (size.height * .05)),
+                          minimumSize: Size(
+                            (size.width * .8),
+                            (size.height * .05),
+                          ),
                         ),
+
                         child: const Text("ENTRAR"),
                       ),
                   ],

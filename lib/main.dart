@@ -18,10 +18,13 @@ class SpacePay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = ThemeData.dark();
-    final Color primary = Colors.blue.shade300;
-    final Color onPrimary = Colors.blue.shade900;
-    const Color secondary = Colors.white;
-    const Color onSecondary = Colors.white70;
+    final Color primary = Colors.blue.shade900;
+    const Color onPrimary = Colors.white;
+    const Color secondary = Colors.black;
+    final Color onSecondary = Colors.blue.shade100;
+    final tertiary = Colors.blue.shade200;
+    const onTertiary = Colors.greenAccent;
+    const Color background = Colors.black;
 
     return MultiProvider(
       providers: [
@@ -48,28 +51,39 @@ class SpacePay extends StatelessWidget {
             // filled: true,
           ),
           colorScheme: theme.colorScheme.copyWith(
-            background: const Color(0xff252626),
+            background: background,
             primary: primary,
             onPrimary: onPrimary,
             secondary: secondary,
+            onSecondary: onSecondary,
+            tertiary: tertiary,
+            onTertiary: onTertiary,
           ),
           textTheme: theme.textTheme.copyWith(
             button: TextStyle(
-              color: primary,
-            ),
-            headline6: const TextStyle(
               color: onSecondary,
+            ),
+            headline5: TextStyle(
+              color: primary,
+              fontSize: 25.0,
+              fontWeight: FontWeight.bold,
+            ),
+            headline6: TextStyle(
+              color: primary,
               fontSize: 15.0,
+              fontWeight: FontWeight.bold,
             ),
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
-            primary: onPrimary,
-            onPrimary: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
           )),
+          snackBarTheme: SnackBarThemeData().copyWith(
+            backgroundColor: theme.colorScheme.primary,
+            contentTextStyle: theme.textTheme.button,
+          ),
         ),
         title: "Space Pay",
         home: const SplashScreen(),
@@ -97,31 +111,31 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _navigateToHome();
-    Provider.of<Users>(context, listen: false).loadData();
   }
 
   _navigateToHome() async {
-    await Future.delayed(
-      const Duration(seconds: 2),
-      () {
-        Provider.of<Auth>(context, listen: false).isAuth
-            ? Navigator.of(context).pushReplacementNamed(AppRoutes.DASHBOARD)
-            : Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
-      },
-    );
+    await Provider.of<Users>(context, listen: false).loadData();
+
+    Future.delayed(const Duration(seconds: 0)).then((value) {
+      Provider.of<Auth>(context, listen: false).isAuth
+          ? Navigator.of(context).pushReplacementNamed(AppRoutes.DASHBOARD)
+          : Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xff252626),
+      backgroundColor: theme.colorScheme.background,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.rocket_launch,
-              color: Colors.blue.shade300,
+              color: theme.colorScheme.primary,
               size: 45.0,
             ),
             const Padding(
@@ -134,8 +148,8 @@ class _SplashScreenState extends State<SplashScreen> {
                 ),
               ),
             ),
-            const CircularProgressIndicator(
-              color: Colors.blue,
+            CircularProgressIndicator(
+              color: theme.colorScheme.primary,
             ),
           ],
         ),

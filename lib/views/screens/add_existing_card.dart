@@ -60,17 +60,30 @@ class _AddExistingCardState extends State<AddExistingCard> {
     showDialog(
       context: context,
       builder: (context) {
+        final theme = Theme.of(context);
+
         return AlertDialog(
-          title: const Text("Análise"),
-          content: const Text("Estamos analisando os seus dados. "
-              "Em breve lhe confimaremos se a solicitação foi aceita ou não."),
+          elevation: 10,
+          backgroundColor: theme.colorScheme.primary,
+          title: Text(
+            "Análise",
+            style: theme.textTheme.titleMedium,
+          ),
+          content: Text(
+            "Estamos analisando os seus dados. "
+            "Em breve lhe confimaremos se a solicitação foi aceita ou não.",
+            style: theme.textTheme.bodyMedium,
+          ),
           actions: [
             TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 },
-                child: const Text("Ok")),
+                child: Text(
+                  "Ok",
+                  style: theme.textTheme.titleMedium,
+                )),
           ],
         );
       },
@@ -99,6 +112,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
       backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
         title: const Text("Adicionar cartão existente"),
+        backgroundColor: Colors.transparent,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -235,7 +249,10 @@ class _AddExistingCardState extends State<AddExistingCard> {
                           padding: const EdgeInsets.only(left: 67, bottom: 10),
                           child: Row(
                             children: [
-                              Text(_nameController.text.toUpperCase()),
+                              Text(
+                                _nameController.text.toUpperCase(),
+                                style: theme.textTheme.headline6,
+                              ),
                             ],
                           ),
                         ),
@@ -246,6 +263,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
                               if (_expiryDateController.text.isNotEmpty)
                                 Text(
                                   "Validade: ${_expiryDateController.text}",
+                                  style: theme.textTheme.headline6,
                                 ),
                             ],
                           ),
@@ -255,7 +273,10 @@ class _AddExistingCardState extends State<AddExistingCard> {
                     Positioned(
                       left: 15,
                       bottom: 15,
-                      child: Text(_cVcController.text),
+                      child: Text(
+                        _cVcController.text,
+                        style: theme.textTheme.headline6,
+                      ),
                     ),
                     if (_cardFlagImage.isNotEmpty)
                       Positioned(

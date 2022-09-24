@@ -86,7 +86,7 @@ abstract class CardFlag {
 
 //TODO: make attributes private
 class BankCard {
-  final int number;
+  final String number;
   final String cardholderName;
   final String expiryDate;
   final int cvc;
@@ -107,18 +107,11 @@ class BankCard {
   }
 
   String get numberLastDigits {
-    return number.toString().substring(12, 16);
+    return number.substring(number.length - 4, number.length);
   }
 
-  String get numberAsString {
-    String number = this.number.toString();
-    String firstPart = number.substring(0, 4);
-    String secondPart = number.substring(4, 8);
-    String thirdPart = number.substring(8, 12);
-    String fourthPart = number.substring(12, 16);
-    number = "$firstPart $secondPart $thirdPart $fourthPart";
-
-    return number;
+  String get numberWithoutSpaces {
+    return number.split(' ').join();
   }
 
   void _defineCardFlagImage() {

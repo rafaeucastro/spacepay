@@ -60,7 +60,7 @@ class _NewCardFormState extends State<NewCardForm> {
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
-        color: theme.colorScheme.onSecondary,
+        color: theme.colorScheme.primary,
       ),
       child: Form(
         child: Column(
@@ -69,7 +69,7 @@ class _NewCardFormState extends State<NewCardForm> {
           children: [
             Text(
               "Solicitar novo cartão",
-              style: theme.textTheme.headlineSmall,
+              style: theme.textTheme.titleMedium,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -115,12 +115,14 @@ class _NewCardFormState extends State<NewCardForm> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(size.width * 0.4, size.height * 0.051),
+                primary: theme.colorScheme.onPrimary,
+                onPrimary: theme.colorScheme.primary,
               ),
               onPressed: () {
                 _showDialog();
                 cards.createNewCard(_name, _dropdownValue, _yearDropdownValue);
               },
-              child: const Text("Enviar"),
+              child: const Text("ENVIAR"),
             ),
           ],
         ),

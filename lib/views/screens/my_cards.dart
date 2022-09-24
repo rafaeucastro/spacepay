@@ -77,7 +77,7 @@ class _MyCardsState extends State<MyCards> {
                 children: [
                   Text("Número"),
                   Text(
-                    card.numberAsString,
+                    card.number,
                     style: TextStyle(
                       color: Colors.blue.shade600,
                     ),
