@@ -6,6 +6,8 @@
 //   americanExpress,
 // }
 
+import 'dart:math';
+
 abstract class CardAttributes {
   static const number = "number";
   static const cardholderName = "cardholderName";
@@ -22,6 +24,9 @@ abstract class CardType {
   static const savings = "Poupança";
   static const multifuncional = "Multifuncional";
   static const all = [credit, debit, savings, multifuncional];
+
+  static const createdCards = "Cartões criados";
+  static const registeredCards = "Cartões registrados";
 }
 
 abstract class CardFlag {
@@ -47,6 +52,12 @@ abstract class CardFlag {
     CardFlag.hipercard,
     CardFlag.americanExpress,
   ];
+
+  static String get randomFlag {
+    var flag = [...CardFlag.all];
+    flag.shuffle();
+    return flag.first;
+  }
 
   // static CardFlag tryParse(String flag) {
   //   if (flag == "Elo") return CardFlag.elo;
@@ -112,6 +123,28 @@ class BankCard {
 
   String get numberWithoutSpaces {
     return number.split(' ').join();
+  }
+
+  static String get generateRamdomCardNumber {
+    final String number1 = (Random().nextInt(8999) + 1000).toString();
+    final String number2 = (Random().nextInt(8999) + 1000).toString();
+    final String number3 = (Random().nextInt(8999) + 1000).toString();
+    final String number4 = (Random().nextInt(8999) + 1000).toString();
+
+    return "$number1 $number2 $number3 $number4";
+  }
+
+  static String getExpiryDate(String validity) {
+    String month = DateTime.now().month.toString();
+    String year = DateTime.now().year.toString().substring(2, 4);
+
+    if (int.parse(month) < 10) {
+      month = "0$month";
+    }
+
+    year = (int.parse(year) + int.parse(validity)).toString();
+
+    return "$month/$year";
   }
 
   void _defineCardFlagImage() {

@@ -7,7 +7,9 @@ import '../../models/cards.dart';
 class CardInfo extends StatelessWidget {
   final BankCard card;
   final BuildContext context;
-  const CardInfo(this.card, this.context, {Key? key}) : super(key: key);
+  final String type;
+  const CardInfo(this.card, this.context, this.type, {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +54,11 @@ class CardInfo extends StatelessWidget {
                   IconButton(
                       onPressed: () {
                         Navigator.of(context).pop();
+                        //TODO: se não der certo excluir, notificar usuário
                         Provider.of<Cards>(context, listen: false)
-                            .removeExistingCard(card);
+                            .removeCard(card, type);
                       },
-                      icon: Icon(Icons.delete)),
+                      icon: const Icon(Icons.delete)),
                 ],
               ),
             ],

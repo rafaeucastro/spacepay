@@ -1,14 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:banksys/models/auth.dart';
 import 'package:banksys/models/cards.dart';
 import 'package:banksys/models/users.dart';
-import 'package:banksys/util/routes.dart';
+
 import 'package:banksys/views/screens/add_existing_card.dart';
 import 'package:banksys/views/screens/home.dart';
 import 'package:banksys/views/screens/login.dart';
-import 'package:banksys/views/screens/my_cards.dart';
 import 'package:banksys/views/screens/sign-up.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
+import 'package:banksys/util/routes.dart';
 
 void main() => runApp(const SpacePay());
 
@@ -92,7 +94,6 @@ class SpacePay extends StatelessWidget {
           AppRoutes.SIGN_UP: (context) => const SignUp(),
           AppRoutes.DASHBOARD: (context) => const DashBoard(),
           AppRoutes.ADD_EXISTING_CARD: (context) => const AddExistingCard(),
-          AppRoutes.MYCARDS: (context) => const MyCards(),
         },
       ),
     );

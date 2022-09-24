@@ -19,10 +19,10 @@ class _DashBoardState extends State<DashBoard> {
   bool _isUnderAnalysis = true;
   bool _isLoading = true;
 
-  void _showCardInfo(BankCard card) {
+  void _showCardInfo(BankCard card, String type) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => CardInfo(card, context),
+      builder: (context) => CardInfo(card, context, type),
     );
   }
 
@@ -89,8 +89,8 @@ class _DashBoardState extends State<DashBoard> {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final cards = Provider.of<Cards>(context);
-    final cardList = Provider.of<Cards>(context).cardList;
-    final userCreatedCards = Provider.of<Cards>(context).userCreatedCars;
+    final registeredCards = Provider.of<Cards>(context).userRegisteredCards;
+    final createdCards = Provider.of<Cards>(context).userCreatedCards;
 
     return Scaffold(
       appBar: AppBar(
@@ -189,13 +189,13 @@ class _DashBoardState extends State<DashBoard> {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(left: 15.0, bottom: 10.0, top: 15.0),
-                  child: Text("Cartões criados"),
+                  child: Text(CardType.createdCards),
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: userCreatedCards.length,
+                    itemCount: createdCards.length,
                     itemBuilder: (context, index) {
-                      final BankCard card = userCreatedCards.elementAt(index);
+                      final BankCard card = createdCards.elementAt(index);
 
                       return ListTile(
                         leading: const Icon(Icons.credit_card),
@@ -207,6 +207,7 @@ class _DashBoardState extends State<DashBoard> {
                             color: Colors.green,
                           ),
                         ),
+                        onTap: () => _showCardInfo(card, CardType.createdCards),
                       );
                     },
                   ),
@@ -223,7 +224,7 @@ class _DashBoardState extends State<DashBoard> {
                       left: 15.0, bottom: 10.0, top: 15.0),
                   child: Row(
                     children: const [
-                      Text("Cartões cadastrados"),
+                      Text(CardType.registeredCards),
                     ],
                   ),
                 ),
@@ -231,9 +232,10 @@ class _DashBoardState extends State<DashBoard> {
                     ? const CircularProgressIndicator()
                     : Expanded(
                         child: ListView.builder(
-                          itemCount: cardList.length,
+                          itemCount: registeredCards.length,
                           itemBuilder: (context, index) {
-                            final BankCard card = cardList.elementAt(index);
+                            final BankCard card =
+                                registeredCards.elementAt(index);
 
                             return ListTile(
                               leading: const Icon(Icons.credit_card),
@@ -251,7 +253,8 @@ class _DashBoardState extends State<DashBoard> {
                                       onPressed: () {
                                         setState(() {});
                                       }),
-                              onTap: () => _showCardInfo(card),
+                              onTap: () =>
+                                  _showCardInfo(card, CardType.registeredCards),
                             );
                           },
                         ),

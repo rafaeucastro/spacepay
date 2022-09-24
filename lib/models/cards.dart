@@ -11,7 +11,7 @@ class Cards with ChangeNotifier {
   // ignore: prefer_final_fields
   List<BankCard> _userCreatedCards = [];
   // ignore: prefer_final_fields
-  List<BankCard> _cardList = [
+  List<BankCard> _userRegisteredCards = [
     BankCard(
       cardholderName: "Rafael Castro",
       cvc: 303,
@@ -20,9 +20,11 @@ class Cards with ChangeNotifier {
       number: '1234 5678 9123 4567',
     )
   ];
+  List<String> _allCardNumbers = [];
+  List<int> _allCVCs = [];
 
-  List<BankCard> get cardList => [..._cardList];
-  List<BankCard> get userCreatedCars => [..._userCreatedCards];
+  List<BankCard> get userRegisteredCards => [..._userRegisteredCards];
+  List<BankCard> get userCreatedCards => [..._userCreatedCards];
 
   void addExistingCard(Map<String, String> formData) async {
     final number = formData[CardAttributes.number]!;
@@ -53,24 +55,52 @@ class Cards with ChangeNotifier {
       databaseID: id,
     );
 
-    _cardList.add(newCard);
+    _userRegisteredCards.add(newCard);
     notifyListeners();
   }
 
-  void createNewCard(String name, String cardType, String validity) {
-    final cvc = Random().nextInt(899) + 100;
-    final String number1 = (Random().nextInt(8999) + 1000).toString();
-    final String number2 = (Random().nextInt(8999) + 1000).toString();
-    final String number3 = (Random().nextInt(8999) + 1000).toString();
-    final String number4 = (Random().nextInt(8999) + 1000).toString();
+  void createNewCard(String name, String cardType, String validity) async {
+    final String flag = CardFlag.randomFlag;
+    final String expiryDate = BankCard.getExpiryDate(validity);
+    int cvc = Random().nextInt(899) + 100;
+    String cardNumber = BankCard.generateRamdomCardNumber;
 
-    //TODO: gerar número do cartão e bandeira aleatório
+    bool isCardNumberExclusive = !_allCardNumbers.contains(cardNumber);
+    bool isCVCExclusive = !_allCVCs.contains(cvc);
+
+    while (!isCVCExclusive) {
+      cvc = Random().nextInt(899) + 100;
+      _allCVCs.contains(cvc) ? null : isCVCExclusive = true;
+    }
+
+    while (!isCardNumberExclusive) {
+      cardNumber = BankCard.generateRamdomCardNumber;
+      _allCardNumbers.contains(cardNumber)
+          ? null
+          : isCardNumberExclusive = true;
+    }
+
+    //TODO: verificar se deu certo inserir
+    final response = await http.post(
+      Uri.parse(Constants.urlCreatedCards),
+      body: jsonEncode({
+        CardAttributes.cardholderName: name,
+        CardAttributes.number: cardNumber,
+        CardAttributes.flag: flag,
+        CardAttributes.expiryDate: expiryDate,
+        CardAttributes.cvc: cvc,
+      }),
+    );
+
+    final id = jsonDecode(response.body)['name'].toString();
+
     final newCard = BankCard(
-      number: "$number1 $number2 $number3 $number4",
+      number: cardNumber,
       cardholderName: name,
-      expiryDate: validity,
+      expiryDate: expiryDate,
       cvc: cvc,
-      flag: CardFlag.all.elementAt(1),
+      flag: flag,
+      databaseID: id,
     );
 
     _userCreatedCards.add(newCard);
@@ -78,13 +108,25 @@ class Cards with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeExistingCard(BankCard card) async {
-    final response = await http.delete(
-      Uri.parse('${Constants.baseUrl}/${card.databaseID}.json'),
-    );
-
-    if (response.statusCode == 200) {
-      _cardList.remove(card);
+  Future<void> removeCard(BankCard card, String type) async {
+    switch (type) {
+      case CardType.createdCards:
+        final response = await http.delete(
+          Uri.parse('${Constants.urlCreatedCards}/${card.databaseID}.json'),
+        );
+        //TOOD: retornar true para verificar se foi possível remover do firebase ou não, caso o status code for diferente de 200
+        if (response.statusCode == 200) {
+          _userCreatedCards.remove(card);
+        }
+        break;
+      case CardType.registeredCards:
+        final response = await http.delete(
+          Uri.parse('${Constants.urlExistingCards}/${card.databaseID}.json'),
+        );
+        if (response.statusCode == 200) {
+          _userCreatedCards.remove(card);
+        }
+        break;
     }
 
     // print("id: ${card.databaseID}");
@@ -94,7 +136,8 @@ class Cards with ChangeNotifier {
   }
 
   Future<void> loadCardList() async {
-    _cardList.clear();
+    //TODO: load new cards list
+    _userRegisteredCards.clear();
 
     final response = await http.get(
       Uri.parse(Constants.urlExistingCards),
@@ -103,7 +146,7 @@ class Cards with ChangeNotifier {
 
     Map<String, dynamic> data = jsonDecode(response.body);
     data.forEach((key, cards) {
-      _cardList.add(BankCard(
+      _userRegisteredCards.add(BankCard(
         cardholderName: cards[CardAttributes.cardholderName],
         expiryDate: cards[CardAttributes.expiryDate],
         flag: cards[CardAttributes.flag],
@@ -111,6 +154,7 @@ class Cards with ChangeNotifier {
         cvc: int.parse(cards[CardAttributes.cvc]),
         databaseID: key,
       ));
+      _allCardNumbers.add(cards[CardAttributes.number]);
     });
 
     notifyListeners();

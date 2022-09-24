@@ -5,5 +5,4 @@ abstract class AppRoutes {
   static const LOGIN = '/login';
   static const SIGN_UP = '/sign-up';
   static const ADD_EXISTING_CARD = '/home/add_existing_card';
-  static const MYCARDS = '/home/my_cards';
 }

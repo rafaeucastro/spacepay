@@ -60,7 +60,7 @@ class _NewCardFormState extends State<NewCardForm> {
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
-        color: theme.colorScheme.primary,
+        color: theme.colorScheme.secondary,
       ),
       child: Form(
         child: Column(

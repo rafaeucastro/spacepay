@@ -7,4 +7,6 @@ abstract class Constants {
   static const baseUrl = "https://spacepay-b6a8c-default-rtdb.firebaseio.com";
   static const urlExistingCards =
       "https://spacepay-b6a8c-default-rtdb.firebaseio.com/existingCards.json";
+  static const urlCreatedCards =
+      "https://spacepay-b6a8c-default-rtdb.firebaseio.com/createdCards.json";
 }
