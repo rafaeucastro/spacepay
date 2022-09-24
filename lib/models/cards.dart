@@ -136,16 +136,34 @@ class Cards with ChangeNotifier {
   }
 
   Future<void> loadCardList() async {
-    //TODO: load new cards list
+    _userCreatedCards.clear();
     _userRegisteredCards.clear();
 
     final response = await http.get(
-      Uri.parse(Constants.urlExistingCards),
+      Uri.parse(Constants.urlCreatedCards),
     );
     if (response.body == 'null') return;
 
     Map<String, dynamic> data = jsonDecode(response.body);
     data.forEach((key, cards) {
+      _userCreatedCards.add(BankCard(
+        cardholderName: cards[CardAttributes.cardholderName],
+        expiryDate: cards[CardAttributes.expiryDate],
+        flag: cards[CardAttributes.flag],
+        number: cards[CardAttributes.number],
+        cvc: cards[CardAttributes.cvc],
+        databaseID: key,
+      ));
+      _allCardNumbers.add(cards[CardAttributes.number]);
+    });
+
+    final response2 = await http.get(
+      Uri.parse(Constants.urlExistingCards),
+    );
+    if (response2.body == 'null') return;
+
+    Map<String, dynamic> data2 = jsonDecode(response2.body);
+    data2.forEach((key, cards) {
       _userRegisteredCards.add(BankCard(
         cardholderName: cards[CardAttributes.cardholderName],
         expiryDate: cards[CardAttributes.expiryDate],

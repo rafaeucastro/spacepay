@@ -33,6 +33,8 @@ class _SignUpState extends State<SignUp> {
     _isADM
         ? provider.addAdmin(clientData: _formData)
         : provider.addClient(clientData: _formData);
+
+    Navigator.of(context).pop();
   }
 
   @override

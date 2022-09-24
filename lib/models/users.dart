@@ -78,6 +78,7 @@ class Users with ChangeNotifier {
     );
 
     _clientList.add(newClient);
+    //TOOD: verificar se deu certo se inscrever
     await Auth.signUp(email, password);
   }
 
