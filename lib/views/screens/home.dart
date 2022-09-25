@@ -1,3 +1,4 @@
+import 'package:banksys/models/auth.dart';
 import 'package:banksys/models/card.dart';
 import 'package:banksys/util/routes.dart';
 import 'package:banksys/views/components.dart/card_info_bottom_sheet.dart';
@@ -15,7 +16,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final String _cardTypeImage = "assets/images/elo_logo.png";
+  // ignore: prefer_final_fields
   bool _isUnderAnalysis = true;
   bool _isLoading = true;
 
@@ -80,7 +81,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     Provider.of<Cards>(context, listen: false)
-        .loadCardList()
+        .loadCardList(context)
         .then((value) => _isLoading = false);
   }
 
@@ -88,7 +89,6 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final cards = Provider.of<Cards>(context);
     final registeredCards = Provider.of<Cards>(context).userRegisteredCards;
     final createdCards = Provider.of<Cards>(context).userCreatedCards;
 
@@ -105,8 +105,11 @@ class _HomeState extends State<Home> {
         title: const Text("Rafael"),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.more_vert),
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
+              Provider.of<Auth>(context, listen: false).logout();
+            },
+            icon: const Icon(Icons.exit_to_app),
           ),
         ],
       ),

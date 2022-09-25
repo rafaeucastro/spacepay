@@ -44,18 +44,17 @@ class Users with ChangeNotifier {
     final Map<String, dynamic> dataAdm = jsonDecode(responseAdm.body) ?? {};
 
     data.forEach((userID, userData) {
-      _clientList.add(
-        Client(
-          email: userData[UserAttributes.email],
-          accountType: userData[UserAttributes.accountType],
-          fullname: userData[UserAttributes.fullName],
-          address: userData[UserAttributes.address],
-          password: userData[UserAttributes.password],
-          phone: int.parse(userData[UserAttributes.phone]),
-          cpf: userData[UserAttributes.cpf],
-          databaseID: userData[UserAttributes.databaseID],
-        ),
+      final newClient = Client(
+        email: userData[UserAttributes.email].toString(),
+        accountType: userData[UserAttributes.accountType].toString(),
+        fullname: userData[UserAttributes.fullName].toString(),
+        address: userData[UserAttributes.address].toString(),
+        password: userData[UserAttributes.password].toString(),
+        phone: int.parse(userData[UserAttributes.phone] ?? '0'),
+        cpf: userData[UserAttributes.cpf].toString(),
+        databaseID: userData[UserAttributes.databaseID].toString(),
       );
+      _clientList.add(newClient);
     });
 
     dataAdm.forEach((userID, admData) {

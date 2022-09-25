@@ -83,7 +83,7 @@ class SpacePay extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
             ),
           )),
-          snackBarTheme: SnackBarThemeData().copyWith(
+          snackBarTheme: const SnackBarThemeData().copyWith(
             backgroundColor: theme.colorScheme.primary,
             contentTextStyle: theme.textTheme.button,
           ),

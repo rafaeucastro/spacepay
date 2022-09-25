@@ -1,40 +1,42 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:banksys/models/auth.dart';
 import 'package:banksys/models/card.dart';
 import 'package:banksys/models/constants.dart';
+import 'package:banksys/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class Cards with ChangeNotifier {
   // ignore: prefer_final_fields
   List<BankCard> _userCreatedCards = [];
   // ignore: prefer_final_fields
-  List<BankCard> _userRegisteredCards = [
-    BankCard(
-      cardholderName: "Rafael Castro",
-      cvc: 303,
-      expiryDate: "12/26",
-      flag: CardFlag.hipercard,
-      number: '1234 5678 9123 4567',
-    )
-  ];
+  List<BankCard> _userRegisteredCards = [];
+  // ignore: prefer_final_fields
   List<String> _allCardNumbers = [];
+  // ignore: prefer_final_fields
   List<int> _allCVCs = [];
 
   List<BankCard> get userRegisteredCards => [..._userRegisteredCards];
   List<BankCard> get userCreatedCards => [..._userCreatedCards];
 
-  void addExistingCard(Map<String, String> formData) async {
+  void addExistingCard(
+      Map<String, String> formData, BuildContext context) async {
     final number = formData[CardAttributes.number]!;
     final cvc = formData[CardAttributes.cvc]!;
     final cardholderName = formData[CardAttributes.cardholderName]!;
     final expiryDate = formData[CardAttributes.expiryDate]!;
     final flag = formData[CardAttributes.flag]!;
 
-    final response = await http.post(
-      Uri.parse(Constants.urlExistingCards),
+    final client = Provider.of<Auth>(context, listen: false).client;
+    if (client == null) return;
+
+    final response = await http.patch(
+      Uri.parse(
+          "${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.registeredCards}/$cvc.json"),
       body: jsonEncode({
         CardAttributes.cardholderName: cardholderName,
         CardAttributes.number: number,
@@ -59,7 +61,8 @@ class Cards with ChangeNotifier {
     notifyListeners();
   }
 
-  void createNewCard(String name, String cardType, String validity) async {
+  void createNewCard(String name, String cardType, String validity,
+      BuildContext context) async {
     final String flag = CardFlag.randomFlag;
     final String expiryDate = BankCard.getExpiryDate(validity);
     int cvc = Random().nextInt(899) + 100;
@@ -80,9 +83,13 @@ class Cards with ChangeNotifier {
           : isCardNumberExclusive = true;
     }
 
+    final client = Provider.of<Auth>(context, listen: false).client;
+    if (client == null) return;
+
     //TODO: verificar se deu certo inserir
-    final response = await http.post(
-      Uri.parse(Constants.urlCreatedCards),
+    final response = await http.patch(
+      Uri.parse(
+          "${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.createdCards}/$cvc.json"),
       body: jsonEncode({
         CardAttributes.cardholderName: name,
         CardAttributes.number: cardNumber,
@@ -108,11 +115,16 @@ class Cards with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeCard(BankCard card, String type) async {
+  Future<void> removeCard(
+      BankCard card, String type, BuildContext context) async {
+    final client = Provider.of<Auth>(context, listen: false).client;
+    if (client == null) return;
+
     switch (type) {
       case CardType.createdCards:
         final response = await http.delete(
-          Uri.parse('${Constants.urlCreatedCards}/${card.databaseID}.json'),
+          Uri.parse(
+              '${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.createdCards}/${card.cvc}.json'),
         );
         //TOOD: retornar true para verificar se foi possível remover do firebase ou não, caso o status code for diferente de 200
         if (response.statusCode == 200) {
@@ -121,7 +133,8 @@ class Cards with ChangeNotifier {
         break;
       case CardType.registeredCards:
         final response = await http.delete(
-          Uri.parse('${Constants.urlExistingCards}/${card.databaseID}.json'),
+          Uri.parse(
+              '${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.registeredCards}/${card.cvc}.json'),
         );
         if (response.statusCode == 200) {
           _userCreatedCards.remove(card);
@@ -135,43 +148,53 @@ class Cards with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadCardList() async {
+  Future<void> loadCardList(BuildContext context) async {
     _userCreatedCards.clear();
     _userRegisteredCards.clear();
 
+    final client = Provider.of<Auth>(context, listen: false).client;
+    if (client == null) return;
+
     final response = await http.get(
-      Uri.parse(Constants.urlCreatedCards),
+      Uri.parse(
+          "${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.createdCards}.json"),
     );
     if (response.body == 'null') return;
 
     Map<String, dynamic> data = jsonDecode(response.body);
+
     data.forEach((key, cards) {
-      _userCreatedCards.add(BankCard(
+      final card = BankCard(
         cardholderName: cards[CardAttributes.cardholderName],
         expiryDate: cards[CardAttributes.expiryDate],
         flag: cards[CardAttributes.flag],
         number: cards[CardAttributes.number],
         cvc: cards[CardAttributes.cvc],
         databaseID: key,
-      ));
+      );
+
+      _userCreatedCards.add(card);
       _allCardNumbers.add(cards[CardAttributes.number]);
     });
 
     final response2 = await http.get(
-      Uri.parse(Constants.urlExistingCards),
+      Uri.parse(
+          "${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.registeredCards}.json"),
     );
     if (response2.body == 'null') return;
 
     Map<String, dynamic> data2 = jsonDecode(response2.body);
     data2.forEach((key, cards) {
-      _userRegisteredCards.add(BankCard(
+      final card = BankCard(
         cardholderName: cards[CardAttributes.cardholderName],
         expiryDate: cards[CardAttributes.expiryDate],
         flag: cards[CardAttributes.flag],
         number: cards[CardAttributes.number],
-        cvc: int.parse(cards[CardAttributes.cvc]),
+        cvc: cards[CardAttributes.cvc],
         databaseID: key,
-      ));
+      );
+
+      _userRegisteredCards.add(card);
       _allCardNumbers.add(cards[CardAttributes.number]);
     });
 

@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/users.dart';
-
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -57,8 +55,6 @@ class _LoginState extends State<Login> {
       return;
     }
 
-    setState(() => _isLoading = true);
-
     _formKey.currentState?.save();
 
     final auth = Provider.of<Auth>(context, listen: false);
@@ -72,9 +68,9 @@ class _LoginState extends State<Login> {
       Navigator.of(context).pushReplacementNamed(AppRoutes.DASHBOARD);
     }
 
-    setState(
-      () => _isLoading = false,
-    );
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void _showErrorDialog(String msg) {
@@ -95,7 +91,6 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final auth = Provider.of<Auth>(context, listen: false);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
@@ -135,7 +130,7 @@ class _LoginState extends State<Login> {
                           color: theme.colorScheme.onSecondary,
                         ),
                         labelText: 'CPF',
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
                       ),
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.number,
@@ -167,7 +162,7 @@ class _LoginState extends State<Login> {
                             color: theme.colorScheme.onSecondary,
                           ),
                           labelText: 'Senha',
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
                         ),
                         focusNode: _passwordFocus,
                         validator: (value) {
@@ -200,9 +195,7 @@ class _LoginState extends State<Login> {
                         ),
                         TextButton(
                           //TODO
-                          onPressed: () {
-                            Navigator.of(context).pushNamed(AppRoutes.HOME);
-                          },
+                          onPressed: () {},
                           child: Text(
                             "Esqueceu a senha?",
                             style: theme.textTheme.button,
@@ -216,6 +209,9 @@ class _LoginState extends State<Login> {
                       ElevatedButton(
                         //TODO
                         onPressed: () {
+                          setState(() {
+                            _isLoading = true;
+                          });
                           _submit();
                         },
                         style: ElevatedButton.styleFrom(

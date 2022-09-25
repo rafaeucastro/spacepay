@@ -17,7 +17,7 @@ class CardItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
-        children: [
+        children: const [
           Text("eapp"),
         ],
       ),

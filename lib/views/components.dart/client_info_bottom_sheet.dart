@@ -1,15 +1,10 @@
-import 'package:banksys/models/card.dart';
+import 'package:banksys/models/user.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../models/cards.dart';
-
-class CardInfo extends StatelessWidget {
-  final BankCard card;
+class ClientInfo extends StatelessWidget {
+  final Client client;
   final BuildContext context;
-  final String type;
-  const CardInfo(this.card, this.context, this.type, {Key? key})
-      : super(key: key);
+  const ClientInfo(this.client, this.context, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,24 +23,12 @@ class CardInfo extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Dados do cartão",
+                "Dados do cliente",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: textScale * 20,
                 ),
-              ),
-              Row(
-                children: [
-                  IconButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                        //TODO: se não der certo excluir, notificar usuário
-                        Provider.of<Cards>(context, listen: false)
-                            .removeCard(card, type, context);
-                      },
-                      icon: const Icon(Icons.delete)),
-                ],
               ),
             ],
           ),
@@ -54,7 +37,7 @@ class CardInfo extends StatelessWidget {
             children: [
               const Text("Nome"),
               Text(
-                card.cardholderName,
+                client.fullName,
                 style: TextStyle(
                   color: Colors.blue.shade600,
                 ),
@@ -64,9 +47,9 @@ class CardInfo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Número"),
+              const Text("CPF"),
               Text(
-                card.number,
+                client.cpf,
                 style: TextStyle(
                   color: Colors.blue.shade600,
                 ),
@@ -76,19 +59,21 @@ class CardInfo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Validade"),
-              Text(card.expiryDate,
-                  style: TextStyle(
-                    color: Colors.blue.shade600,
-                  )),
+              const Text("Telefone"),
+              Text(
+                client.phone.toString(),
+                style: TextStyle(
+                  color: Colors.blue.shade600,
+                ),
+              ),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Código de Segurança"),
+              const Text("Tipo de conta"),
               Text(
-                card.cvc.toString(),
+                client.accountType,
                 style: TextStyle(
                   color: Colors.blue.shade600,
                 ),

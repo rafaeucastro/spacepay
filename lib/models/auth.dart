@@ -17,12 +17,43 @@ abstract class AuthMode {
 class Auth with ChangeNotifier {
   static const email = "email";
   static const password = "password";
+  bool? _isADM;
+  Client? _client;
+  Admin? _admin;
   String? _token;
   String? _email;
   String? _userId;
   DateTime? _expiryDate;
-  Timer? _logoutTimer;
+  // Timer? _logoutTimer;
   bool _admIsLogged = false;
+
+  Object? get user {
+    if (admAuthenticated) {
+      return _admin;
+    }
+    if (isAuth) {
+      return _client;
+    }
+    return null;
+  }
+
+  Client? get client {
+    if (isAuth) {
+      return _client;
+    }
+    return null;
+  }
+
+  Admin? get admin {
+    if (isAuth) {
+      return _admin;
+    }
+    return null;
+  }
+
+  bool get isADM {
+    return _isADM ?? false;
+  }
 
   bool get admAuthenticated {
     return _admIsLogged;
@@ -45,6 +76,11 @@ class Auth with ChangeNotifier {
     return isAuth ? _userId : null;
   }
 
+  void logout() {
+    _admIsLogged = false;
+    _token = null;
+  }
+
   static Future<void> signUp(String email, String password) async {
     final response = await http.post(
       Uri.parse(Constants.signUpUrl),
@@ -54,13 +90,16 @@ class Auth with ChangeNotifier {
         'returnSecureToken': true,
       }),
     );
-
-    print(jsonDecode(response.body));
+    //TODO: verificar a resposta
+    if (response.body.isEmpty) {
+      return;
+    }
   }
 
   Future<void> authenticate(String cpf, String password, bool isADM) async {
     Client? client;
     Admin? admin;
+    _isADM = isADM;
 
     if (isADM) {
       try {
@@ -75,6 +114,7 @@ class Auth with ChangeNotifier {
       admin.password == password
           ? _admIsLogged = true
           : throw AuthException('INVALID_PASSWORD');
+      _admin = admin;
     } else {
       try {
         client = Users.clients.firstWhere((client) => client.cpf == cpf);
@@ -104,6 +144,8 @@ class Auth with ChangeNotifier {
           Duration(seconds: int.parse(body['expiresIn'])),
         );
       }
+
+      _client = client;
     }
 
     notifyListeners();

@@ -39,6 +39,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
     "AmericanExpress"
   ];
 
+  // ignore: prefer_final_fields
   String _dropdownValue = "Erro";
   String _cardFlagImage = "";
   double _imageScale = 4.0;
@@ -52,7 +53,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
     _formKey.currentState?.save();
 
     final cards = Provider.of<Cards>(context, listen: false);
-    cards.addExistingCard(_formData);
+    cards.addExistingCard(_formData, context);
     _showDialog();
   }
 

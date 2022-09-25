@@ -1,3 +1,5 @@
+import 'package:banksys/models/card.dart';
+
 abstract class AccountType {
   static const savings = "Poupança";
   static const checking = "Corrente";
@@ -14,6 +16,8 @@ abstract class UserAttributes {
   static const accountType = "accountType";
   static const state = "state";
   static const databaseID = "databaseID";
+  static const createdCards = "createdCards";
+  static const registeredCards = "registeredCards";
 }
 
 abstract class User {
@@ -36,6 +40,13 @@ class Client extends User {
   final String email;
   final String accountType;
   int phone;
+  // ignore: prefer_final_fields
+  List<BankCard> _createdCards = [];
+  // ignore: prefer_final_fields
+  List<BankCard> _existingCards = [];
+
+  List<BankCard> get createdCards => [..._createdCards];
+  List<BankCard> get existingCards => [..._existingCards];
 
   Client({
     required this.email,
@@ -53,6 +64,14 @@ class Client extends User {
           password: password,
           databaseID: databaseID,
         );
+
+  void addCreatedCard(BankCard card) {
+    _createdCards.add(card);
+  }
+
+  void addExistingCard(BankCard card) {
+    _existingCards.add(card);
+  }
 }
 
 class Admin extends User {

@@ -31,7 +31,6 @@ class _NewCardFormState extends State<NewCardForm> {
             TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  Navigator.of(context).pop();
                 },
                 child: const Text("Entendido")),
           ],
@@ -119,8 +118,10 @@ class _NewCardFormState extends State<NewCardForm> {
                 onPrimary: theme.colorScheme.primary,
               ),
               onPressed: () {
+                Navigator.of(context).pop();
                 _showDialog();
-                cards.createNewCard(_name, _dropdownValue, _yearDropdownValue);
+                cards.createNewCard(
+                    _name, _dropdownValue, _yearDropdownValue, context);
               },
               child: const Text("ENVIAR"),
             ),

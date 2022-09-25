@@ -5,6 +5,7 @@ class Validator {
   static String? Function(String?)? cardNumber = _cardNumber;
   static String? Function(String?)? cardExpiryDate = _cardExpiryDate;
   static String? Function(String?)? cardCVC = _cardCVC;
+  static String? Function(String?)? sixDigitCode = _sixDigitCode;
 
   static String? _mandatoryField(String? userInput) {
     String email = userInput ?? "";
@@ -33,14 +34,6 @@ class Validator {
       return "Considere digitar o código!";
     } else if (!digitPattern.hasMatch(code)) {
       return "Somente números";
-    }
-    return null;
-  }
-
-  static String? _newPassword(String? userInput) {
-    final password = userInput ?? "";
-    if (password.isEmpty) {
-      return "Considere digitar algo!";
     }
     return null;
   }
