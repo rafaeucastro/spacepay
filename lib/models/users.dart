@@ -52,7 +52,7 @@ class Users with ChangeNotifier {
         password: userData[UserAttributes.password].toString(),
         phone: int.parse(userData[UserAttributes.phone] ?? '0'),
         cpf: userData[UserAttributes.cpf].toString(),
-        databaseID: userData[UserAttributes.databaseID].toString(),
+        databaseID: userID,
       );
       _clientList.add(newClient);
     });
@@ -64,6 +64,7 @@ class Users with ChangeNotifier {
         fullname: admData[UserAttributes.fullName],
         address: admData[UserAttributes.address],
         password: admData[UserAttributes.password],
+        databaseID: userID,
       ));
     });
 

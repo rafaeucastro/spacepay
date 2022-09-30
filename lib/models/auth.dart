@@ -17,7 +17,7 @@ abstract class AuthMode {
 class Auth with ChangeNotifier {
   static const email = "email";
   static const password = "password";
-  bool? _isADM;
+  bool? _isADM = false;
   Client? _client;
   Admin? _admin;
   String? _token;
@@ -25,27 +25,16 @@ class Auth with ChangeNotifier {
   String? _userId;
   DateTime? _expiryDate;
   // Timer? _logoutTimer;
-  bool _admIsLogged = false;
-
-  Object? get user {
-    if (admAuthenticated) {
-      return _admin;
-    }
-    if (isAuth) {
-      return _client;
-    }
-    return null;
-  }
 
   Client? get client {
-    if (isAuth) {
+    if (isClientAuth) {
       return _client;
     }
     return null;
   }
 
   Admin? get admin {
-    if (isAuth) {
+    if (isAdminAuthenticated) {
       return _admin;
     }
     return null;
@@ -55,30 +44,37 @@ class Auth with ChangeNotifier {
     return _isADM ?? false;
   }
 
-  bool get admAuthenticated {
-    return _admIsLogged;
+  bool get isAdminAuthenticated {
+    return _userId != null && isADM;
   }
 
-  bool get isAuth {
+  bool get isClientAuth {
     final isValid = _expiryDate?.isAfter(DateTime.now()) ?? false;
-    return _token != null && isValid;
+    return _token != null && isValid && !_isADM!;
   }
 
   String? get token {
-    return isAuth ? _token : null;
+    return isClientAuth ? _token : null;
   }
 
   String? get eMail {
-    return isAuth ? _email : null;
+    return isClientAuth ? _email : null;
   }
 
   String? get userId {
-    return isAuth ? _userId : null;
+    return isClientAuth || isAdminAuthenticated ? _userId : null;
   }
 
   void logout() {
-    _admIsLogged = false;
+    _isADM = false;
+    _client = null;
+    _admin = null;
     _token = null;
+    _email = null;
+    _userId = null;
+    _expiryDate = null;
+
+    notifyListeners();
   }
 
   static Future<void> signUp(String email, String password) async {
@@ -112,7 +108,7 @@ class Auth with ChangeNotifier {
       }
 
       admin.password == password
-          ? _admIsLogged = true
+          ? _userId = admin.databaseID
           : throw AuthException('INVALID_PASSWORD');
       _admin = admin;
     } else {

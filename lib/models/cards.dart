@@ -61,6 +61,36 @@ class Cards with ChangeNotifier {
     notifyListeners();
   }
 
+  void sendCardForAnalysis(String name, String cardType, String validity,
+      BuildContext context) async {
+    final auth = Provider.of<Auth>(context, listen: false);
+
+    final response = await http.post(
+      Uri.parse(
+          "${Constants.baseUrl}/admins/-NCl0gUqE_K4QWFn-Qyu/requests/${UserAttributes.createdCards}.json"),
+      body: jsonEncode({
+        UserAttributes.fullName: name,
+        'cardType': cardType,
+        'validity': validity,
+        'userID': auth.userId,
+      }),
+    );
+
+    if (response.body == 'null') return;
+
+    final String id = jsonDecode(response.body)['name'];
+
+    final response2 = await http.patch(
+      Uri.parse(
+          "${Constants.baseUrl}/admins/-NCl0gUqE_K4QWFn-Qyu/requests/${UserAttributes.createdCards}/$id/.json"),
+      body: jsonEncode({
+        'id': id,
+      }),
+    );
+
+    if (response2.body == 'null') return;
+  }
+
   void createNewCard(String name, String cardType, String validity,
       BuildContext context) async {
     final String flag = CardFlag.randomFlag;
@@ -137,7 +167,7 @@ class Cards with ChangeNotifier {
               '${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.registeredCards}/${card.cvc}.json'),
         );
         if (response.statusCode == 200) {
-          _userCreatedCards.remove(card);
+          _userRegisteredCards.remove(card);
         }
         break;
     }
@@ -149,8 +179,8 @@ class Cards with ChangeNotifier {
   }
 
   Future<void> loadCardList(BuildContext context) async {
-    _userCreatedCards.clear();
-    _userRegisteredCards.clear();
+    List<BankCard> userCreatedCards = [];
+    List<BankCard> userRegisteredCards = [];
 
     final client = Provider.of<Auth>(context, listen: false).client;
     if (client == null) return;
@@ -159,45 +189,51 @@ class Cards with ChangeNotifier {
       Uri.parse(
           "${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.createdCards}.json"),
     );
-    if (response.body == 'null') return;
 
-    Map<String, dynamic> data = jsonDecode(response.body);
+    //TODO: tratar quando vier nulo
+    if (response.body != 'null') {
+      Map<String, dynamic> data = jsonDecode(response.body);
 
-    data.forEach((key, cards) {
-      final card = BankCard(
-        cardholderName: cards[CardAttributes.cardholderName],
-        expiryDate: cards[CardAttributes.expiryDate],
-        flag: cards[CardAttributes.flag],
-        number: cards[CardAttributes.number],
-        cvc: cards[CardAttributes.cvc],
-        databaseID: key,
-      );
+      data.forEach((key, cards) {
+        final card = BankCard(
+          cardholderName: cards[CardAttributes.cardholderName],
+          expiryDate: cards[CardAttributes.expiryDate],
+          flag: cards[CardAttributes.flag],
+          number: cards[CardAttributes.number],
+          cvc: cards[CardAttributes.cvc],
+          databaseID: key,
+        );
 
-      _userCreatedCards.add(card);
-      _allCardNumbers.add(cards[CardAttributes.number]);
-    });
+        userCreatedCards.add(card);
+        _allCardNumbers.add(cards[CardAttributes.number]);
+      });
+    }
 
     final response2 = await http.get(
       Uri.parse(
           "${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.registeredCards}.json"),
     );
-    if (response2.body == 'null') return;
 
-    Map<String, dynamic> data2 = jsonDecode(response2.body);
-    data2.forEach((key, cards) {
-      final card = BankCard(
-        cardholderName: cards[CardAttributes.cardholderName],
-        expiryDate: cards[CardAttributes.expiryDate],
-        flag: cards[CardAttributes.flag],
-        number: cards[CardAttributes.number],
-        cvc: cards[CardAttributes.cvc],
-        databaseID: key,
-      );
+    if (response2.body != 'null') {
+      Map<String, dynamic> data2 = jsonDecode(response2.body);
 
-      _userRegisteredCards.add(card);
-      _allCardNumbers.add(cards[CardAttributes.number]);
-    });
+      data2.forEach((key, cards) {
+        final card = BankCard(
+          cardholderName: cards[CardAttributes.cardholderName],
+          expiryDate: cards[CardAttributes.expiryDate],
+          flag: cards[CardAttributes.flag],
+          number: cards[CardAttributes.number],
+          cvc: cards[CardAttributes.cvc],
+          databaseID: key,
+        );
 
+        userRegisteredCards.add(card);
+        _allCardNumbers.add(cards[CardAttributes.number]);
+      });
+    }
+
+    _userCreatedCards = userCreatedCards;
+    _userRegisteredCards = userRegisteredCards;
     notifyListeners();
   }
 }

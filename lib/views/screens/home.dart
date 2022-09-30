@@ -106,166 +106,176 @@ class _HomeState extends State<Home> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
               Provider.of<Auth>(context, listen: false).logout();
+              Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
             },
             icon: const Icon(Icons.exit_to_app),
           ),
         ],
       ),
       backgroundColor: theme.colorScheme.background,
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 9.0),
-            child: SizedBox(
-              height: size.height * 0.1,
-              child: Row(
+      body: RefreshIndicator(
+        onRefresh: () => Provider.of<Cards>(context, listen: false)
+            .loadCardList(context)
+            .then((value) => _isLoading = false),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 9.0),
+              child: SizedBox(
+                height: size.height * 0.1,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          _showModal();
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 5,
+                            horizontal: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: theme.colorScheme.primary,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_card,
+                                color: theme.colorScheme.onPrimary,
+                              ),
+                              const Text("Solicitar cartão"),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushNamed(AppRoutes.ADD_EXISTING_CARD);
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 5,
+                            horizontal: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: theme.colorScheme.primary,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_card,
+                                color: theme.colorScheme.onPrimary,
+                              ),
+                              Text(
+                                "  Cadastrar\nnovo cartão",
+                                style: theme.textTheme.titleSmall,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        _showModal();
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: theme.colorScheme.primary,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add_card,
-                              color: theme.colorScheme.onPrimary,
-                            ),
-                            const Text("Solicitar cartão"),
-                          ],
-                        ),
-                      ),
-                    ),
+                  const Padding(
+                    padding:
+                        EdgeInsets.only(left: 15.0, bottom: 10.0, top: 15.0),
+                    child: Text(CardType.createdCards),
                   ),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context)
-                            .pushNamed(AppRoutes.ADD_EXISTING_CARD);
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 10,
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : Expanded(
+                          child: ListView.builder(
+                            itemCount: createdCards.length,
+                            itemBuilder: (context, index) {
+                              final BankCard card =
+                                  createdCards.elementAt(index);
+
+                              return ListTile(
+                                leading: const Icon(Icons.credit_card),
+                                title: Text(card.cardholderName),
+                                subtitle: Text("**** ${card.numberLastDigits}"),
+                                trailing: const Text(
+                                  "Aprovado",
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                  ),
+                                ),
+                                onTap: () =>
+                                    _showCardInfo(card, CardType.createdCards),
+                              );
+                            },
+                          ),
                         ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: theme.colorScheme.primary,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add_card,
-                              color: theme.colorScheme.onPrimary,
-                            ),
-                            Text(
-                              "  Cadastrar\nnovo cartão",
-                              style: theme.textTheme.titleSmall,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 15.0, bottom: 10.0, top: 15.0),
-                  child: Text(CardType.createdCards),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: createdCards.length,
-                    itemBuilder: (context, index) {
-                      final BankCard card = createdCards.elementAt(index);
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, bottom: 10.0, top: 15.0),
+                    child: Row(
+                      children: const [
+                        Text(CardType.registeredCards),
+                      ],
+                    ),
+                  ),
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : Expanded(
+                          child: ListView.builder(
+                            itemCount: registeredCards.length,
+                            itemBuilder: (context, index) {
+                              final BankCard card =
+                                  registeredCards.elementAt(index);
 
-                      return ListTile(
-                        leading: const Icon(Icons.credit_card),
-                        title: Text(card.cardholderName),
-                        subtitle: Text("**** ${card.numberLastDigits}"),
-                        trailing: const Text(
-                          "Aprovado",
-                          style: TextStyle(
-                            color: Colors.green,
+                              return ListTile(
+                                leading: const Icon(Icons.credit_card),
+                                title: Text(card.cardholderName),
+                                subtitle: Text("**** ${card.numberLastDigits}"),
+                                trailing: _isUnderAnalysis
+                                    ? const Text(
+                                        "Em análise",
+                                        style: TextStyle(
+                                          color: Colors.red,
+                                        ),
+                                      )
+                                    : IconButton(
+                                        icon: const Icon(Icons.delete_forever),
+                                        onPressed: () {
+                                          setState(() {});
+                                        }),
+                                onTap: () => _showCardInfo(
+                                    card, CardType.registeredCards),
+                              );
+                            },
                           ),
                         ),
-                        onTap: () => _showCardInfo(card, CardType.createdCards),
-                      );
-                    },
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                      left: 15.0, bottom: 10.0, top: 15.0),
-                  child: Row(
-                    children: const [
-                      Text(CardType.registeredCards),
-                    ],
-                  ),
-                ),
-                _isLoading
-                    ? const CircularProgressIndicator()
-                    : Expanded(
-                        child: ListView.builder(
-                          itemCount: registeredCards.length,
-                          itemBuilder: (context, index) {
-                            final BankCard card =
-                                registeredCards.elementAt(index);
-
-                            return ListTile(
-                              leading: const Icon(Icons.credit_card),
-                              title: Text(card.cardholderName),
-                              subtitle: Text("**** ${card.numberLastDigits}"),
-                              trailing: _isUnderAnalysis
-                                  ? const Text(
-                                      "Em análise",
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                      ),
-                                    )
-                                  : IconButton(
-                                      icon: const Icon(Icons.delete_forever),
-                                      onPressed: () {
-                                        setState(() {});
-                                      }),
-                              onTap: () =>
-                                  _showCardInfo(card, CardType.registeredCards),
-                            );
-                          },
-                        ),
-                      ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: IconButton(
         icon: Icon(Icons.add_card, size: size.width * 0.1),

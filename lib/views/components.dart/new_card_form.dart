@@ -120,7 +120,7 @@ class _NewCardFormState extends State<NewCardForm> {
               onPressed: () {
                 Navigator.of(context).pop();
                 _showDialog();
-                cards.createNewCard(
+                cards.sendCardForAnalysis(
                     _name, _dropdownValue, _yearDropdownValue, context);
               },
               child: const Text("ENVIAR"),

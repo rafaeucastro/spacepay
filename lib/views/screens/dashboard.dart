@@ -1,6 +1,9 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:banksys/models/card.dart';
+import 'package:banksys/models/cards_requests.dart';
 import 'package:banksys/models/user.dart';
+import 'package:banksys/views/components.dart/bank_card.dart';
 import 'package:banksys/views/components.dart/client_info_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +19,9 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> {
+  final _key = GlobalKey();
+  double _bottomKeyboardMargin = 0;
+
   void _clientInfo(Client client) {
     showModalBottomSheet(
       context: context,
@@ -25,11 +31,55 @@ class _DashBoardState extends State<DashBoard> {
     );
   }
 
+  _showModalJustification() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          color: Colors.blue.shade100,
+          height: 200 + _bottomKeyboardMargin,
+          child: Column(
+            children: [
+              Text("Qual o motivo??",
+                  style: TextStyle(
+                    color: Colors.blue.shade900,
+                    fontWeight: FontWeight.bold,
+                  )),
+              TextField(
+                onTap: () => setState(() {
+                  _bottomKeyboardMargin =
+                      MediaQuery.of(context).viewInsets.bottom;
+                }),
+                onChanged: (value) {
+                  setState(() {
+                    _bottomKeyboardMargin =
+                        MediaQuery.of(context).viewInsets.bottom;
+                  });
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Justificativa',
+                ),
+                textInputAction: TextInputAction.send,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<BankCardRequests>(context, listen: false).loadRequests(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final users = Provider.of<Users>(context);
+    final requests = Provider.of<BankCardRequests>(context).requests;
 
     return Scaffold(
       appBar: AppBar(
@@ -51,7 +101,7 @@ class _DashBoardState extends State<DashBoard> {
         alignment: Alignment.center,
         child: Column(
           children: [
-            Container(),
+            Text("Clientes"),
             Expanded(
               child: ListView.builder(
                 itemCount: Users.clients.length,
@@ -65,6 +115,75 @@ class _DashBoardState extends State<DashBoard> {
                     onTap: () => _clientInfo(user),
                   );
                 },
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  const Text('Solicitações'),
+                  Expanded(
+                      child: ListView.builder(
+                    itemCount: requests.length,
+                    itemBuilder: (context, index) {
+                      final request = requests.elementAt(index);
+
+                      return Column(
+                        children: [
+                          ListTile(
+                            trailing: const Icon(Icons.credit_card),
+                            title: Text(request.name),
+                            subtitle: Text(request.cardType),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              InkWell(
+                                highlightColor: Colors.black,
+                                splashColor: Colors.black,
+                                onTap: () {
+                                  Provider.of<BankCardRequests>(context,
+                                          listen: false)
+                                      .confirmRequest(request, context);
+                                },
+                                child: Row(children: const [
+                                  Icon(Icons.check),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 10),
+                                    child: Text(
+                                      "Aprovar",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ]),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: InkWell(
+                                  highlightColor: Colors.black,
+                                  splashColor: Colors.black,
+                                  onTap: () {
+                                    _showModalJustification();
+                                  },
+                                  child: Row(children: const [
+                                    Icon(Icons.clear),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: Text(
+                                        "Recusar",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ]),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  )),
+                ],
               ),
             ),
           ],

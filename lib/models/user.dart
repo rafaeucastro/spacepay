@@ -83,10 +83,12 @@ class Admin extends User {
     required String fullname,
     required String address,
     required String password,
+    final String? databaseID,
   }) : super(
           cpf: cpf,
           fullName: fullname,
           address: address,
           password: password,
+          databaseID: databaseID,
         );
 }

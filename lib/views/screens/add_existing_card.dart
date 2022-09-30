@@ -1,6 +1,7 @@
 import 'package:banksys/models/card.dart';
 import 'package:banksys/models/cards.dart';
 import 'package:banksys/util/validators.dart';
+import 'package:banksys/views/components.dart/bank_card.dart';
 import 'package:banksys/views/components.dart/card_flag_dropdown.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
   final _cardNumberController = TextEditingController();
   final _nameController = TextEditingController();
   final _expiryDateController = TextEditingController();
-  final _cVcController = TextEditingController();
+  final _cvcController = TextEditingController();
 
   // ignore: prefer_final_fields
   Map<String, String> _formData = {
@@ -196,7 +197,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
                               ),
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.number,
-                              controller: _cVcController,
+                              controller: _cvcController,
                               maxLength: 3,
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
@@ -226,67 +227,15 @@ class _AddExistingCardState extends State<AddExistingCard> {
                   ),
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.all(15),
+              BankCardItem(
                 height: size.height * 0.28,
                 width: size.width,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.onSecondary,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Stack(
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Text(
-                            _cardNumberController.text,
-                            style: theme.textTheme.headline5,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 67, bottom: 10),
-                          child: Row(
-                            children: [
-                              Text(
-                                _nameController.text.toUpperCase(),
-                                style: theme.textTheme.headline6,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 67),
-                          child: Row(
-                            children: [
-                              if (_expiryDateController.text.isNotEmpty)
-                                Text(
-                                  "Validade: ${_expiryDateController.text}",
-                                  style: theme.textTheme.headline6,
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Positioned(
-                      left: 15,
-                      bottom: 15,
-                      child: Text(
-                        _cVcController.text,
-                        style: theme.textTheme.headline6,
-                      ),
-                    ),
-                    if (_cardFlagImage.isNotEmpty)
-                      Positioned(
-                        right: 15,
-                        bottom: 15,
-                        child: Image.asset(_cardFlagImage, scale: _imageScale),
-                      ),
-                  ],
-                ),
+                cardFlagImage: _cardFlagImage,
+                cardholderName: _nameController.text,
+                number: _nameController.text,
+                expireDate: _expiryDateController.text,
+                imageScale: _imageScale,
+                cvc: _cvcController.text,
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),

@@ -1,3 +1,4 @@
+import 'package:banksys/models/cards_requests.dart';
 import 'package:banksys/views/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +40,9 @@ class SpacePay extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => Cards(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => BankCardRequests(),
         ),
       ],
       child: MaterialApp(
@@ -120,7 +124,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await Provider.of<Users>(context, listen: false).loadData();
 
     Future.delayed(const Duration(seconds: 0)).then((value) {
-      Provider.of<Auth>(context, listen: false).isAuth
+      Provider.of<Auth>(context, listen: false).isClientAuth
           ? Navigator.of(context).pushReplacementNamed(AppRoutes.HOME)
           : Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
     });
