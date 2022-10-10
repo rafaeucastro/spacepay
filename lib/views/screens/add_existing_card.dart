@@ -232,7 +232,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
                 width: size.width,
                 cardFlagImage: _cardFlagImage,
                 cardholderName: _nameController.text,
-                number: _nameController.text,
+                number: _cardNumberController.text,
                 expireDate: _expiryDateController.text,
                 imageScale: _imageScale,
                 cvc: _cvcController.text,

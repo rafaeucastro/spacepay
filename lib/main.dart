@@ -122,6 +122,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   _navigateToHome() async {
     await Provider.of<Users>(context, listen: false).loadData();
+    await Provider.of<BankCardRequests>(context, listen: false)
+        .loadRequests(context);
 
     Future.delayed(const Duration(seconds: 0)).then((value) {
       Provider.of<Auth>(context, listen: false).isClientAuth

@@ -17,7 +17,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   // ignore: prefer_final_fields
-  bool _isUnderAnalysis = true;
   bool _isLoading = true;
 
   void _showCardInfo(BankCard card, String type) {
@@ -211,11 +210,17 @@ class _HomeState extends State<Home> {
                               return ListTile(
                                 leading: const Icon(Icons.credit_card),
                                 title: Text(card.cardholderName),
-                                subtitle: Text("**** ${card.numberLastDigits}"),
-                                trailing: const Text(
-                                  "Aprovado",
+                                subtitle: Text(
+                                  card.isApproved
+                                      ? "**** ${card.numberLastDigits}"
+                                      : "**** ****",
+                                ),
+                                trailing: Text(
+                                  card.status,
                                   style: TextStyle(
-                                    color: Colors.green,
+                                    color: card.isApproved
+                                        ? Colors.green
+                                        : Colors.red,
                                   ),
                                 ),
                                 onTap: () =>
@@ -253,18 +258,14 @@ class _HomeState extends State<Home> {
                                 leading: const Icon(Icons.credit_card),
                                 title: Text(card.cardholderName),
                                 subtitle: Text("**** ${card.numberLastDigits}"),
-                                trailing: _isUnderAnalysis
-                                    ? const Text(
-                                        "Em análise",
-                                        style: TextStyle(
-                                          color: Colors.red,
-                                        ),
-                                      )
-                                    : IconButton(
-                                        icon: const Icon(Icons.delete_forever),
-                                        onPressed: () {
-                                          setState(() {});
-                                        }),
+                                trailing: Text(
+                                  card.status,
+                                  style: TextStyle(
+                                    color: card.isApproved
+                                        ? Colors.green
+                                        : Colors.red,
+                                  ),
+                                ),
                                 onTap: () => _showCardInfo(
                                     card, CardType.registeredCards),
                               );

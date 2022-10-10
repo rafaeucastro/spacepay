@@ -79,7 +79,10 @@ class _DashBoardState extends State<DashBoard> {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final users = Provider.of<Users>(context);
-    final requests = Provider.of<BankCardRequests>(context).requests;
+    final newCardRequests =
+        Provider.of<BankCardRequests>(context).newCardRequests;
+    final registeredCardRequests =
+        Provider.of<BankCardRequests>(context).registeredCardsRequests;
 
     return Scaffold(
       appBar: AppBar(
@@ -122,67 +125,133 @@ class _DashBoardState extends State<DashBoard> {
                 children: [
                   const Text('Solicitações'),
                   Expanded(
-                      child: ListView.builder(
-                    itemCount: requests.length,
-                    itemBuilder: (context, index) {
-                      final request = requests.elementAt(index);
+                    child: ListView.builder(
+                      itemCount: newCardRequests.length,
+                      itemBuilder: (context, index) {
+                        final request = newCardRequests.elementAt(index);
 
-                      return Column(
-                        children: [
-                          ListTile(
-                            trailing: const Icon(Icons.credit_card),
-                            title: Text(request.name),
-                            subtitle: Text(request.cardType),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              InkWell(
-                                highlightColor: Colors.black,
-                                splashColor: Colors.black,
-                                onTap: () {
-                                  Provider.of<BankCardRequests>(context,
-                                          listen: false)
-                                      .confirmRequest(request, context);
-                                },
-                                child: Row(children: const [
-                                  Icon(Icons.check),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 10),
-                                    child: Text(
-                                      "Aprovar",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                ]),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 20),
-                                child: InkWell(
+                        return Column(
+                          children: [
+                            ListTile(
+                              trailing: const Icon(Icons.credit_card),
+                              title: Text(request.name),
+                              subtitle: Text(request.cardType),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                InkWell(
                                   highlightColor: Colors.black,
                                   splashColor: Colors.black,
                                   onTap: () {
-                                    _showModalJustification();
+                                    Provider.of<BankCardRequests>(context,
+                                            listen: false)
+                                        .confirmNewCardRequest(
+                                            request, context);
                                   },
                                   child: Row(children: const [
-                                    Icon(Icons.clear),
+                                    Icon(Icons.check),
                                     Padding(
                                       padding: EdgeInsets.only(left: 10),
                                       child: Text(
-                                        "Recusar",
+                                        "Aprovar",
                                         style: TextStyle(color: Colors.white),
                                       ),
                                     ),
                                   ]),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
-                  )),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: InkWell(
+                                    highlightColor: Colors.black,
+                                    splashColor: Colors.black,
+                                    onTap: () {
+                                      _showModalJustification();
+                                    },
+                                    child: Row(children: const [
+                                      Icon(Icons.clear),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          "Recusar",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ]),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: registeredCardRequests.length,
+                      itemBuilder: (context, index) {
+                        final card = registeredCardRequests.elementAt(index);
+
+                        return Column(
+                          children: [
+                            ListTile(
+                              trailing: const Icon(Icons.credit_card),
+                              title: Text(card.cardholderName),
+                              subtitle: Text(card.number),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                InkWell(
+                                  highlightColor: Colors.black,
+                                  splashColor: Colors.black,
+                                  onTap: () {
+                                    Provider.of<BankCardRequests>(context,
+                                            listen: false)
+                                        .confirmRegisteredCardRequest(
+                                            card, context);
+                                  },
+                                  child: Row(children: const [
+                                    Icon(Icons.check),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: Text(
+                                        "Aprovar",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ]),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: InkWell(
+                                    highlightColor: Colors.black,
+                                    splashColor: Colors.black,
+                                    onTap: () {
+                                      _showModalJustification();
+                                    },
+                                    child: Row(children: const [
+                                      Icon(Icons.clear),
+                                      Padding(
+                                        padding: EdgeInsets.only(left: 10),
+                                        child: Text(
+                                          "Recusar",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ]),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),

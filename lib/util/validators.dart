@@ -66,6 +66,12 @@ class Validator {
   static String? _cardExpiryDate(String? userInput) {
     final expiryDate = userInput ?? "";
 
+    if (expiryDate.isEmpty) {
+      return "Considere digitar algo!";
+    } else if (expiryDate.length != 5) {
+      return "Digite o número completo!";
+    }
+
     int month = int.tryParse(expiryDate.substring(0, 2)) ?? 0;
     int year = int.tryParse(expiryDate.substring(3, 5)) ?? 0;
     int now = int.parse(DateTime.now().year.toString().substring(2, 4));
@@ -79,11 +85,7 @@ class Validator {
           .substring(2, 4),
     );
 
-    if (expiryDate.isEmpty) {
-      return "Considere digitar algo!";
-    } else if (expiryDate.length != 5) {
-      return "Digite o número completo!";
-    } else if (month < 1 || month > 12) {
+    if (month < 1 || month > 12) {
       return "Mês inválido";
     } else if (year < now || year > sixYearsFromNow) {
       return "Ano inválido";

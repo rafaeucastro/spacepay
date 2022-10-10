@@ -18,6 +18,7 @@ abstract class UserAttributes {
   static const databaseID = "databaseID";
   static const createdCards = "createdCards";
   static const registeredCards = "registeredCards";
+  static const cardRequests = "cardRequests";
 }
 
 abstract class User {

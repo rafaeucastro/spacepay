@@ -26,35 +26,36 @@ class Cards with ChangeNotifier {
   void addExistingCard(
       Map<String, String> formData, BuildContext context) async {
     final number = formData[CardAttributes.number]!;
-    final cvc = formData[CardAttributes.cvc]!;
+    final cvc = int.parse(formData[CardAttributes.cvc]!);
     final cardholderName = formData[CardAttributes.cardholderName]!;
     final expiryDate = formData[CardAttributes.expiryDate]!;
     final flag = formData[CardAttributes.flag]!;
 
-    final client = Provider.of<Auth>(context, listen: false).client;
-    if (client == null) return;
+    final clientDatabaseID =
+        Provider.of<Auth>(context, listen: false).client!.databaseID;
+    if (clientDatabaseID == null) return;
 
+    //TODO: usar userID como identificador do mapa no firebase.
     final response = await http.patch(
       Uri.parse(
-          "${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.registeredCards}/$cvc.json"),
+          "${Constants.baseUrl}/admins/-NCl0gUqE_K4QWFn-Qyu/requests/${UserAttributes.registeredCards}/$cvc.json"),
       body: jsonEncode({
         CardAttributes.cardholderName: cardholderName,
         CardAttributes.number: number,
         CardAttributes.expiryDate: expiryDate,
         CardAttributes.cvc: cvc,
         CardAttributes.flag: flag,
+        CardAttributes.status: "Em análise",
+        CardAttributes.databaseID: clientDatabaseID,
       }),
     );
-
-    final id = jsonDecode(response.body)['name'].toString();
 
     final newCard = BankCard(
       cardholderName: cardholderName,
       expiryDate: expiryDate,
       flag: flag,
       number: number,
-      cvc: int.parse(cvc),
-      databaseID: id,
+      cvc: cvc,
     );
 
     _userRegisteredCards.add(newCard);
@@ -63,7 +64,8 @@ class Cards with ChangeNotifier {
 
   void sendCardForAnalysis(String name, String cardType, String validity,
       BuildContext context) async {
-    final auth = Provider.of<Auth>(context, listen: false);
+    final clientDatabaseID =
+        Provider.of<Auth>(context, listen: false).client!.databaseID;
 
     final response = await http.post(
       Uri.parse(
@@ -72,7 +74,7 @@ class Cards with ChangeNotifier {
         UserAttributes.fullName: name,
         'cardType': cardType,
         'validity': validity,
-        'userID': auth.userId,
+        'userID': clientDatabaseID,
       }),
     );
 
@@ -89,10 +91,22 @@ class Cards with ChangeNotifier {
     );
 
     if (response2.body == 'null') return;
+
+    _userCreatedCards.add(
+      BankCard(
+        number: "**** ****",
+        cardholderName: name,
+        expiryDate: "**/**",
+        cvc: 0,
+        flag: "",
+      ),
+    );
+
+    notifyListeners();
   }
 
   void createNewCard(String name, String cardType, String validity,
-      BuildContext context) async {
+      String userID, BuildContext context) async {
     final String flag = CardFlag.randomFlag;
     final String expiryDate = BankCard.getExpiryDate(validity);
     int cvc = Random().nextInt(899) + 100;
@@ -113,34 +127,33 @@ class Cards with ChangeNotifier {
           : isCardNumberExclusive = true;
     }
 
-    final client = Provider.of<Auth>(context, listen: false).client;
-    if (client == null) return;
-
     //TODO: verificar se deu certo inserir
     final response = await http.patch(
       Uri.parse(
-          "${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.createdCards}/$cvc.json"),
+          "${Constants.baseUrl}/clients/$userID/${UserAttributes.createdCards}/$cvc.json"),
       body: jsonEncode({
         CardAttributes.cardholderName: name,
         CardAttributes.number: cardNumber,
         CardAttributes.flag: flag,
         CardAttributes.expiryDate: expiryDate,
         CardAttributes.cvc: cvc,
+        CardAttributes.status: "Aprovado",
       }),
     );
 
-    final id = jsonDecode(response.body)['name'].toString();
+    //TODO: DELETE ALL THIS CODE
+    // final id = jsonDecode(response.body)['name'].toString();
 
-    final newCard = BankCard(
-      number: cardNumber,
-      cardholderName: name,
-      expiryDate: expiryDate,
-      cvc: cvc,
-      flag: flag,
-      databaseID: id,
-    );
+    // final newCard = BankCard(
+    //   number: cardNumber,
+    //   cardholderName: name,
+    //   expiryDate: expiryDate,
+    //   cvc: cvc,
+    //   flag: flag,
+    //   databaseID: id,
+    // );
 
-    _userCreatedCards.add(newCard);
+    // _userCreatedCards.add(newCard);
 
     notifyListeners();
   }
@@ -166,7 +179,7 @@ class Cards with ChangeNotifier {
           Uri.parse(
               '${Constants.baseUrl}/clients/${client.databaseID}/${UserAttributes.registeredCards}/${card.cvc}.json'),
         );
-        if (response.statusCode == 200) {
+        if (response.statusCode == 200 || response.statusCode == 404) {
           _userRegisteredCards.remove(card);
         }
         break;
@@ -192,9 +205,9 @@ class Cards with ChangeNotifier {
 
     //TODO: tratar quando vier nulo
     if (response.body != 'null') {
-      Map<String, dynamic> data = jsonDecode(response.body);
+      Map<String, dynamic> createdCardsData = jsonDecode(response.body);
 
-      data.forEach((key, cards) {
+      createdCardsData.forEach((key, cards) {
         final card = BankCard(
           cardholderName: cards[CardAttributes.cardholderName],
           expiryDate: cards[CardAttributes.expiryDate],
@@ -202,6 +215,7 @@ class Cards with ChangeNotifier {
           number: cards[CardAttributes.number],
           cvc: cards[CardAttributes.cvc],
           databaseID: key,
+          status: cards[CardAttributes.status],
         );
 
         userCreatedCards.add(card);
@@ -215,9 +229,9 @@ class Cards with ChangeNotifier {
     );
 
     if (response2.body != 'null') {
-      Map<String, dynamic> data2 = jsonDecode(response2.body);
+      Map<String, dynamic> registeredCardsData = jsonDecode(response2.body);
 
-      data2.forEach((key, cards) {
+      registeredCardsData.forEach((key, cards) {
         final card = BankCard(
           cardholderName: cards[CardAttributes.cardholderName],
           expiryDate: cards[CardAttributes.expiryDate],
@@ -225,6 +239,7 @@ class Cards with ChangeNotifier {
           number: cards[CardAttributes.number],
           cvc: cards[CardAttributes.cvc],
           databaseID: key,
+          status: cards[CardAttributes.status],
         );
 
         userRegisteredCards.add(card);
