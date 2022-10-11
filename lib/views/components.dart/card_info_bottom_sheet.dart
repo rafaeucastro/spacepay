@@ -15,6 +15,8 @@ class CardInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final textScale = MediaQuery.of(context).textScaleFactor;
     final size = MediaQuery.of(context).size;
+    final theme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return Container(
       height: size.height * 0.45,
@@ -52,11 +54,11 @@ class CardInfo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Nome"),
+              Text("Nome", style: textTheme.headline5),
               Text(
                 card.cardholderName,
                 style: TextStyle(
-                  color: Colors.blue.shade600,
+                  color: theme.onPrimary,
                 ),
               ),
             ],
@@ -64,11 +66,11 @@ class CardInfo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Número"),
+              Text("Número", style: textTheme.headline5),
               Text(
                 card.number,
                 style: TextStyle(
-                  color: Colors.blue.shade600,
+                  color: theme.onPrimary,
                 ),
               ),
             ],
@@ -76,21 +78,21 @@ class CardInfo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Validade"),
+              Text("Validade", style: textTheme.headline5),
               Text(card.expiryDate,
                   style: TextStyle(
-                    color: Colors.blue.shade600,
+                    color: theme.onPrimary,
                   )),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Código de Segurança"),
+              Text("Código de Segurança", style: textTheme.headline5),
               Text(
                 card.cvc.toString(),
                 style: TextStyle(
-                  color: Colors.blue.shade600,
+                  color: theme.onPrimary,
                 ),
               ),
             ],

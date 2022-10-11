@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
 import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/models/card.dart';
 import 'package:spacepay/util/routes.dart';
@@ -18,6 +21,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // ignore: prefer_final_fields
   bool _isLoading = true;
+  File? _storedImage;
 
   void _showCardInfo(BankCard card, String type) {
     showModalBottomSheet(
@@ -36,7 +40,25 @@ class _HomeState extends State<Home> {
     );
   }
 
+  //TODO: salvar a imagem no firebase
+  void _takePicture() async {
+    final ImagePicker _picker = ImagePicker();
+    XFile? imageFile = await _picker.pickImage(
+      source: ImageSource.camera,
+      maxHeight: 300,
+      maxWidth: 300,
+    );
+
+    if (imageFile == null) return;
+
+    setState(() {
+      _storedImage = File(imageFile.path);
+    });
+  }
+
   void _showUserOptionsDialog(Size size, ThemeData theme) {
+    final auth = Provider.of<Auth>(context, listen: false);
+
     showGeneralDialog(
       context: context,
       pageBuilder: (context, animation, secondaryAnimation) {
@@ -44,32 +66,52 @@ class _HomeState extends State<Home> {
           backgroundColor: theme.colorScheme.primary,
           child: Container(
             height: size.height * 0.4,
+            padding: const EdgeInsets.only(bottom: 20),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
-            child: Column(children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.clear),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(right: 15),
-                    child: Text('SpacePay'),
-                  ),
-                ],
-              ),
-              ListTile(
-                leading: Image.asset(
-                  CardFlag.eloImage,
-                  scale: 5,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: Icon(Icons.clear,
+                          color: theme.colorScheme.onSecondary),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(right: 15),
+                      child: Text('SpacePay'),
+                    ),
+                  ],
                 ),
-                title: const Text("Jessé"),
-                subtitle: const Text("jessévicente096@gmail.com"),
-              ),
-              const Text("Adicionar ou trocar foto do perfil"),
-              const Text("Excluir conta definitivamente"),
-            ]),
+                SizedBox(
+                  height: 150,
+                  width: 150,
+                  child: _storedImage != null
+                      ? Image.file(
+                          _storedImage!,
+                          fit: BoxFit.cover,
+                          height: double.infinity,
+                        )
+                      : Icon(
+                          Icons.person,
+                          color: theme.colorScheme.onPrimary,
+                        ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    auth.client?.fullName ?? "Sem nome",
+                    style: theme.textTheme.titleMedium,
+                  ),
+                ),
+                Expanded(child: SizedBox()),
+                Text(
+                  "Excluir conta definitivamente",
+                  style: theme.textTheme.titleMedium,
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -90,19 +132,65 @@ class _HomeState extends State<Home> {
     final size = MediaQuery.of(context).size;
     final registeredCards = Provider.of<Cards>(context).userRegisteredCards;
     final createdCards = Provider.of<Cards>(context).userCreatedCards;
+    final auth = Provider.of<Auth>(context, listen: false);
+    final navigator = Navigator.of(context);
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Image.asset(CardFlag.eloImage),
+          icon: _storedImage != null
+              ? Image.file(
+                  _storedImage!,
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
+                )
+              : Icon(
+                  Icons.person,
+                  color: theme.colorScheme.onPrimary,
+                ),
           onPressed: () {
             _showUserOptionsDialog(size, theme);
           },
         ),
-        title: const Text("Rafael"),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              auth.client?.fullName ?? "Sem nome",
+              style: theme.textTheme.titleMedium,
+            ),
+            Text(
+              auth.client?.email ?? "Sem e-mail",
+              style: theme.textTheme.subtitle2,
+            ),
+          ],
+        ),
         actions: [
+          PopupMenuButton(
+            color: theme.colorScheme.primary,
+            itemBuilder: (context) {
+              return [
+                PopupMenuItem<Text>(
+                  child: const Text("Configurações"),
+                  onTap: () {},
+                ),
+                PopupMenuItem<Text>(
+                  onTap: _takePicture,
+                  child: const Text("Alterar foto do perfil"),
+                ),
+                PopupMenuItem<Text>(
+                  child: const Text("Sair"),
+                  onTap: () {
+                    navigator.pushReplacementNamed(AppRoutes.LOGIN);
+                    auth.logout();
+                  },
+                ),
+              ];
+            },
+          ),
           IconButton(
             onPressed: () {
               Provider.of<Auth>(context, listen: false).logout();
@@ -219,8 +307,8 @@ class _HomeState extends State<Home> {
                                   card.status,
                                   style: TextStyle(
                                     color: card.isApproved
-                                        ? Colors.green
-                                        : Colors.red,
+                                        ? theme.colorScheme.secondary
+                                        : theme.colorScheme.primary,
                                   ),
                                 ),
                                 onTap: () =>
@@ -262,8 +350,8 @@ class _HomeState extends State<Home> {
                                   card.status,
                                   style: TextStyle(
                                     color: card.isApproved
-                                        ? Colors.green
-                                        : Colors.red,
+                                        ? theme.colorScheme.secondary
+                                        : theme.colorScheme.primary,
                                   ),
                                 ),
                                 onTap: () => _showCardInfo(

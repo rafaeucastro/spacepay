@@ -16,7 +16,12 @@ class PersonalizedDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return DropdownButtonFormField(
+      dropdownColor: colorScheme.primary,
+      focusColor: colorScheme.secondary,
+      iconEnabledColor: colorScheme.secondary,
       value: dropdownValue,
       items: list.map((string) {
         return DropdownMenuItem(
@@ -27,9 +32,11 @@ class PersonalizedDropDown extends StatelessWidget {
       decoration: label == null
           ? null
           : InputDecoration(
+              fillColor: colorScheme.secondary,
+              focusColor: Colors.amber,
               label: Text(
                 label!,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: colorScheme.secondary),
               ),
             ),
       onChanged: onChanged,

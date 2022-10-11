@@ -14,7 +14,11 @@ class CardTypeDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return DropdownButtonFormField(
+      dropdownColor: colorScheme.primary,
+      focusColor: colorScheme.secondary,
       value: dropdownValue,
       items: cardType.map((type) {
         return DropdownMenuItem(
@@ -23,10 +27,12 @@ class CardTypeDropDown extends StatelessWidget {
         );
       }).toList(),
       onChanged: onChanged,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         label: Text(
           "Tipo de cartão",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: colorScheme.secondary,
+          ),
         ),
       ),
     );

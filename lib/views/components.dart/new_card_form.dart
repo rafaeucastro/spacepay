@@ -59,7 +59,12 @@ class _NewCardFormState extends State<NewCardForm> {
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
-        color: theme.colorScheme.secondary,
+        border: Border.all(
+          color: theme.colorScheme.secondary,
+          strokeAlign: StrokeAlign.inside,
+          width: 1.5,
+        ),
+        color: theme.colorScheme.background,
       ),
       child: Form(
         child: Column(
@@ -114,8 +119,6 @@ class _NewCardFormState extends State<NewCardForm> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(size.width * 0.4, size.height * 0.051),
-                primary: theme.colorScheme.onPrimary,
-                onPrimary: theme.colorScheme.primary,
               ),
               onPressed: () {
                 Navigator.of(context).pop();

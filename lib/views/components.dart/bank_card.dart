@@ -32,40 +32,53 @@ class BankCardItem extends StatelessWidget {
       height: height,
       width: width,
       decoration: BoxDecoration(
-        color: theme.colorScheme.onSecondary,
+        color: theme.colorScheme.tertiary,
         borderRadius: BorderRadius.circular(15),
+        gradient: LinearGradient(
+          colors: [
+            Colors.red,
+            theme.colorScheme.primary,
+            theme.colorScheme.primary,
+            theme.colorScheme.primary,
+            theme.colorScheme.onPrimary,
+            theme.colorScheme.onPrimary,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
       ),
       child: Stack(
         children: [
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.only(left: 40, bottom: 10),
                 child: Text(
                   cardholderName.toUpperCase(),
-                  style: theme.textTheme.headline6,
+                  style: theme.textTheme.headline5,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 67, bottom: 10),
+                padding: const EdgeInsets.only(left: 40, bottom: 10),
                 child: Row(
                   children: [
                     Text(
                       number.toUpperCase(),
-                      style: theme.textTheme.headline6,
+                      style: theme.textTheme.headline5,
                     ),
                   ],
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 67),
+                padding: const EdgeInsets.only(left: 40),
                 child: Row(
                   children: [
                     if (expireDate.isNotEmpty)
                       Text(
                         "Validade: $expireDate",
-                        style: theme.textTheme.headline6,
+                        style: theme.textTheme.headline5,
                       ),
                   ],
                 ),
@@ -77,7 +90,7 @@ class BankCardItem extends StatelessWidget {
             bottom: 15,
             child: Text(
               cvc,
-              style: theme.textTheme.headline6,
+              style: theme.textTheme.headline5,
             ),
           ),
           if (cardFlagImage.isNotEmpty)

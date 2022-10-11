@@ -22,12 +22,12 @@ class SpacePay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = ThemeData.dark();
-    final Color primary = Colors.blue.shade900;
+    const Color primary = Color(0xFFFF5249);
     const Color onPrimary = Colors.white;
-    const Color secondary = Colors.black;
-    final Color onSecondary = Colors.blue.shade100;
-    final tertiary = Colors.blue.shade200;
-    const onTertiary = Colors.greenAccent;
+    const Color secondary = Color(0xFFFFDD78);
+    const Color onSecondary = Colors.black;
+    final tertiary = Colors.blue.shade900;
+    const onTertiary = Colors.amber;
     const Color background = Colors.black;
 
     return MultiProvider(
@@ -49,13 +49,15 @@ class SpacePay extends StatelessWidget {
         theme: theme.copyWith(
           inputDecorationTheme: const InputDecorationTheme().copyWith(
             border: OutlineInputBorder(
-              // borderSide: BorderSide.none,
               borderRadius: BorderRadius.circular(5),
             ),
             contentPadding: const EdgeInsets.all(10),
-            // constraints: const BoxConstraints(maxHeight: 40, maxWidth: 300),
-            // fillColor: theme.colorScheme.onSecondary,
-            // filled: true,
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: primary),
+            ),
+            labelStyle: const TextStyle(
+              color: primary,
+            ),
           ),
           colorScheme: theme.colorScheme.copyWith(
             background: background,
@@ -67,29 +69,41 @@ class SpacePay extends StatelessWidget {
             onTertiary: onTertiary,
           ),
           textTheme: theme.textTheme.copyWith(
-            button: TextStyle(
-              color: onSecondary,
+            button: const TextStyle(
+              color: onTertiary,
             ),
-            headline5: TextStyle(
-              color: primary,
-              fontSize: 25.0,
+            headline5: const TextStyle(
+              color: onPrimary,
+              fontSize: 16.0,
               fontWeight: FontWeight.bold,
             ),
-            headline6: TextStyle(
+            headline6: const TextStyle(
               color: primary,
               fontSize: 15.0,
               fontWeight: FontWeight.bold,
             ),
+            subtitle2: const TextStyle(
+              color: onPrimary,
+              fontSize: 15.0,
+            ),
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
+            backgroundColor: onTertiary,
+            foregroundColor: onSecondary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
           )),
           snackBarTheme: const SnackBarThemeData().copyWith(
-            backgroundColor: theme.colorScheme.primary,
+            backgroundColor: primary,
             contentTextStyle: theme.textTheme.button,
+          ),
+          iconTheme: const IconThemeData().copyWith(
+            color: primary,
+          ),
+          checkboxTheme: const CheckboxThemeData().copyWith(
+            fillColor: MaterialStateProperty.all(primary),
           ),
         ),
         title: "Space Pay",

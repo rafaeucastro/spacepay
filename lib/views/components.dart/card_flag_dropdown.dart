@@ -14,7 +14,12 @@ class CardFlagDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return DropdownButtonFormField(
+      dropdownColor: colorScheme.primary,
+      focusColor: colorScheme.secondary,
+      iconEnabledColor: colorScheme.secondary,
       value: dropdownValue,
       items: cardFlag.map((flag) {
         return DropdownMenuItem(

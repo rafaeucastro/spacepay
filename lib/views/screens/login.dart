@@ -98,17 +98,16 @@ class _LoginState extends State<Login> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.rocket_launch,
-                color: theme.colorScheme.primary,
-                size: 45.0,
+              Image.asset(
+                "assets/images/spacepay_transparent.png",
+                scale: 10,
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 40.0),
                 child: Text(
                   "SpacePay",
                   style: TextStyle(
-                    color: theme.colorScheme.onPrimary,
+                    color: theme.colorScheme.primary,
                     fontSize: 32,
                   ),
                 ),
@@ -121,13 +120,12 @@ class _LoginState extends State<Login> {
                     children: [
                       TextFormField(
                         initialValue: "000.000.000-00",
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.person,
-                            color: theme.colorScheme.onSecondary,
                           ),
                           labelText: 'CPF',
-                          border: const OutlineInputBorder(),
+                          border: OutlineInputBorder(),
                         ),
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.number,
@@ -155,12 +153,14 @@ class _LoginState extends State<Login> {
                           obscuringCharacter: '*',
                           obscureText: _showPassword,
                           decoration: InputDecoration(
-                            prefixIcon: Icon(
+                            prefixIcon: const Icon(
                               Icons.key,
-                              color: theme.colorScheme.onSecondary,
                             ),
                             suffixIcon: IconButton(
-                              icon: const Icon(Icons.password),
+                              icon: Icon(
+                                Icons.password,
+                                color: theme.colorScheme.secondary,
+                              ),
                               onPressed: () {
                                 setState(() {
                                   _showPassword = !_showPassword;
