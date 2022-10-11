@@ -1,4 +1,4 @@
-package com.example.banksys
+package com.gdppi.spacepay
 
 import io.flutter.embedding.android.FlutterActivity
 

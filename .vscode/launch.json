@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "banksys",
+            "name": "spacepay",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "banksys (profile mode)",
+            "name": "spacepay (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "banksys (release mode)",
+            "name": "spacepay (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

@@ -1,6 +1,6 @@
 {
-    "name": "banksys",
-    "short_name": "banksys",
+    "name": "spacepay",
+    "short_name": "spacepay",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

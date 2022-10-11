@@ -1,4 +1,4 @@
-import 'package:banksys/models/card.dart';
+import 'package:spacepay/models/card.dart';
 
 abstract class AccountType {
   static const savings = "Poupança";

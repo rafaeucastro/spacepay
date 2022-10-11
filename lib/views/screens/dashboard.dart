@@ -1,10 +1,10 @@
 // ignore_for_file: unused_local_variable
 
-import 'package:banksys/models/card.dart';
-import 'package:banksys/models/cards_requests.dart';
-import 'package:banksys/models/user.dart';
-import 'package:banksys/views/components.dart/bank_card.dart';
-import 'package:banksys/views/components.dart/client_info_bottom_sheet.dart';
+import 'package:spacepay/models/card.dart';
+import 'package:spacepay/models/cards_requests.dart';
+import 'package:spacepay/models/user.dart';
+import 'package:spacepay/views/components.dart/bank_card.dart';
+import 'package:spacepay/views/components.dart/client_info_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

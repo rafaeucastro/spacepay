@@ -1,8 +1,8 @@
-import 'package:banksys/models/card.dart';
-import 'package:banksys/models/cards.dart';
-import 'package:banksys/util/validators.dart';
-import 'package:banksys/views/components.dart/bank_card.dart';
-import 'package:banksys/views/components.dart/card_flag_dropdown.dart';
+import 'package:spacepay/models/card.dart';
+import 'package:spacepay/models/cards.dart';
+import 'package:spacepay/util/validators.dart';
+import 'package:spacepay/views/components.dart/bank_card.dart';
+import 'package:spacepay/views/components.dart/card_flag_dropdown.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

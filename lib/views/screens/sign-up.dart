@@ -1,5 +1,5 @@
-import 'package:banksys/util/validators.dart';
-import 'package:banksys/views/components.dart/account_type_dropdown.dart';
+import 'package:spacepay/util/validators.dart';
+import 'package:spacepay/views/components.dart/account_type_dropdown.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

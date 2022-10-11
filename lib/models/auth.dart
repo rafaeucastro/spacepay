@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:banksys/exceptions/auth_exception.dart';
-import 'package:banksys/exceptions/user_not_found_expection.dart';
-import 'package:banksys/models/constants.dart';
-import 'package:banksys/models/user.dart';
-import 'package:banksys/models/users.dart';
+import 'package:spacepay/exceptions/auth_exception.dart';
+import 'package:spacepay/exceptions/user_not_found_expection.dart';
+import 'package:spacepay/models/constants.dart';
+import 'package:spacepay/models/user.dart';
+import 'package:spacepay/models/users.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 

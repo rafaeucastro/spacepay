@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:banksys/models/auth.dart';
-import 'package:banksys/models/card.dart';
-import 'package:banksys/models/constants.dart';
-import 'package:banksys/models/user.dart';
+import 'package:spacepay/models/auth.dart';
+import 'package:spacepay/models/card.dart';
+import 'package:spacepay/models/constants.dart';
+import 'package:spacepay/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

@@ -1,7 +1,7 @@
-import 'package:banksys/models/card.dart';
-import 'package:banksys/models/cards.dart';
-import 'package:banksys/views/components.dart/card_type_dropdown.dart';
-import 'package:banksys/views/components.dart/personalized_dropdown.dart';
+import 'package:spacepay/models/card.dart';
+import 'package:spacepay/models/cards.dart';
+import 'package:spacepay/views/components.dart/card_type_dropdown.dart';
+import 'package:spacepay/views/components.dart/personalized_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

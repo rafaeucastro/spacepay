@@ -1,4 +1,4 @@
-import 'package:banksys/models/card.dart';
+import 'package:spacepay/models/card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

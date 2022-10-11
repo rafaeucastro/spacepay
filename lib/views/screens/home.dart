@@ -1,8 +1,8 @@
-import 'package:banksys/models/auth.dart';
-import 'package:banksys/models/card.dart';
-import 'package:banksys/util/routes.dart';
-import 'package:banksys/views/components.dart/card_info_bottom_sheet.dart';
-import 'package:banksys/views/components.dart/new_card_form.dart';
+import 'package:spacepay/models/auth.dart';
+import 'package:spacepay/models/card.dart';
+import 'package:spacepay/util/routes.dart';
+import 'package:spacepay/views/components.dart/card_info_bottom_sheet.dart';
+import 'package:spacepay/views/components.dart/new_card_form.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

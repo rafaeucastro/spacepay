@@ -1,8 +1,8 @@
-import 'package:banksys/exceptions/auth_exception.dart';
-import 'package:banksys/exceptions/user_not_found_expection.dart';
-import 'package:banksys/models/auth.dart';
-import 'package:banksys/models/user.dart';
-import 'package:banksys/util/routes.dart';
+import 'package:spacepay/exceptions/auth_exception.dart';
+import 'package:spacepay/exceptions/user_not_found_expection.dart';
+import 'package:spacepay/models/auth.dart';
+import 'package:spacepay/models/user.dart';
+import 'package:spacepay/util/routes.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

@@ -1,4 +1,4 @@
-import 'package:banksys/models/user.dart';
+import 'package:spacepay/models/user.dart';
 import 'package:flutter/material.dart';
 
 class ClientInfo extends StatelessWidget {

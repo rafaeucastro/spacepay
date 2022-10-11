@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:banksys/models/constants.dart';
-import 'package:banksys/models/user.dart';
+import 'package:spacepay/models/constants.dart';
+import 'package:spacepay/models/user.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
