@@ -63,22 +63,22 @@ class BankCardRequests with ChangeNotifier {
           "${Constants.baseUrl}/admins/$id/requests/registeredCards.json"),
     );
 
-    if (response2.body == 'null') return;
+    if (response2.body != 'null') {
+      final Map<String, dynamic> data2 = jsonDecode(response2.body);
 
-    final Map<String, dynamic> data2 = jsonDecode(response2.body);
+      data2.forEach((cvc, request) {
+        final cardRequest = BankCard(
+          cardholderName: request[CardAttributes.cardholderName],
+          expiryDate: request[CardAttributes.expiryDate],
+          flag: request[CardAttributes.flag],
+          number: request[CardAttributes.number],
+          cvc: request[CardAttributes.cvc],
+          databaseID: request[CardAttributes.databaseID],
+        );
 
-    data2.forEach((cvc, request) {
-      final cardRequest = BankCard(
-        cardholderName: request[CardAttributes.cardholderName],
-        expiryDate: request[CardAttributes.expiryDate],
-        flag: request[CardAttributes.flag],
-        number: request[CardAttributes.number],
-        cvc: request[CardAttributes.cvc],
-        databaseID: request[CardAttributes.databaseID],
-      );
-
-      _registeredCardRequests.add(cardRequest);
-    });
+        _registeredCardRequests.add(cardRequest);
+      });
+    }
 
     notifyListeners();
   }
