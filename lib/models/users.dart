@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:spacepay/models/constants.dart';
 import 'package:spacepay/models/user.dart';
@@ -14,8 +15,11 @@ class Users with ChangeNotifier {
   List<Client> _clientList = [];
   // ignore: prefer_final_fields
   List<Admin> _adminList = [];
+  Client? _loggedClient;
 
-  // List<Client> get clients => [..._clientList];
+  Users(this._loggedClient, this._clientList);
+
+  List<Client> get getClients => [..._clientList];
   // List<Admin> get admins => [..._adminList];
 
   Future<void> loadData() async {
@@ -53,6 +57,7 @@ class Users with ChangeNotifier {
         phone: int.parse(userData[UserAttributes.phone] ?? '0'),
         cpf: userData[UserAttributes.cpf].toString(),
         databaseID: userID,
+        profilePicture: File(userData['profilePicture'] ?? ""),
       );
       _clientList.add(newClient);
     });
@@ -125,5 +130,19 @@ class Users with ChangeNotifier {
     );
 
     _adminList.add(newAdmin);
+  }
+
+  void setUserProfilePicture(File profilePicture) async {
+    final user =
+        _clientList.firstWhere((element) => _loggedClient!.cpf == element.cpf);
+
+    user.profilePicture = profilePicture;
+
+    final response = await http.patch(
+      Uri.parse('${Constants.baseUrl}/clients/${user.databaseID}.json'),
+      body: jsonEncode({
+        'profilePicture': profilePicture.path,
+      }),
+    );
   }
 }

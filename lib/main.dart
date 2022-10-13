@@ -35,8 +35,14 @@ class SpacePay extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => Auth(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => Users(),
+        ChangeNotifierProxyProvider<Auth, Users>(
+          create: (context) => Users(null, []),
+          update: (context, auth, previous) {
+            return Users(
+              auth.client,
+              previous!.getClients,
+            );
+          },
         ),
         ChangeNotifierProvider(
           create: (context) => Cards(),
@@ -47,16 +53,17 @@ class SpacePay extends StatelessWidget {
       ],
       child: MaterialApp(
         theme: theme.copyWith(
+          canvasColor: Colors.transparent,
           inputDecorationTheme: const InputDecorationTheme().copyWith(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(5),
             ),
             contentPadding: const EdgeInsets.all(10),
             focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: primary),
+              borderSide: BorderSide(color: secondary),
             ),
             labelStyle: const TextStyle(
-              color: primary,
+              color: secondary,
             ),
           ),
           colorScheme: theme.colorScheme.copyWith(
@@ -100,7 +107,7 @@ class SpacePay extends StatelessWidget {
             contentTextStyle: theme.textTheme.button,
           ),
           iconTheme: const IconThemeData().copyWith(
-            color: primary,
+            color: secondary,
           ),
           checkboxTheme: const CheckboxThemeData().copyWith(
             fillColor: MaterialStateProperty.all(primary),

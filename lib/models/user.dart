@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:path_provider/path_provider.dart';
 import 'package:spacepay/models/card.dart';
 
 abstract class AccountType {
@@ -27,6 +30,7 @@ abstract class User {
   final String fullName;
   String address;
   String password;
+  File? profilePicture;
 
   User({
     required this.cpf,
@@ -34,6 +38,7 @@ abstract class User {
     required this.address,
     required this.password,
     this.databaseID,
+    this.profilePicture,
   });
 }
 
@@ -58,12 +63,14 @@ class Client extends User {
     required String address,
     required String password,
     final String? databaseID,
+    File? profilePicture,
   }) : super(
           cpf: cpf,
           fullName: fullname,
           address: address,
           password: password,
           databaseID: databaseID,
+          profilePicture: profilePicture,
         );
 
   void addCreatedCard(BankCard card) {
@@ -72,6 +79,11 @@ class Client extends User {
 
   void addExistingCard(BankCard card) {
     _existingCards.add(card);
+  }
+
+  void loadUserProfilePicture() async {
+    final appDir = await getApplicationDocumentsDirectory();
+    appDir.list();
   }
 }
 

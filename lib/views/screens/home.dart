@@ -1,15 +1,20 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
+
 import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/models/card.dart';
+import 'package:spacepay/models/users.dart';
 import 'package:spacepay/util/routes.dart';
 import 'package:spacepay/views/components.dart/card_info_bottom_sheet.dart';
 import 'package:spacepay/views/components.dart/new_card_form.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../models/cards.dart';
+import '../components.dart/user_photo_dialog.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -54,68 +59,41 @@ class _HomeState extends State<Home> {
     setState(() {
       _storedImage = File(imageFile.path);
     });
+
+    final appDir = await getApplicationDocumentsDirectory();
+
+    final String filename = path.basename(_storedImage!.path);
+    final savedImage = await _storedImage!.copy('${appDir.path}/$filename');
+
+    _saveImage(savedImage);
+  }
+
+  void _saveImage(File profilePicture) {
+    Provider.of<Users>(context, listen: false)
+        .setUserProfilePicture(profilePicture);
   }
 
   void _showUserOptionsDialog(Size size, ThemeData theme) {
     final auth = Provider.of<Auth>(context, listen: false);
 
-    showGeneralDialog(
+    showDialog(
       context: context,
-      pageBuilder: (context, animation, secondaryAnimation) {
-        return Dialog(
-          backgroundColor: theme.colorScheme.primary,
-          child: Container(
-            height: size.height * 0.4,
-            padding: const EdgeInsets.only(bottom: 20),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: Icon(Icons.clear,
-                          color: theme.colorScheme.onSecondary),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(right: 15),
-                      child: Text('SpacePay'),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 150,
-                  width: 150,
-                  child: _storedImage != null
-                      ? Image.file(
-                          _storedImage!,
-                          fit: BoxFit.cover,
-                          height: double.infinity,
-                        )
-                      : Icon(
-                          Icons.person,
-                          color: theme.colorScheme.onPrimary,
-                        ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    auth.client?.fullName ?? "Sem nome",
-                    style: theme.textTheme.titleMedium,
-                  ),
-                ),
-                Expanded(child: SizedBox()),
-                Text(
-                  "Excluir conta definitivamente",
-                  style: theme.textTheme.titleMedium,
-                ),
-              ],
-            ),
-          ),
-        );
+      builder: (context) {
+        return UserPhotoDialog(storedImage: _storedImage, auth: auth);
       },
     );
+  }
+
+  void _logout() {
+    Provider.of<Auth>(context, listen: false).logout();
+    Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
+  }
+
+  void _loadProfilePicture(BuildContext context) {
+    final loggedClient = Provider.of<Auth>(context, listen: false).client;
+    if (loggedClient!.profilePicture!.path.isEmpty) return;
+
+    _storedImage = File(loggedClient.profilePicture!.path);
   }
 
   @override
@@ -124,6 +102,8 @@ class _HomeState extends State<Home> {
     Provider.of<Cards>(context, listen: false)
         .loadCardList(context)
         .then((value) => _isLoading = false);
+
+    _loadProfilePicture(context);
   }
 
   @override
@@ -132,8 +112,7 @@ class _HomeState extends State<Home> {
     final size = MediaQuery.of(context).size;
     final registeredCards = Provider.of<Cards>(context).userRegisteredCards;
     final createdCards = Provider.of<Cards>(context).userCreatedCards;
-    final auth = Provider.of<Auth>(context, listen: false);
-    final navigator = Navigator.of(context);
+    final loggedClient = Provider.of<Auth>(context, listen: false).client;
 
     return Scaffold(
       appBar: AppBar(
@@ -141,11 +120,10 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.transparent,
         leading: IconButton(
           icon: _storedImage != null
-              ? Image.file(
-                  _storedImage!,
-                  fit: BoxFit.cover,
-                  height: double.infinity,
-                  width: double.infinity,
+              ? CircleAvatar(
+                  backgroundImage: FileImage(
+                    _storedImage!,
+                  ),
                 )
               : Icon(
                   Icons.person,
@@ -159,11 +137,11 @@ class _HomeState extends State<Home> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              auth.client?.fullName ?? "Sem nome",
+              loggedClient?.fullName ?? "Sem nome",
               style: theme.textTheme.titleMedium,
             ),
             Text(
-              auth.client?.email ?? "Sem e-mail",
+              loggedClient?.email ?? "Sem e-mail",
               style: theme.textTheme.subtitle2,
             ),
           ],
@@ -182,25 +160,20 @@ class _HomeState extends State<Home> {
                   child: const Text("Alterar foto do perfil"),
                 ),
                 PopupMenuItem<Text>(
+                  onTap: _logout,
                   child: const Text("Sair"),
-                  onTap: () {
-                    navigator.pushReplacementNamed(AppRoutes.LOGIN);
-                    auth.logout();
-                  },
                 ),
               ];
             },
           ),
           IconButton(
-            onPressed: () {
-              Provider.of<Auth>(context, listen: false).logout();
-              Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
-            },
+            onPressed: _logout,
             icon: const Icon(Icons.exit_to_app),
           ),
         ],
       ),
       backgroundColor: theme.colorScheme.background,
+      //TODO: usar consumer e future builder
       body: RefreshIndicator(
         onRefresh: () => Provider.of<Cards>(context, listen: false)
             .loadCardList(context)
@@ -218,12 +191,14 @@ class _HomeState extends State<Home> {
                         onTap: () {
                           _showModal();
                         },
+                        borderRadius: BorderRadius.circular(10),
+                        splashColor: theme.colorScheme.secondary,
                         child: Container(
-                          alignment: Alignment.center,
                           margin: const EdgeInsets.symmetric(
-                            vertical: 5,
                             horizontal: 10,
+                            vertical: 5,
                           ),
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: theme.colorScheme.primary,
@@ -247,12 +222,14 @@ class _HomeState extends State<Home> {
                           Navigator.of(context)
                               .pushNamed(AppRoutes.ADD_EXISTING_CARD);
                         },
+                        borderRadius: BorderRadius.circular(10),
+                        splashColor: theme.colorScheme.secondary,
                         child: Container(
-                          alignment: Alignment.center,
                           margin: const EdgeInsets.symmetric(
-                            vertical: 5,
                             horizontal: 10,
+                            vertical: 5,
                           ),
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: theme.colorScheme.primary,
@@ -366,11 +343,9 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      floatingActionButton: IconButton(
-        icon: Icon(Icons.add_card, size: size.width * 0.1),
-        onPressed: () {
-          _showModal();
-        },
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showModal,
+        child: Icon(Icons.add_card, size: size.width * 0.1),
       ),
     );
   }
