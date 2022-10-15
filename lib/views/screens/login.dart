@@ -25,7 +25,7 @@ class _LoginState extends State<Login> {
   // ignore: prefer_final_fields
   Map<String, String> _authData = {Auth.password: '', UserAttributes.cpf: ''};
 
-  void _authenticate() async {
+  Future<void> _authenticate() async {
     final auth = Provider.of<Auth>(context, listen: false);
 
     try {
@@ -51,19 +51,16 @@ class _LoginState extends State<Login> {
 
     _formKey.currentState?.save();
 
-    _authenticate();
     final auth = Provider.of<Auth>(context, listen: false);
 
-    if (auth.isClientAuth) {
-      Navigator.of(context).pushReplacementNamed(AppRoutes.HOME);
-    }
+    _authenticate().then((value) {
+      if (auth.isClientAuth) {
+        Navigator.of(context).pushReplacementNamed(AppRoutes.HOME);
+      }
 
-    if (auth.isAdminAuthenticated) {
-      Navigator.of(context).pushReplacementNamed(AppRoutes.DASHBOARD);
-    }
-
-    setState(() {
-      _isLoading = false;
+      if (auth.isAdminAuthenticated) {
+        Navigator.of(context).pushReplacementNamed(AppRoutes.DASHBOARD);
+      }
     });
   }
 
@@ -149,7 +146,7 @@ class _LoginState extends State<Login> {
                       Padding(
                         padding: const EdgeInsets.only(top: 25),
                         child: TextFormField(
-                          initialValue: "Admin",
+                          initialValue: "Rafael123\$",
                           obscuringCharacter: '*',
                           obscureText: _showPassword,
                           decoration: InputDecoration(

@@ -17,14 +17,11 @@ abstract class AuthMode {
 class Auth with ChangeNotifier {
   static const email = "email";
   static const password = "password";
-  bool? _isADM = false;
-  Client? _client;
+  bool _isADM = false;
   Admin? _admin;
+  Client? _client;
   String? _token;
-  String? _email;
   String? _userId;
-  DateTime? _expiryDate;
-  // Timer? _logoutTimer;
 
   Client? get client {
     if (isClientAuth) {
@@ -41,7 +38,7 @@ class Auth with ChangeNotifier {
   }
 
   bool get isADM {
-    return _isADM ?? false;
+    return _isADM;
   }
 
   bool get isAdminAuthenticated {
@@ -49,16 +46,11 @@ class Auth with ChangeNotifier {
   }
 
   bool get isClientAuth {
-    final isValid = _expiryDate?.isAfter(DateTime.now()) ?? false;
-    return _token != null && isValid && !_isADM!;
+    return _token != null && _userId != null && !_isADM;
   }
 
   String? get token {
     return isClientAuth ? _token : null;
-  }
-
-  String? get eMail {
-    return isClientAuth ? _email : null;
   }
 
   String? get userId {
@@ -70,9 +62,7 @@ class Auth with ChangeNotifier {
     _client = null;
     _admin = null;
     _token = null;
-    _email = null;
     _userId = null;
-    _expiryDate = null;
 
     notifyListeners();
   }
@@ -111,7 +101,9 @@ class Auth with ChangeNotifier {
           ? _userId = admin.databaseID
           : throw AuthException('INVALID_PASSWORD');
       _admin = admin;
-    } else {
+    }
+
+    if (!isADM) {
       try {
         client = Users.clients.firstWhere((client) => client.cpf == cpf);
       } on Exception {
@@ -130,15 +122,13 @@ class Auth with ChangeNotifier {
       );
 
       final body = jsonDecode(response.body);
+
       if (body['error'] != null) {
         throw AuthException(body['error']['errors'][0]['message']);
       } else {
-        _email = body['email'];
+        //_email = body['email'];
         _userId = body['localId'];
         _token = body['idToken'];
-        _expiryDate = DateTime.now().add(
-          Duration(seconds: int.parse(body['expiresIn'])),
-        );
       }
 
       _client = client;

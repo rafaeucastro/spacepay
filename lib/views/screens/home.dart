@@ -2,9 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
-import 'package:image_picker/image_picker.dart';
 
 import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/models/card.dart';
@@ -156,6 +153,7 @@ class _HomeState extends State<Home> {
             .loadCardList(context)
             .then((value) => _isLoading = false),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 9.0),
@@ -233,12 +231,16 @@ class _HomeState extends State<Home> {
             ),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Padding(
-                    padding:
-                        EdgeInsets.only(left: 15.0, bottom: 10.0, top: 15.0),
-                    child: Text(CardType.createdCards),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, bottom: 10.0, top: 15.0),
+                    child: Row(
+                      children: const [
+                        Text(CardType.createdCards),
+                      ],
+                    ),
                   ),
                   _isLoading
                       ? const CircularProgressIndicator()
@@ -252,11 +254,7 @@ class _HomeState extends State<Home> {
                               return ListTile(
                                 leading: const Icon(Icons.credit_card),
                                 title: Text(card.cardholderName),
-                                subtitle: Text(
-                                  card.isApproved
-                                      ? "**** ${card.numberLastDigits}"
-                                      : "**** ****",
-                                ),
+                                subtitle: Text("**** ${card.numberLastDigits}"),
                                 trailing: Text(
                                   card.status,
                                   style: TextStyle(
