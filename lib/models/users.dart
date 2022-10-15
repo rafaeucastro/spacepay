@@ -1,12 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:spacepay/models/constants.dart';
-import 'package:spacepay/models/user.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
 import 'auth.dart';
+
+import 'package:spacepay/models/constants.dart';
+import 'package:spacepay/models/user.dart';
 
 class Users with ChangeNotifier {
   static late final List<Client> clients;
@@ -15,7 +19,7 @@ class Users with ChangeNotifier {
   List<Client> _clientList = [];
   // ignore: prefer_final_fields
   List<Admin> _adminList = [];
-  Client? _loggedClient;
+  final Client? _loggedClient;
 
   Users(this._loggedClient, this._clientList);
 
@@ -132,17 +136,63 @@ class Users with ChangeNotifier {
     _adminList.add(newAdmin);
   }
 
-  void setUserProfilePicture(File profilePicture) async {
+  Future<File?> _takePicture() async {
+    final ImagePicker picker = ImagePicker();
+    XFile? imageFile = await picker.pickImage(
+      source: ImageSource.camera,
+      maxHeight: 300,
+      maxWidth: 300,
+    );
+
+    if (imageFile == null) return null;
+
+    File storedImage;
+
+    storedImage = File(imageFile.path);
+
+    //get app directory
+    final appDir = await getApplicationDocumentsDirectory();
+    //get only the file's name
+    final String fileExtension = path.extension(storedImage.path);
+
+    return storedImage.copy('${appDir.path}/profilePicture$fileExtension');
+  }
+
+  Future<File?> setUserProfilePicture() async {
+    final profilePicture = await _takePicture();
+
+    //if the user don't take the picture
+    if (profilePicture == null) return null;
+
     final user =
         _clientList.firstWhere((element) => _loggedClient!.cpf == element.cpf);
 
+    //define the picture for the current user
+    if (user.profilePicture != null) {
+      await user.profilePicture!.exists()
+          ? user.profilePicture!.delete()
+          : null;
+    }
     user.profilePicture = profilePicture;
 
+    //TODO: tratar a resposta
     final response = await http.patch(
       Uri.parse('${Constants.baseUrl}/clients/${user.databaseID}.json'),
       body: jsonEncode({
         'profilePicture': profilePicture.path,
       }),
     );
+
+    // print(response.statusCode);
+    // print(response.body);
+
+    return profilePicture;
+  }
+
+  Future<File?> loadProfilePicture() async {
+    final fileExists = await _loggedClient!.profilePicture!.exists();
+    if (!fileExists) return null;
+
+    return File(_loggedClient!.profilePicture!.path);
   }
 }

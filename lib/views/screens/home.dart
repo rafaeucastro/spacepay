@@ -45,32 +45,11 @@ class _HomeState extends State<Home> {
     );
   }
 
-  //TODO: salvar a imagem no firebase
   void _takePicture() async {
-    final ImagePicker _picker = ImagePicker();
-    XFile? imageFile = await _picker.pickImage(
-      source: ImageSource.camera,
-      maxHeight: 300,
-      maxWidth: 300,
-    );
+    _storedImage = await Provider.of<Users>(context, listen: false)
+        .setUserProfilePicture();
 
-    if (imageFile == null) return;
-
-    setState(() {
-      _storedImage = File(imageFile.path);
-    });
-
-    final appDir = await getApplicationDocumentsDirectory();
-
-    final String filename = path.basename(_storedImage!.path);
-    final savedImage = await _storedImage!.copy('${appDir.path}/$filename');
-
-    _saveImage(savedImage);
-  }
-
-  void _saveImage(File profilePicture) {
-    Provider.of<Users>(context, listen: false)
-        .setUserProfilePicture(profilePicture);
+    if (_storedImage == null) return;
   }
 
   void _showUserOptionsDialog(Size size, ThemeData theme) {
@@ -89,11 +68,9 @@ class _HomeState extends State<Home> {
     Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
   }
 
-  void _loadProfilePicture(BuildContext context) {
-    final loggedClient = Provider.of<Auth>(context, listen: false).client;
-    if (loggedClient!.profilePicture!.path.isEmpty) return;
-
-    _storedImage = File(loggedClient.profilePicture!.path);
+  void _loadProfilePicture() async {
+    _storedImage =
+        await Provider.of<Users>(context, listen: false).loadProfilePicture();
   }
 
   @override
@@ -103,7 +80,7 @@ class _HomeState extends State<Home> {
         .loadCardList(context)
         .then((value) => _isLoading = false);
 
-    _loadProfilePicture(context);
+    _loadProfilePicture();
   }
 
   @override

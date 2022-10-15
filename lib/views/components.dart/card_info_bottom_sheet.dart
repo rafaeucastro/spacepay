@@ -46,7 +46,7 @@ class CardInfo extends StatelessWidget {
                         Provider.of<Cards>(context, listen: false)
                             .removeCard(card, type, context);
                       },
-                      icon: const Icon(Icons.delete)),
+                      icon: Icon(Icons.delete, color: theme.primary)),
                 ],
               ),
             ],
