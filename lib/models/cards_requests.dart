@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:spacepay/models/constants.dart';
+import 'package:spacepay/util/constants.dart';
 import 'package:spacepay/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

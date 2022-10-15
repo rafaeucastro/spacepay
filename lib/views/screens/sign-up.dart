@@ -15,9 +15,6 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  bool _isADM = false;
-  final List<String> upperTextList = ["Sou ADM", "Sou cliente"];
-  String upperText = "Sou ADM";
   final _formKey = GlobalKey<FormState>();
   bool _formIsValid = false;
   final Map<String, String> _formData = {};
@@ -30,9 +27,7 @@ class _SignUpState extends State<SignUp> {
     _formKey.currentState?.save();
 
     final provider = Provider.of<Users>(context, listen: false);
-    _isADM
-        ? provider.addAdmin(clientData: _formData)
-        : provider.addClient(clientData: _formData);
+    provider.addClient(clientData: _formData);
 
     Navigator.of(context).pop();
   }
@@ -43,25 +38,28 @@ class _SignUpState extends State<SignUp> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: theme.colorScheme.background,
+      appBar: AppBar(
+        backgroundColor: theme.colorScheme.background,
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _isADM = !_isADM;
-                      _isADM
-                          ? upperText = upperTextList[1]
-                          : upperText = upperTextList[0];
-
-                      _passwordController.clear();
-                      _formKey.currentState?.reset();
-                    });
-                  },
-                  child: Text(upperText)),
+              Container(
+                height: 100,
+                width: double.infinity,
+                alignment: Alignment.center,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Inscreva-se",
+                  style: TextStyle(
+                    color: theme.colorScheme.onPrimary,
+                    fontSize: 46,
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Form(
@@ -81,20 +79,19 @@ class _SignUpState extends State<SignUp> {
                           validator: Validator.mandatoryFieldValidator,
                         ),
                       ),
-                      if (!_isADM)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: 'E-mail',
-                            ),
-                            textInputAction: TextInputAction.next,
-                            onSaved: (newValue) {
-                              _formData['email'] = newValue ?? "";
-                            },
-                            validator: Validator.emailValidator,
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'E-mail',
                           ),
+                          textInputAction: TextInputAction.next,
+                          onSaved: (newValue) {
+                            _formData['email'] = newValue ?? "";
+                          },
+                          validator: Validator.emailValidator,
                         ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: TextFormField(
@@ -113,39 +110,24 @@ class _SignUpState extends State<SignUp> {
                           },
                         ),
                       ),
-                      if (!_isADM)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: TextFormField(
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              TelefoneInputFormatter(),
-                            ],
-                            decoration: const InputDecoration(
-                              labelText: 'Telefone',
-                            ),
-                            textInputAction: TextInputAction.next,
-                            keyboardType: TextInputType.number,
-                            validator: Validator.mandatoryFieldValidator,
-                            onSaved: (newValue) {
-                              _formData['phone'] = newValue ?? "";
-                            },
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: TextFormField(
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            TelefoneInputFormatter(),
+                          ],
+                          decoration: const InputDecoration(
+                            labelText: 'Telefone',
                           ),
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.number,
+                          validator: Validator.mandatoryFieldValidator,
+                          onSaved: (newValue) {
+                            _formData['phone'] = newValue ?? "";
+                          },
                         ),
-                      if (_isADM)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: 'Estado',
-                            ),
-                            textInputAction: TextInputAction.next,
-                            validator: Validator.mandatoryFieldValidator,
-                            onSaved: (newValue) {
-                              _formData['state'] = newValue ?? "";
-                            },
-                          ),
-                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: TextFormField(
@@ -190,11 +172,10 @@ class _SignUpState extends State<SignUp> {
                           },
                         ),
                       ),
-                      if (!_isADM)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: AccountTypeDropDown(formData: _formData),
-                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: AccountTypeDropDown(formData: _formData),
+                      ),
                     ],
                   ),
                 ),

@@ -4,6 +4,7 @@ import 'package:spacepay/models/card.dart';
 import 'package:spacepay/models/cards_requests.dart';
 import 'package:spacepay/models/user.dart';
 import 'package:spacepay/views/components.dart/bank_card.dart';
+import 'package:spacepay/views/components.dart/card_info_bottom_sheet.dart';
 import 'package:spacepay/views/components.dart/client_info_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,13 @@ class _DashBoardState extends State<DashBoard> {
       builder: (context) {
         return ClientInfo(client, context);
       },
+    );
+  }
+
+  void _showCardInfo(BankCard card, String type) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => CardInfo(card, context, type),
     );
   }
 
@@ -104,15 +112,25 @@ class _DashBoardState extends State<DashBoard> {
         alignment: Alignment.center,
         child: Column(
           children: [
-            Text("Clientes"),
+            const Text("Clientes"),
             Expanded(
               child: ListView.builder(
                 itemCount: Users.clients.length,
                 itemBuilder: (context, index) {
                   final user = Users.clients.elementAt(index);
+                  print(user.profilePicture == null);
 
                   return ListTile(
-                    leading: const Icon(Icons.credit_card),
+                    leading: user.profilePicture != null
+                        ? CircleAvatar(
+                            backgroundImage: FileImage(
+                              user.profilePicture!,
+                            ),
+                          )
+                        : Icon(
+                            Icons.person,
+                            color: theme.colorScheme.onPrimary,
+                          ),
                     title: Text(user.fullName),
                     subtitle: Text(user.email),
                     onTap: () => _clientInfo(user),
@@ -200,6 +218,8 @@ class _DashBoardState extends State<DashBoard> {
                               trailing: const Icon(Icons.credit_card),
                               title: Text(card.cardholderName),
                               subtitle: Text(card.number),
+                              onTap: () =>
+                                  _showCardInfo(card, CardType.registeredCards),
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,

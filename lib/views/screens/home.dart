@@ -47,6 +47,7 @@ class _HomeState extends State<Home> {
         .setUserProfilePicture();
 
     if (_storedImage == null) return;
+    setState(() {});
   }
 
   void _showUserOptionsDialog(Size size, ThemeData theme) {
@@ -65,7 +66,7 @@ class _HomeState extends State<Home> {
     Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
   }
 
-  void _loadProfilePicture() async {
+  Future<void> _loadProfilePicture() async {
     _storedImage =
         await Provider.of<Users>(context, listen: false).loadProfilePicture();
   }
@@ -87,6 +88,7 @@ class _HomeState extends State<Home> {
     final registeredCards = Provider.of<Cards>(context).userRegisteredCards;
     final createdCards = Provider.of<Cards>(context).userCreatedCards;
     final loggedClient = Provider.of<Auth>(context, listen: false).client;
+    //print(_storedImage!.path);
 
     return Scaffold(
       appBar: AppBar(

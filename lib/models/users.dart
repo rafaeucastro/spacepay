@@ -9,7 +9,7 @@ import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
 import 'auth.dart';
 
-import 'package:spacepay/models/constants.dart';
+import 'package:spacepay/util/constants.dart';
 import 'package:spacepay/models/user.dart';
 
 class Users with ChangeNotifier {
@@ -61,7 +61,9 @@ class Users with ChangeNotifier {
         phone: int.parse(userData[UserAttributes.phone] ?? '0'),
         cpf: userData[UserAttributes.cpf].toString(),
         databaseID: userID,
-        profilePicture: File(userData['profilePicture'] ?? ""),
+        profilePicture: userData['profilePicture'] == null
+            ? null
+            : File(userData['profilePicture']),
       );
       _clientList.add(newClient);
     });
@@ -173,6 +175,7 @@ class Users with ChangeNotifier {
           ? user.profilePicture!.delete()
           : null;
     }
+
     user.profilePicture = profilePicture;
 
     //TODO: tratar a resposta
@@ -190,6 +193,8 @@ class Users with ChangeNotifier {
   }
 
   Future<File?> loadProfilePicture() async {
+    if (_loggedClient!.profilePicture == null) return null;
+
     final fileExists = await _loggedClient!.profilePicture!.exists();
     if (!fileExists) return null;
 

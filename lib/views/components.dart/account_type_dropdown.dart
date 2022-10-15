@@ -18,12 +18,18 @@ class _AccountTypeDropDownState extends State<AccountTypeDropDown> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return DropdownButtonFormField(
+      dropdownColor: colorScheme.primary,
       value: dropdownValue,
       items: AccountType.accountTypes.map((type) {
         return DropdownMenuItem(
           value: type,
-          child: Text(type),
+          child: Text(
+            type,
+            style: TextStyle(color: colorScheme.secondary),
+          ),
         );
       }).toList(),
       onSaved: (newValue) {

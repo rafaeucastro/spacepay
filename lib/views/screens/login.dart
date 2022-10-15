@@ -36,6 +36,10 @@ class _LoginState extends State<Login> {
     } on AuthException catch (error) {
       _showErrorDialog(error.toString());
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void _submit() {

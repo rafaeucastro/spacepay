@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/models/card.dart';
-import 'package:spacepay/models/constants.dart';
+import 'package:spacepay/util/constants.dart';
 import 'package:spacepay/models/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

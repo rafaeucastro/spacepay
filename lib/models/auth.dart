@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:spacepay/exceptions/auth_exception.dart';
 import 'package:spacepay/exceptions/user_not_found_expection.dart';
-import 'package:spacepay/models/constants.dart';
+import 'package:spacepay/util/constants.dart';
 import 'package:spacepay/models/user.dart';
 import 'package:spacepay/models/users.dart';
 import 'package:flutter/material.dart';
