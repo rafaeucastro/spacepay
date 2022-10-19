@@ -47,12 +47,12 @@ class _NewCardFormState extends State<NewCardForm> {
     final cards = Provider.of<Cards>(context);
 
     return Container(
-      height: size.height * 0.34 + _bottomKeyboardMargin,
+      height: size.height * 0.34 + MediaQuery.of(context).viewInsets.bottom,
       padding: EdgeInsets.only(
         left: 10,
         right: 10,
         top: 10,
-        bottom: _bottomKeyboardMargin,
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.only(
@@ -106,14 +106,8 @@ class _NewCardFormState extends State<NewCardForm> {
                 labelText: 'Nome completo do titular',
               ),
               textInputAction: TextInputAction.next,
-              onTap: () => setState(() {
-                _bottomKeyboardMargin = mediaQuery.viewInsets.bottom;
-              }),
               onChanged: (value) {
                 _name = value;
-                setState(() {
-                  _bottomKeyboardMargin = mediaQuery.viewInsets.bottom;
-                });
               },
             ),
             ElevatedButton(
