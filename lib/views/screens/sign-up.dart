@@ -104,7 +104,7 @@ class _SignUpState extends State<SignUp> {
                           ),
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.number,
-                          validator: Validator.mandatoryFieldValidator,
+                          validator: Validator.cpf,
                           onSaved: (newValue) {
                             _formData['cpf'] = newValue ?? "";
                           },

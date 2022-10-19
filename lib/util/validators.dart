@@ -1,3 +1,5 @@
+import 'package:brasil_fields/brasil_fields.dart';
+
 class Validator {
   static String? Function(String?)? mandatoryFieldValidator = _mandatoryField;
   static String? Function(String?)? emailValidator = _email;
@@ -6,10 +8,23 @@ class Validator {
   static String? Function(String?)? cardExpiryDate = _cardExpiryDate;
   static String? Function(String?)? cardCVC = _cardCVC;
   static String? Function(String?)? sixDigitCode = _sixDigitCode;
+  static String? Function(String?)? cpf = _cpf;
+
+  static String? _cpf(String? userInput) {
+    String cpf = userInput ?? "";
+
+    if (cpf.isEmpty) return "Campo obrigatório!";
+
+    if (UtilBrasilFields.isCPFValido(cpf)) {
+      return null;
+    } else {
+      return "CPF Inválido!";
+    }
+  }
 
   static String? _mandatoryField(String? userInput) {
-    String email = userInput ?? "";
-    if (email.isEmpty) {
+    String text = userInput ?? "";
+    if (text.isEmpty) {
       return "Campo obrigatório!";
     }
     return null;
