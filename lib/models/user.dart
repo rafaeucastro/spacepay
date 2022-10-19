@@ -81,9 +81,18 @@ class Client extends User {
     _existingCards.add(card);
   }
 
-  void loadUserProfilePicture() async {
-    final appDir = await getApplicationDocumentsDirectory();
-    appDir.list();
+  bool get hasProfilePicture {
+    return profilePicture != null;
+  }
+
+  void setProfilePicture(File newProfilePicture) async {
+    if (hasProfilePicture) {
+      if (await profilePicture!.exists()) {
+        await profilePicture!.delete();
+      }
+    }
+
+    profilePicture = newProfilePicture;
   }
 }
 

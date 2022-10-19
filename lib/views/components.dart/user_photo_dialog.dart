@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,19 +6,13 @@ import '../../models/auth.dart';
 class UserPhotoDialog extends StatelessWidget {
   const UserPhotoDialog({
     Key? key,
-    required File? storedImage,
-    required this.auth,
-  })  : _storedImage = storedImage,
-        super(key: key);
-
-  final File? _storedImage;
-  final Auth auth;
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final auth = Provider.of<Auth>(context, listen: false);
+    final client = Provider.of<Auth>(context, listen: false).client!;
 
     return Dialog(
       backgroundColor: theme.colorScheme.primary,
@@ -46,9 +38,9 @@ class UserPhotoDialog extends StatelessWidget {
             SizedBox(
               height: 150,
               width: 150,
-              child: _storedImage != null
+              child: client.profilePicture != null
                   ? Image.file(
-                      _storedImage!,
+                      client.profilePicture!,
                       fit: BoxFit.cover,
                       height: double.infinity,
                     )
@@ -60,7 +52,7 @@ class UserPhotoDialog extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
-                auth.client?.fullName ?? "Sem nome",
+                client.fullName,
                 style: theme.textTheme.titleMedium,
               ),
             ),

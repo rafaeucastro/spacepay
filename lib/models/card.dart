@@ -103,7 +103,6 @@ class BankCard {
   final String expiryDate;
   final int cvc;
   final String flag;
-  //TODO remove databaseID
   String? databaseID;
   String status;
   String flagImage = CardFlag.eloImage;

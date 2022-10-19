@@ -61,9 +61,6 @@ class Users with ChangeNotifier {
         phone: int.parse(userData[UserAttributes.phone] ?? '0'),
         cpf: userData[UserAttributes.cpf].toString(),
         databaseID: userID,
-        profilePicture: userData['profilePicture'] == null
-            ? null
-            : File(userData['profilePicture']),
       );
       _clientList.add(newClient);
     });
@@ -148,56 +145,43 @@ class Users with ChangeNotifier {
 
     if (imageFile == null) return null;
 
-    File storedImage;
-
-    storedImage = File(imageFile.path);
-
-    //get app directory
-    final appDir = await getApplicationDocumentsDirectory();
-    //get only the file's name
-    final String fileExtension = path.extension(storedImage.path);
-
-    return storedImage.copy('${appDir.path}/profilePicture$fileExtension');
+    return File(imageFile.path);
   }
 
   Future<File?> setUserProfilePicture() async {
-    final profilePicture = await _takePicture();
+    final storedImage = await _takePicture();
 
     //if the user don't take the picture
-    if (profilePicture == null) return null;
+    if (storedImage == null) return null;
 
+    //get only the file's name
+    final String fileExtension = path.extension(storedImage.path);
+    final appDir = await getApplicationDocumentsDirectory();
+
+    //find the client
     final user =
         _clientList.firstWhere((element) => _loggedClient!.cpf == element.cpf);
 
-    //define the picture for the current user
-    if (user.profilePicture != null) {
-      await user.profilePicture!.exists()
-          ? user.profilePicture!.delete()
-          : null;
-    }
+    //save the picture locally
+    final newProfilePicture = await storedImage
+        .copy('${appDir.path}/profile_picture-${user.cpf}$fileExtension');
 
-    user.profilePicture = profilePicture;
+    user.setProfilePicture(newProfilePicture);
 
-    //TODO: tratar a resposta
-    final response = await http.patch(
-      Uri.parse('${Constants.baseUrl}/clients/${user.databaseID}.json'),
-      body: jsonEncode({
-        'profilePicture': profilePicture.path,
-      }),
-    );
-
-    // print(response.statusCode);
-    // print(response.body);
-
-    return profilePicture;
+    return newProfilePicture;
   }
 
   Future<File?> loadProfilePicture() async {
-    if (_loggedClient!.profilePicture == null) return null;
+    final appDir = await getApplicationDocumentsDirectory();
 
-    final fileExists = await _loggedClient!.profilePicture!.exists();
-    if (!fileExists) return null;
+    final profilePicture =
+        File('${appDir.path}/profile_picture-${_loggedClient!.cpf}.jpg');
 
-    return File(_loggedClient!.profilePicture!.path);
+    if (await profilePicture.exists()) {
+      _loggedClient!.profilePicture = profilePicture;
+      return profilePicture;
+    }
+
+    return null;
   }
 }

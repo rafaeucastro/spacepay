@@ -23,7 +23,6 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // ignore: prefer_final_fields
   bool _isLoading = true;
-  File? _storedImage;
 
   void _showCardInfo(BankCard card, String type) {
     showModalBottomSheet(
@@ -43,20 +42,19 @@ class _HomeState extends State<Home> {
   }
 
   void _takePicture() async {
-    _storedImage = await Provider.of<Users>(context, listen: false)
+    final File? photo = await Provider.of<Users>(context, listen: false)
         .setUserProfilePicture();
 
-    if (_storedImage == null) return;
+    if (photo == null) return;
+
     setState(() {});
   }
 
   void _showUserOptionsDialog(Size size, ThemeData theme) {
-    final auth = Provider.of<Auth>(context, listen: false);
-
     showDialog(
       context: context,
       builder: (context) {
-        return UserPhotoDialog(storedImage: _storedImage, auth: auth);
+        return const UserPhotoDialog();
       },
     );
   }
@@ -66,11 +64,6 @@ class _HomeState extends State<Home> {
     Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
   }
 
-  Future<void> _loadProfilePicture() async {
-    _storedImage =
-        await Provider.of<Users>(context, listen: false).loadProfilePicture();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -78,7 +71,9 @@ class _HomeState extends State<Home> {
         .loadCardList(context)
         .then((value) => _isLoading = false);
 
-    _loadProfilePicture();
+    Provider.of<Users>(context, listen: false)
+        .loadProfilePicture()
+        .then((value) {});
   }
 
   @override
@@ -88,17 +83,17 @@ class _HomeState extends State<Home> {
     final registeredCards = Provider.of<Cards>(context).userRegisteredCards;
     final createdCards = Provider.of<Cards>(context).userCreatedCards;
     final loggedClient = Provider.of<Auth>(context, listen: false).client;
-    //print(_storedImage!.path);
+    final profilePicture = loggedClient!.profilePicture;
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: _storedImage != null
+          icon: profilePicture != null
               ? CircleAvatar(
                   backgroundImage: FileImage(
-                    _storedImage!,
+                    profilePicture,
                   ),
                 )
               : Icon(
@@ -113,11 +108,11 @@ class _HomeState extends State<Home> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              loggedClient?.fullName ?? "Sem nome",
+              loggedClient.fullName,
               style: theme.textTheme.titleMedium,
             ),
             Text(
-              loggedClient?.email ?? "Sem e-mail",
+              loggedClient.email,
               style: theme.textTheme.subtitle2,
             ),
           ],
