@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "294143480979",
+    "firebase_url": "https://spacepay-b6a8c-default-rtdb.firebaseio.com",
+    "project_id": "spacepay-b6a8c",
+    "storage_bucket": "spacepay-b6a8c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294143480979:android:ffc7b834a3a12156372966",
+        "android_client_info": {
+          "package_name": "com.gdppi.spacepay"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "294143480979-kaqn90rhtfj8gghlj3llao4tviuea865.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc9sdONTaeWTAacRoy6keSCGNqIi7Mg1w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "294143480979-kaqn90rhtfj8gghlj3llao4tviuea865.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

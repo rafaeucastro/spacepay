@@ -7,6 +7,7 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:spacepay/views/screens/reset_password.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -200,8 +201,10 @@ class _LoginState extends State<Login> {
                             ],
                           ),
                           TextButton(
-                            //TODO
-                            onPressed: () {},
+                            onPressed: () =>
+                                Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => const ResetPassword(),
+                            )),
                             child: Text(
                               "Esqueceu a senha?",
                               style: theme.textTheme.button,

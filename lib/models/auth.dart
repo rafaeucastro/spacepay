@@ -14,7 +14,7 @@ abstract class AuthMode {
   static const signUp = "signUp";
 }
 
-class Auth with ChangeNotifier {
+class Auth extends Constants with ChangeNotifier {
   static const email = "email";
   static const password = "password";
   bool _isADM = false;
@@ -22,6 +22,7 @@ class Auth with ChangeNotifier {
   Client? _client;
   String? _token;
   String? _userId;
+  Map<String, String> clientLoginData = {}; //04/11/2022
 
   Client? get client {
     if (isClientAuth) {
@@ -79,6 +80,17 @@ class Auth with ChangeNotifier {
 
     if (response.body.isEmpty) {
       throw AuthException("Erro");
+    }
+  }
+
+  //04/11/2022
+  Future<void> loadClientLoginData() async {
+    final response =
+        await http.get(Uri.parse('${Constants.baseUrl}/clientLoginData.json)'));
+
+    if (response.body != 'null') {
+      Map<String, dynamic> data = jsonDecode(response.body);
+      print(data);
     }
   }
 

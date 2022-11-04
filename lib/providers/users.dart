@@ -89,6 +89,22 @@ class Users with ChangeNotifier {
     notifyListeners();
   }
 
+  // 04/11/2022
+  Future<void> _sendClientLoginData(
+      String cpf, String email, String clientID) async {
+    final response = await http.patch(
+      Uri.parse('${Constants.baseUrl}/clientLoginData/$clientID.json'),
+      body: jsonEncode({
+        UserAttributes.cpf: cpf,
+        UserAttributes.email: email,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      print(' >>> FALHA AO ENVIAR DADOS DE LOGIN DO CLIENTE AO FIREBASE');
+    }
+  }
+
   void addClient({required Map<String, String> clientData}) async {
     String phone =
         UtilBrasilFields.removeCaracteres(clientData[UserAttributes.phone]!);
@@ -126,6 +142,8 @@ class Users with ChangeNotifier {
     );
 
     _clientList.add(newClient);
+
+    _sendClientLoginData(cpf, email, id);
   }
 
   Future<void> addAdmin({required Map<String, String> clientData}) async {

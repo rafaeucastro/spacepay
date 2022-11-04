@@ -1,6 +1,7 @@
 import 'package:spacepay/providers/cards_requests.dart';
 import 'package:spacepay/views/screens/card_requests.dart';
-import 'package:spacepay/views/screens/requests.dart';
+// ignore: depend_on_referenced_packages
+import 'package:firebase_core/firebase_core.dart';
 import 'package:spacepay/views/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,12 @@ import 'package:spacepay/views/screens/sign-up.dart';
 import 'package:spacepay/util/routes.dart';
 import 'package:spacepay/views/screens/user_profile.dart';
 
-void main() => runApp(const SpacePay());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  runApp(const SpacePay());
+}
 
 class SpacePay extends StatelessWidget {
   const SpacePay({Key? key}) : super(key: key);
