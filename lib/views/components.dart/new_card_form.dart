@@ -1,5 +1,5 @@
 import 'package:spacepay/models/card.dart';
-import 'package:spacepay/models/cards.dart';
+import 'package:spacepay/providers/cards.dart';
 import 'package:spacepay/views/components.dart/card_type_dropdown.dart';
 import 'package:spacepay/views/components.dart/personalized_dropdown.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,6 @@ class _NewCardFormState extends State<NewCardForm> {
   String _yearDropdownValue = "2";
   final _validYears = ["2", "4", "5", "6"];
   String _name = "";
-  double _bottomKeyboardMargin = 0;
 
   void _showDialog() {
     showDialog(
@@ -43,7 +42,6 @@ class _NewCardFormState extends State<NewCardForm> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final mediaQuery = MediaQuery.of(context);
     final cards = Provider.of<Cards>(context);
 
     return Container(

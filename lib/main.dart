@@ -1,11 +1,13 @@
-import 'package:spacepay/models/cards_requests.dart';
+import 'package:spacepay/providers/cards_requests.dart';
+import 'package:spacepay/views/screens/card_requests.dart';
+import 'package:spacepay/views/screens/requests.dart';
 import 'package:spacepay/views/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:spacepay/models/auth.dart';
-import 'package:spacepay/models/cards.dart';
-import 'package:spacepay/models/users.dart';
+import 'package:spacepay/providers/cards.dart';
+import 'package:spacepay/providers/users.dart';
 
 import 'package:spacepay/views/screens/add_existing_card.dart';
 import 'package:spacepay/views/screens/home.dart';
@@ -13,6 +15,7 @@ import 'package:spacepay/views/screens/login.dart';
 import 'package:spacepay/views/screens/sign-up.dart';
 
 import 'package:spacepay/util/routes.dart';
+import 'package:spacepay/views/screens/user_profile.dart';
 
 void main() => runApp(const SpacePay());
 
@@ -118,9 +121,11 @@ class SpacePay extends StatelessWidget {
         routes: {
           AppRoutes.LOGIN: (context) => const Login(),
           AppRoutes.SIGN_UP: (context) => const SignUp(),
-          AppRoutes.HOME: (context) => const Home(),
-          AppRoutes.ADD_EXISTING_CARD: (context) => const AddExistingCard(),
           AppRoutes.DASHBOARD: (context) => const DashBoard(),
+          AppRoutes.HOME: (context) => const Home(),
+          AppRoutes.USER_PROFILE: (context) => const UserProfile(),
+          AppRoutes.ADD_EXISTING_CARD: (context) => const AddExistingCard(),
+          AppRoutes.CARD_REQUESTS: (context) => const MyCardRequests(),
         },
       ),
     );
@@ -142,9 +147,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToHome() async {
-    await Provider.of<Users>(context, listen: false).loadData();
-    await Provider.of<BankCardRequests>(context, listen: false)
-        .loadRequests(context);
+    await Provider.of<Users>(context, listen: false).loadClients();
+    await Provider.of<Users>(context, listen: false).loadAdmins();
 
     Future.delayed(const Duration(seconds: 0)).then((value) {
       Provider.of<Auth>(context, listen: false).isClientAuth

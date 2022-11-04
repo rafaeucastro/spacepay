@@ -56,7 +56,7 @@ class UserPhotoDialog extends StatelessWidget {
                 style: theme.textTheme.titleMedium,
               ),
             ),
-            Expanded(child: SizedBox()),
+            const Expanded(child: SizedBox()),
             Text(
               "Excluir conta definitivamente",
               style: theme.textTheme.titleMedium,

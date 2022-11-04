@@ -7,7 +7,6 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' as path;
 import 'package:http/http.dart' as http;
-import 'auth.dart';
 
 import 'package:spacepay/util/constants.dart';
 import 'package:spacepay/models/user.dart';
@@ -26,10 +25,39 @@ class Users with ChangeNotifier {
   List<Client> get getClients => [..._clientList];
   // List<Admin> get admins => [..._adminList];
 
-  Future<void> loadData() async {
+  Future<void> loadAdmins() async {
+    _adminList.clear();
+
+    late final http.Response responseAdm;
+
+    try {
+      responseAdm = await http.get(Uri.parse(Constants.adminsUrl));
+    } on http.ClientException {
+      return;
+    } catch (error) {
+      return;
+    }
+    final Map<String, dynamic> dataAdm = jsonDecode(responseAdm.body) ?? {};
+
+    dataAdm.forEach((userID, admData) {
+      _adminList.add(Admin(
+        state: admData[UserAttributes.state],
+        cpf: admData[UserAttributes.cpf],
+        fullname: admData[UserAttributes.fullName],
+        address: admData[UserAttributes.address],
+        password: admData[UserAttributes.password],
+        databaseID: userID,
+      ));
+    });
+
+    admins = _adminList;
+
+    notifyListeners();
+  }
+
+  Future<void> loadClients() async {
     _clientList.clear();
     late final http.Response response;
-    late final http.Response responseAdm;
 
     //TODO: lidar com as exceções. ex: caso o usuário não tenha net
     try {
@@ -40,16 +68,7 @@ class Users with ChangeNotifier {
       return;
     }
 
-    try {
-      responseAdm = await http.get(Uri.parse(Constants.adminsUrl));
-    } on http.ClientException {
-      return;
-    } catch (error) {
-      return;
-    }
-
     final Map<String, dynamic> data = jsonDecode(response.body);
-    final Map<String, dynamic> dataAdm = jsonDecode(responseAdm.body) ?? {};
 
     data.forEach((userID, userData) {
       final newClient = Client(
@@ -65,19 +84,9 @@ class Users with ChangeNotifier {
       _clientList.add(newClient);
     });
 
-    dataAdm.forEach((userID, admData) {
-      _adminList.add(Admin(
-        state: admData[UserAttributes.state],
-        cpf: admData[UserAttributes.cpf],
-        fullname: admData[UserAttributes.fullName],
-        address: admData[UserAttributes.address],
-        password: admData[UserAttributes.password],
-        databaseID: userID,
-      ));
-    });
-
     clients = _clientList;
-    admins = _adminList;
+
+    notifyListeners();
   }
 
   void addClient({required Map<String, String> clientData}) async {
@@ -117,8 +126,6 @@ class Users with ChangeNotifier {
     );
 
     _clientList.add(newClient);
-    //TOOD: verificar se deu certo se inscrever
-    await Auth.signUp(email, password);
   }
 
   Future<void> addAdmin({required Map<String, String> clientData}) async {

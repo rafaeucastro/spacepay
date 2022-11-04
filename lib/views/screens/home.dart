@@ -5,12 +5,12 @@ import 'package:provider/provider.dart';
 
 import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/models/card.dart';
-import 'package:spacepay/models/users.dart';
+import 'package:spacepay/providers/users.dart';
 import 'package:spacepay/util/routes.dart';
 import 'package:spacepay/views/components.dart/card_info_bottom_sheet.dart';
 import 'package:spacepay/views/components.dart/new_card_form.dart';
 
-import '../../models/cards.dart';
+import '../../providers/cards.dart';
 import '../components.dart/user_photo_dialog.dart';
 
 class Home extends StatefulWidget {
@@ -67,9 +67,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    Provider.of<Cards>(context, listen: false)
-        .loadCardList(context)
-        .then((value) => _isLoading = false);
+    //Provider.of<Cards>(context, listen: false).loadMyCards(context);
 
     Provider.of<Users>(context, listen: false)
         .loadProfilePicture()
@@ -80,10 +78,8 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final registeredCards = Provider.of<Cards>(context).userRegisteredCards;
-    final createdCards = Provider.of<Cards>(context).userCreatedCards;
-    final loggedClient = Provider.of<Auth>(context, listen: false).client;
-    final profilePicture = loggedClient!.profilePicture;
+    final client = Provider.of<Auth>(context, listen: false).client;
+    final profilePicture = client!.profilePicture;
 
     return Scaffold(
       appBar: AppBar(
@@ -104,39 +100,23 @@ class _HomeState extends State<Home> {
             _showUserOptionsDialog(size, theme);
           },
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              loggedClient.fullName,
-              style: theme.textTheme.titleMedium,
-            ),
-            Text(
-              loggedClient.email,
-              style: theme.textTheme.subtitle2,
-            ),
-          ],
+        title: InkWell(
+          onTap: () => Navigator.of(context).pushNamed(AppRoutes.USER_PROFILE),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                client.fullName,
+                style: theme.textTheme.titleMedium,
+              ),
+              Text(
+                client.email,
+                style: theme.textTheme.subtitle2,
+              ),
+            ],
+          ),
         ),
         actions: [
-          PopupMenuButton(
-            color: theme.colorScheme.primary,
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem<Text>(
-                  child: const Text("Configurações"),
-                  onTap: () {},
-                ),
-                PopupMenuItem<Text>(
-                  onTap: _takePicture,
-                  child: const Text("Alterar foto do perfil"),
-                ),
-                PopupMenuItem<Text>(
-                  onTap: _logout,
-                  child: const Text("Sair"),
-                ),
-              ];
-            },
-          ),
           IconButton(
             onPressed: _logout,
             icon: const Icon(Icons.exit_to_app),
@@ -144,11 +124,9 @@ class _HomeState extends State<Home> {
         ],
       ),
       backgroundColor: theme.colorScheme.background,
-      //TODO: usar consumer e future builder
       body: RefreshIndicator(
-        onRefresh: () => Provider.of<Cards>(context, listen: false)
-            .loadCardList(context)
-            .then((value) => _isLoading = false),
+        onRefresh: () =>
+            Provider.of<Cards>(context, listen: false).loadMyCards(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -160,9 +138,8 @@ class _HomeState extends State<Home> {
                   children: [
                     Expanded(
                       child: InkWell(
-                        onTap: () {
-                          _showModal();
-                        },
+                        onTap: () => Navigator.of(context)
+                            .pushNamed(AppRoutes.CARD_REQUESTS),
                         borderRadius: BorderRadius.circular(10),
                         splashColor: theme.colorScheme.secondary,
                         child: Container(
@@ -179,10 +156,10 @@ class _HomeState extends State<Home> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                Icons.add_card,
+                                Icons.list,
                                 color: theme.colorScheme.onPrimary,
                               ),
-                              const Text("Solicitar cartão"),
+                              const Text("Minhas solicitações"),
                             ],
                           ),
                         ),
@@ -235,80 +212,37 @@ class _HomeState extends State<Home> {
                         left: 15.0, bottom: 10.0, top: 15.0),
                     child: Row(
                       children: const [
-                        Text(CardType.createdCards),
+                        Text('Meus cartões'),
                       ],
                     ),
                   ),
-                  _isLoading
-                      ? const CircularProgressIndicator()
-                      : Expanded(
-                          child: ListView.builder(
-                            itemCount: createdCards.length,
-                            itemBuilder: (context, index) {
-                              final BankCard card =
-                                  createdCards.elementAt(index);
+                  FutureBuilder(
+                    future: Provider.of<Cards>(context, listen: false)
+                        .loadMyCards(context),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      return Expanded(
+                        child: ListView.builder(
+                          itemCount: client.myCards.length,
+                          itemBuilder: (context, index) {
+                            final BankCard card =
+                                client.myCards.elementAt(index);
 
-                              return ListTile(
-                                leading: const Icon(Icons.credit_card),
-                                title: Text(card.cardholderName),
-                                subtitle: Text("**** ${card.numberLastDigits}"),
-                                trailing: Text(
-                                  card.status,
-                                  style: TextStyle(
-                                    color: card.isApproved
-                                        ? theme.colorScheme.secondary
-                                        : theme.colorScheme.primary,
-                                  ),
-                                ),
-                                onTap: () =>
-                                    _showCardInfo(card, CardType.createdCards),
-                              );
-                            },
-                          ),
+                            return ListTile(
+                              key: ObjectKey(card.databaseID),
+                              leading: const Icon(Icons.credit_card),
+                              title: Text(card.cardholderName),
+                              subtitle: Text("**** ${card.numberLastDigits}"),
+                              onTap: () =>
+                                  _showCardInfo(card, CardType.createdCards),
+                            );
+                          },
                         ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, bottom: 10.0, top: 15.0),
-                    child: Row(
-                      children: const [
-                        Text(CardType.registeredCards),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                  _isLoading
-                      ? const CircularProgressIndicator()
-                      : Expanded(
-                          child: ListView.builder(
-                            itemCount: registeredCards.length,
-                            itemBuilder: (context, index) {
-                              final BankCard card =
-                                  registeredCards.elementAt(index);
-
-                              return ListTile(
-                                leading: const Icon(Icons.credit_card),
-                                title: Text(card.cardholderName),
-                                subtitle: Text("**** ${card.numberLastDigits}"),
-                                trailing: Text(
-                                  card.status,
-                                  style: TextStyle(
-                                    color: card.isApproved
-                                        ? theme.colorScheme.secondary
-                                        : theme.colorScheme.primary,
-                                  ),
-                                ),
-                                onTap: () => _showCardInfo(
-                                    card, CardType.registeredCards),
-                              );
-                            },
-                          ),
-                        ),
                 ],
               ),
             ),

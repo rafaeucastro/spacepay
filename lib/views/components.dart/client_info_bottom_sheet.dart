@@ -35,9 +35,9 @@ class ClientInfo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Nome"),
+              const Text("CPF"),
               Text(
-                client.fullName,
+                client.cpf,
                 style: TextStyle(
                   color: Colors.blue.shade600,
                 ),
@@ -47,9 +47,9 @@ class ClientInfo extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("CPF"),
+              const Text("Endereço"),
               Text(
-                client.cpf,
+                client.address,
                 style: TextStyle(
                   color: Colors.blue.shade600,
                 ),

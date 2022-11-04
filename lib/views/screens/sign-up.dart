@@ -1,3 +1,5 @@
+import 'package:spacepay/models/exceptions/auth_exception.dart';
+import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/util/validators.dart';
 import 'package:spacepay/views/components.dart/account_type_dropdown.dart';
 import 'package:brasil_fields/brasil_fields.dart';
@@ -5,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/users.dart';
+import '../../providers/users.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -20,6 +22,23 @@ class _SignUpState extends State<SignUp> {
   final Map<String, String> _formData = {};
   final _passwordController = TextEditingController();
 
+  void _showErrorDialog(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+      ),
+    );
+  }
+
+  void _signUp() async {
+    try {
+      Auth.signUp(_formData['email']!, _formData['password']!);
+    } on AuthException catch (error) {
+      _showErrorDialog(error.toString());
+      return;
+    }
+  }
+
   void _submit() {
     _formIsValid = _formKey.currentState?.validate() ?? false;
     if (!_formIsValid) return;
@@ -27,6 +46,9 @@ class _SignUpState extends State<SignUp> {
     _formKey.currentState?.save();
 
     final provider = Provider.of<Users>(context, listen: false);
+
+    _signUp();
+
     provider.addClient(clientData: _formData);
 
     Navigator.of(context).pop();

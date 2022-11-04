@@ -1,15 +1,14 @@
 // ignore_for_file: unused_local_variable
-
-import 'package:spacepay/models/card.dart';
-import 'package:spacepay/models/cards_requests.dart';
-import 'package:spacepay/models/user.dart';
-import 'package:spacepay/views/components.dart/bank_card.dart';
-import 'package:spacepay/views/components.dart/card_info_bottom_sheet.dart';
-import 'package:spacepay/views/components.dart/client_info_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:animations/animations.dart';
 
-import '../../models/users.dart';
+import 'package:spacepay/providers/cards_requests.dart';
+import 'package:spacepay/views/components.dart/dashboard_drawer.dart';
+import 'package:spacepay/views/screens/clients_list.dart';
+import 'package:spacepay/views/screens/requests.dart';
+
+import '../../providers/users.dart';
 import '../../util/routes.dart';
 
 class DashBoard extends StatefulWidget {
@@ -20,61 +19,11 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> {
-  final _key = GlobalKey();
-  double _bottomKeyboardMargin = 0;
-
-  void _clientInfo(Client client) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return ClientInfo(client, context);
-      },
-    );
-  }
-
-  void _showCardInfo(BankCard card, String type) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => CardInfo(card, context, type),
-    );
-  }
-
-  _showModalJustification() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          color: Colors.blue.shade100,
-          height: 200 + _bottomKeyboardMargin,
-          child: Column(
-            children: [
-              Text("Qual o motivo??",
-                  style: TextStyle(
-                    color: Colors.blue.shade900,
-                    fontWeight: FontWeight.bold,
-                  )),
-              TextField(
-                onTap: () => setState(() {
-                  _bottomKeyboardMargin =
-                      MediaQuery.of(context).viewInsets.bottom;
-                }),
-                onChanged: (value) {
-                  setState(() {
-                    _bottomKeyboardMargin =
-                        MediaQuery.of(context).viewInsets.bottom;
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: 'Justificativa',
-                ),
-                textInputAction: TextInputAction.send,
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
+  final _tabs = const [
+    ClientsList(),
+    ClientRequests(),
+  ];
+  int _currentTabIndex = 0;
 
   @override
   void initState() {
@@ -87,15 +36,12 @@ class _DashBoardState extends State<DashBoard> {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final users = Provider.of<Users>(context);
-    final newCardRequests =
-        Provider.of<BankCardRequests>(context).newCardRequests;
-    final registeredCardRequests =
-        Provider.of<BankCardRequests>(context).registeredCardsRequests;
+    final newCardRequests = Provider.of<BankCardRequests>(context).cardRequests;
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: theme.colorScheme.background,
         title: const Center(child: Text("Dashboard")),
         actions: [
           IconButton(
@@ -106,177 +52,32 @@ class _DashBoardState extends State<DashBoard> {
           ),
         ],
       ),
+      drawer: const DashBoardDrawer(),
       backgroundColor: theme.colorScheme.background,
       body: Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
         alignment: Alignment.center,
-        child: Column(
-          children: [
-            const Text("Clientes"),
-            Expanded(
-              child: ListView.builder(
-                itemCount: Users.clients.length,
-                itemBuilder: (context, index) {
-                  final user = Users.clients.elementAt(index);
-                  print(user.profilePicture == null);
-
-                  return ListTile(
-                    leading: user.profilePicture != null
-                        ? CircleAvatar(
-                            backgroundImage: FileImage(
-                              user.profilePicture!,
-                            ),
-                          )
-                        : Icon(
-                            Icons.person,
-                            color: theme.colorScheme.onPrimary,
-                          ),
-                    title: Text(user.fullName),
-                    subtitle: Text(user.email),
-                    onTap: () => _clientInfo(user),
-                  );
-                },
-              ),
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  const Text('Solicitações'),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: newCardRequests.length,
-                      itemBuilder: (context, index) {
-                        final request = newCardRequests.elementAt(index);
-
-                        return Column(
-                          children: [
-                            ListTile(
-                              trailing: const Icon(Icons.credit_card),
-                              title: Text(request.name),
-                              subtitle: Text(request.cardType),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                InkWell(
-                                  highlightColor: Colors.black,
-                                  splashColor: Colors.black,
-                                  onTap: () {
-                                    Provider.of<BankCardRequests>(context,
-                                            listen: false)
-                                        .confirmNewCardRequest(
-                                            request, context);
-                                  },
-                                  child: Row(children: const [
-                                    Icon(Icons.check),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 10),
-                                      child: Text(
-                                        "Aprovar",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ]),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 20),
-                                  child: InkWell(
-                                    highlightColor: Colors.black,
-                                    splashColor: Colors.black,
-                                    onTap: () {
-                                      _showModalJustification();
-                                    },
-                                    child: Row(children: const [
-                                      Icon(Icons.clear),
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 10),
-                                        child: Text(
-                                          "Recusar",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                    ]),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: registeredCardRequests.length,
-                      itemBuilder: (context, index) {
-                        final card = registeredCardRequests.elementAt(index);
-
-                        return Column(
-                          children: [
-                            ListTile(
-                              trailing: const Icon(Icons.credit_card),
-                              title: Text(card.cardholderName),
-                              subtitle: Text(card.number),
-                              onTap: () =>
-                                  _showCardInfo(card, CardType.registeredCards),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                InkWell(
-                                  highlightColor: Colors.black,
-                                  splashColor: Colors.black,
-                                  onTap: () {
-                                    Provider.of<BankCardRequests>(context,
-                                            listen: false)
-                                        .confirmRegisteredCardRequest(
-                                            card, context);
-                                  },
-                                  child: Row(children: const [
-                                    Icon(Icons.check),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 10),
-                                      child: Text(
-                                        "Aprovar",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ]),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 20),
-                                  child: InkWell(
-                                    highlightColor: Colors.black,
-                                    splashColor: Colors.black,
-                                    onTap: () {
-                                      _showModalJustification();
-                                    },
-                                    child: Row(children: const [
-                                      Icon(Icons.clear),
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 10),
-                                        child: Text(
-                                          "Recusar",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                    ]),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+        child: PageTransitionSwitcher(
+          duration: const Duration(seconds: 1),
+          transitionBuilder: (child, primaryAnimation, secondaryAnimation) =>
+              FadeThroughTransition(
+            animation: primaryAnimation,
+            secondaryAnimation: secondaryAnimation,
+            child: child,
+          ),
+          child: _tabs[_currentTabIndex],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentTabIndex,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Clientes"),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.add_card), label: "Cartões novos"),
+        ],
+        onTap: (value) => setState(() {
+          _currentTabIndex = value;
+        }),
       ),
     );
   }

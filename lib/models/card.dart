@@ -104,7 +104,6 @@ class BankCard {
   final int cvc;
   final String flag;
   String? databaseID;
-  String status;
   String flagImage = CardFlag.eloImage;
   double flagImageScale = 4.0;
 
@@ -115,17 +114,16 @@ class BankCard {
     required this.cvc,
     required this.flag,
     this.databaseID,
-    this.status = "Em análise",
   }) {
     _defineCardFlagImage();
   }
 
-  bool get isApproved {
-    if (status == "Em análise") {
-      return false;
-    }
-    return true;
-  }
+  // bool get isApproved {
+  //   if (status == "Em análise") {
+  //     return false;
+  //   }
+  //   return true;
+  // }
 
   String get numberLastDigits {
     return number.substring(number.length - 4, number.length);

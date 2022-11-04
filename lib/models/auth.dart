@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:spacepay/exceptions/auth_exception.dart';
-import 'package:spacepay/exceptions/user_not_found_expection.dart';
+import 'package:spacepay/models/exceptions/auth_exception.dart';
+import 'package:spacepay/models/exceptions/user_not_found_expection.dart';
 import 'package:spacepay/util/constants.dart';
 import 'package:spacepay/models/user.dart';
-import 'package:spacepay/models/users.dart';
+import 'package:spacepay/providers/users.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -76,9 +76,9 @@ class Auth with ChangeNotifier {
         'returnSecureToken': true,
       }),
     );
-    //TODO: verificar a resposta
+
     if (response.body.isEmpty) {
-      return;
+      throw AuthException("Erro");
     }
   }
 

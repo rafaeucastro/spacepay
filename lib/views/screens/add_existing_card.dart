@@ -1,12 +1,13 @@
-import 'package:spacepay/models/card.dart';
-import 'package:spacepay/models/cards.dart';
-import 'package:spacepay/util/validators.dart';
-import 'package:spacepay/views/components.dart/bank_card.dart';
-import 'package:spacepay/views/components.dart/card_flag_dropdown.dart';
-import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:brasil_fields/brasil_fields.dart';
+
+import 'package:spacepay/models/card.dart';
+import 'package:spacepay/providers/cards.dart';
+import 'package:spacepay/util/validators.dart';
+import 'package:spacepay/views/components.dart/bank_card.dart';
+import 'package:spacepay/views/components.dart/card_flag_dropdown.dart';
 
 class AddExistingCard extends StatefulWidget {
   const AddExistingCard({Key? key}) : super(key: key);
@@ -54,7 +55,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
     _formKey.currentState?.save();
 
     final cards = Provider.of<Cards>(context, listen: false);
-    cards.addExistingCard(_formData, context);
+    cards.addCard(_formData, context);
     _showDialog();
   }
 
@@ -68,12 +69,11 @@ class _AddExistingCardState extends State<AddExistingCard> {
           elevation: 10,
           backgroundColor: theme.colorScheme.primary,
           title: Text(
-            "Análise",
+            "CADASTRAR CARTÃO",
             style: theme.textTheme.titleMedium,
           ),
           content: Text(
-            "Estamos analisando os seus dados. "
-            "Em breve lhe confimaremos se a solicitação foi aceita ou não.",
+            "Seu cartão foi cadastrado com sucesso!",
             style: theme.textTheme.bodyMedium,
           ),
           actions: [

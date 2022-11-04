@@ -6,4 +6,6 @@ abstract class AppRoutes {
   static const SIGN_UP = '/sign-up';
   static const ADD_EXISTING_CARD = '/home/add_existing_card';
   static const DASHBOARD = '/dashboard';
+  static const USER_PROFILE = '/user_profiles';
+  static const CARD_REQUESTS = 'card_request';
 }

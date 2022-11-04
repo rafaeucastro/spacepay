@@ -1,5 +1,5 @@
-import 'package:spacepay/exceptions/auth_exception.dart';
-import 'package:spacepay/exceptions/user_not_found_expection.dart';
+import 'package:spacepay/models/exceptions/auth_exception.dart';
+import 'package:spacepay/models/exceptions/user_not_found_expection.dart';
 import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/models/user.dart';
 import 'package:spacepay/util/routes.dart';
@@ -86,7 +86,6 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final auth = Provider.of<Auth>(context, listen: false);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
@@ -150,7 +149,7 @@ class _LoginState extends State<Login> {
                       Padding(
                         padding: const EdgeInsets.only(top: 25),
                         child: TextFormField(
-                          initialValue: "Rafael123\$",
+                          initialValue: "Admin",
                           obscuringCharacter: '*',
                           obscureText: _showPassword,
                           decoration: InputDecoration(

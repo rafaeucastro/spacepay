@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
 import 'package:spacepay/models/card.dart';
+import 'card_request.dart';
 
 abstract class AccountType {
   static const savings = "Poupança";
@@ -19,8 +19,7 @@ abstract class UserAttributes {
   static const accountType = "accountType";
   static const state = "state";
   static const databaseID = "databaseID";
-  static const createdCards = "createdCards";
-  static const registeredCards = "registeredCards";
+  static const myCards = "myCards";
   static const cardRequests = "cardRequests";
 }
 
@@ -40,6 +39,20 @@ abstract class User {
     this.databaseID,
     this.profilePicture,
   });
+
+  bool get hasProfilePicture {
+    return profilePicture != null;
+  }
+
+  void setProfilePicture(File newProfilePicture) async {
+    if (hasProfilePicture) {
+      if (await profilePicture!.exists()) {
+        await profilePicture!.delete();
+      }
+    }
+
+    profilePicture = newProfilePicture;
+  }
 }
 
 class Client extends User {
@@ -47,12 +60,12 @@ class Client extends User {
   final String accountType;
   int phone;
   // ignore: prefer_final_fields
-  List<BankCard> _createdCards = [];
+  List<BankCard> _myCards = [];
   // ignore: prefer_final_fields
-  List<BankCard> _existingCards = [];
+  List<CardRequest> _cardRequests = [];
 
-  List<BankCard> get createdCards => [..._createdCards];
-  List<BankCard> get existingCards => [..._existingCards];
+  List<BankCard> get myCards => [..._myCards];
+  List<CardRequest> get cardRequests => [..._cardRequests];
 
   Client({
     required this.email,
@@ -73,26 +86,28 @@ class Client extends User {
           profilePicture: profilePicture,
         );
 
-  void addCreatedCard(BankCard card) {
-    _createdCards.add(card);
+  void addCard(BankCard card) {
+    _myCards.add(card);
   }
 
-  void addExistingCard(BankCard card) {
-    _existingCards.add(card);
+  void addCardRequest(CardRequest card) {
+    _cardRequests.add(card);
   }
 
-  bool get hasProfilePicture {
-    return profilePicture != null;
+  void removeCard(BankCard card) {
+    _myCards.remove(card);
   }
 
-  void setProfilePicture(File newProfilePicture) async {
-    if (hasProfilePicture) {
-      if (await profilePicture!.exists()) {
-        await profilePicture!.delete();
-      }
-    }
+  void removeRequest(CardRequest request) {
+    _cardRequests.remove(request);
+  }
 
-    profilePicture = newProfilePicture;
+  void clearMyCards() {
+    _myCards.clear();
+  }
+
+  void clearCardRequests() {
+    _cardRequests.clear();
   }
 }
 
