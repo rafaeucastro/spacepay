@@ -28,9 +28,11 @@ void main() async {
 class SpacePay extends StatelessWidget {
   const SpacePay({Key? key}) : super(key: key);
 
+  void chageTheme() {}
+
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = ThemeData.dark();
+    final darkTheme = ThemeData.dark();
     const Color primary = Color(0xFFFF5249);
     const Color onPrimary = Colors.white;
     const Color secondary = Color(0xFFFFDD78);
@@ -61,7 +63,7 @@ class SpacePay extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        theme: theme.copyWith(
+        theme: darkTheme.copyWith(
           canvasColor: Colors.transparent,
           inputDecorationTheme: const InputDecorationTheme().copyWith(
             border: OutlineInputBorder(
@@ -75,7 +77,7 @@ class SpacePay extends StatelessWidget {
               color: secondary,
             ),
           ),
-          colorScheme: theme.colorScheme.copyWith(
+          colorScheme: darkTheme.colorScheme.copyWith(
             background: background,
             primary: primary,
             onPrimary: onPrimary,
@@ -84,7 +86,7 @@ class SpacePay extends StatelessWidget {
             tertiary: tertiary,
             onTertiary: onTertiary,
           ),
-          textTheme: theme.textTheme.copyWith(
+          textTheme: darkTheme.textTheme.copyWith(
             button: const TextStyle(
               color: onTertiary,
             ),
@@ -113,7 +115,7 @@ class SpacePay extends StatelessWidget {
           )),
           snackBarTheme: const SnackBarThemeData().copyWith(
             backgroundColor: primary,
-            contentTextStyle: theme.textTheme.button,
+            contentTextStyle: darkTheme.textTheme.button,
           ),
           iconTheme: const IconThemeData().copyWith(
             color: secondary,

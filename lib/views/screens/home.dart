@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,6 +6,7 @@ import 'package:spacepay/models/card.dart';
 import 'package:spacepay/providers/users.dart';
 import 'package:spacepay/util/routes.dart';
 import 'package:spacepay/views/components.dart/card_info_bottom_sheet.dart';
+import 'package:spacepay/views/components.dart/dashboard_drawer.dart';
 import 'package:spacepay/views/components.dart/new_card_form.dart';
 
 import '../../providers/cards.dart';
@@ -41,24 +40,6 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _takePicture() async {
-    final File? photo = await Provider.of<Users>(context, listen: false)
-        .setUserProfilePicture();
-
-    if (photo == null) return;
-
-    setState(() {});
-  }
-
-  void _showUserOptionsDialog(Size size, ThemeData theme) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const UserPhotoDialog();
-      },
-    );
-  }
-
   void _logout() {
     Provider.of<Auth>(context, listen: false).logout();
     Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
@@ -67,11 +48,19 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    //Provider.of<Cards>(context, listen: false).loadMyCards(context);
+    loadData();
+  }
 
-    Provider.of<Users>(context, listen: false)
-        .loadProfilePicture()
-        .then((value) {});
+  void loadData() {
+    Provider.of<Cards>(context, listen: false)
+        .loadMyCards(context)
+        .then((value) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+
+    Provider.of<Users>(context, listen: false).loadProfilePicture();
   }
 
   @override
@@ -79,27 +68,32 @@ class _HomeState extends State<Home> {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final client = Provider.of<Auth>(context, listen: false).client;
-    final profilePicture = client!.profilePicture;
+    final profilePicture =
+        Provider.of<Users>(context).loggedClient!.profilePicture;
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: profilePicture != null
-              ? CircleAvatar(
-                  backgroundImage: FileImage(
-                    profilePicture,
-                  ),
-                )
-              : Icon(
-                  Icons.person,
-                  color: theme.colorScheme.onPrimary,
+        leading: profilePicture != null
+            ? IconButton(
+                onPressed: () => showDialog(
+                  context: context,
+                  builder: (context) {
+                    return const UserPhotoDialog();
+                  },
                 ),
-          onPressed: () {
-            _showUserOptionsDialog(size, theme);
-          },
-        ),
+                icon: Hero(
+                  tag: profilePicture,
+                  child: CircleAvatar(
+                    backgroundImage: FileImage(
+                      profilePicture,
+                    ),
+                  ),
+                ),
+              )
+            : const CircleAvatar(
+                backgroundImage: AssetImage('assets/images/app_logo2.jpg')),
         title: InkWell(
           onTap: () => Navigator.of(context).pushNamed(AppRoutes.USER_PROFILE),
           child: Column(
@@ -138,35 +132,6 @@ class _HomeState extends State<Home> {
                   children: [
                     Expanded(
                       child: InkWell(
-                        onTap: () => Navigator.of(context)
-                            .pushNamed(AppRoutes.CARD_REQUESTS),
-                        borderRadius: BorderRadius.circular(10),
-                        splashColor: theme.colorScheme.secondary,
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: theme.colorScheme.primary,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.list,
-                                color: theme.colorScheme.onPrimary,
-                              ),
-                              const Text("Minhas solicitações"),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: InkWell(
                         onTap: () {
                           Navigator.of(context)
                               .pushNamed(AppRoutes.ADD_EXISTING_CARD);
@@ -199,6 +164,35 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () => Navigator.of(context)
+                            .pushNamed(AppRoutes.CARD_REQUESTS),
+                        borderRadius: BorderRadius.circular(10),
+                        splashColor: theme.colorScheme.secondary,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: theme.colorScheme.primary,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.list,
+                                color: theme.colorScheme.onPrimary,
+                              ),
+                              const Text("Minhas solicitações"),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -216,33 +210,26 @@ class _HomeState extends State<Home> {
                       ],
                     ),
                   ),
-                  FutureBuilder(
-                    future: Provider.of<Cards>(context, listen: false)
-                        .loadMyCards(context),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      }
-                      return Expanded(
-                        child: ListView.builder(
-                          itemCount: client.myCards.length,
-                          itemBuilder: (context, index) {
-                            final BankCard card =
-                                client.myCards.elementAt(index);
+                  _isLoading
+                      ? const CircularProgressIndicator()
+                      : Expanded(
+                          child: ListView.builder(
+                            itemCount: client.myCards.length,
+                            itemBuilder: (context, index) {
+                              final BankCard card =
+                                  client.myCards.elementAt(index);
 
-                            return ListTile(
-                              key: ObjectKey(card.databaseID),
-                              leading: const Icon(Icons.credit_card),
-                              title: Text(card.cardholderName),
-                              subtitle: Text("**** ${card.numberLastDigits}"),
-                              onTap: () =>
-                                  _showCardInfo(card, CardType.createdCards),
-                            );
-                          },
+                              return ListTile(
+                                key: ObjectKey(card.databaseID),
+                                leading: const Icon(Icons.credit_card),
+                                title: Text(card.cardholderName),
+                                subtitle: Text("**** ${card.numberLastDigits}"),
+                                onTap: () =>
+                                    _showCardInfo(card, CardType.createdCards),
+                              );
+                            },
+                          ),
                         ),
-                      );
-                    },
-                  ),
                 ],
               ),
             ),

@@ -75,7 +75,6 @@ class _CardInfoState extends State<CardInfo> {
                   cardholderName: card.cardholderName,
                   number: card.number,
                   expireDate: card.expiryDate,
-                  imageScale: card.flagImageScale * 2,
                   cvc: card.cvc.toString(),
                 )
               : SizedBox(

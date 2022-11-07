@@ -32,19 +32,10 @@ class _AddExistingCardState extends State<AddExistingCard> {
   };
   final _formKey = GlobalKey<FormState>();
   bool _formIsValid = false;
-  //TODO: trocar por uma lista no tipo CardFlag
-  final List<String> _cardFlag = [
-    "Elo",
-    "Visa",
-    "HiperCard",
-    "MasterCard",
-    "AmericanExpress"
-  ];
 
   // ignore: prefer_final_fields
   String _dropdownValue = "Erro";
   String _cardFlagImage = "";
-  double _imageScale = 4.0;
 
   void _submit() {
     _formIsValid = _formKey.currentState?.validate() ?? false;
@@ -61,6 +52,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
 
   void _showDialog() {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         final theme = Theme.of(context);
@@ -93,13 +85,8 @@ class _AddExistingCardState extends State<AddExistingCard> {
   }
 
   void _switchImage(Object? object) {
-    final result = CardFlag.switchFlagImage(
-      identification: object.toString(),
-      flagImage: _cardFlagImage,
-      imageScale: _imageScale,
-    );
-    _cardFlagImage = result.keys.first;
-    _imageScale = result.values.first;
+    _cardFlagImage = BankCard.defineCardFlagImage(object.toString());
+
     setState(() {
       _formData[CardAttributes.flag] = object.toString();
     });
@@ -214,7 +201,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
                         ],
                       ),
                       CardFlagDropDown(
-                        cardFlag: _cardFlag,
+                        cardFlag: CardFlag.all,
                         dropdownValue:
                             _formData[CardAttributes.flag] ?? _dropdownValue,
                         onChanged: (object) => _switchImage(object),
@@ -234,7 +221,6 @@ class _AddExistingCardState extends State<AddExistingCard> {
                 cardholderName: _nameController.text,
                 number: _cardNumberController.text,
                 expireDate: _expiryDateController.text,
-                imageScale: _imageScale,
                 cvc: _cvcController.text,
               ),
               Padding(

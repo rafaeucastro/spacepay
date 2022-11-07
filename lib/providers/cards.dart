@@ -27,7 +27,7 @@ class Cards with ChangeNotifier {
 
     final client = Provider.of<Auth>(context, listen: false).client;
     final clientDatabaseID =
-        Provider.of<Auth>(context, listen: false).client!.databaseID;
+        Provider.of<Auth>(context, listen: false).client.databaseID;
     if (clientDatabaseID == null) return;
 
     await http.patch(
@@ -52,15 +52,15 @@ class Cards with ChangeNotifier {
       databaseID: clientDatabaseID,
     );
 
-    client!.addCard(newCard);
+    client.addCard(newCard);
     notifyListeners();
   }
 
   void sendCardForAnalysis(String name, String cardType, String validity,
       BuildContext context) async {
-    final client = Provider.of<Auth>(context, listen: false).client!;
+    final client = Provider.of<Auth>(context, listen: false).client;
     final clientDatabaseID =
-        Provider.of<Auth>(context, listen: false).client!.databaseID;
+        Provider.of<Auth>(context, listen: false).client.databaseID;
 
     final response = await http.post(
       Uri.parse(
@@ -212,13 +212,11 @@ class Cards with ChangeNotifier {
       });
     }
 
-    print('LOAD LENGTH CARDS: ${client.myCards.length}');
     notifyListeners();
   }
 
   Future<void> loadCardRequests(BuildContext context) async {
     final client = Provider.of<Auth>(context, listen: false).client;
-    if (client == null) return;
 
     client.clearCardRequests();
 

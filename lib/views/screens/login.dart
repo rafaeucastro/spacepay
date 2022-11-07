@@ -7,6 +7,7 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:spacepay/util/utils.dart';
 import 'package:spacepay/views/screens/reset_password.dart';
 
 class Login extends StatefulWidget {
@@ -22,7 +23,7 @@ class _LoginState extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   bool _formIsValid = false;
   bool _isADM = false;
-  bool _showPassword = false;
+  bool _hidePassword = true;
   // ignore: prefer_final_fields
   Map<String, String> _authData = {Auth.password: '', UserAttributes.cpf: ''};
 
@@ -30,12 +31,12 @@ class _LoginState extends State<Login> {
     final auth = Provider.of<Auth>(context, listen: false);
 
     try {
-      await auth.authenticate(
+      await auth.logIn(
           _authData[UserAttributes.cpf]!, _authData[Auth.password]!, _isADM);
     } on UserNotFoundException catch (error) {
-      _showErrorDialog(error.toString());
+      Utils.showSnackBar(error.toString(), context);
     } on AuthException catch (error) {
-      _showErrorDialog(error.toString());
+      Utils.showSnackBar(error.toString(), context);
     }
 
     setState(() {
@@ -67,14 +68,6 @@ class _LoginState extends State<Login> {
         Navigator.of(context).pushReplacementNamed(AppRoutes.DASHBOARD);
       }
     });
-  }
-
-  void _showErrorDialog(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-      ),
-    );
   }
 
   @override
@@ -120,7 +113,7 @@ class _LoginState extends State<Login> {
                   child: Column(
                     children: [
                       TextFormField(
-                        initialValue: "000.000.000-00",
+                        //initialValue: "000.000.000-00",
                         decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.person,
@@ -144,15 +137,13 @@ class _LoginState extends State<Login> {
                         onSaved: (cpf) {
                           _authData['cpf'] = cpf!;
                         },
-                        // onFieldSubmitted: ((value) =>
-                        //     FocusScope.of(context).requestFocus(_passwordFocus)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 25),
                         child: TextFormField(
-                          initialValue: "Admin",
+                          //initialValue: "Rafael123\$\$",
                           obscuringCharacter: '*',
-                          obscureText: _showPassword,
+                          obscureText: _hidePassword,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(
                               Icons.key,
@@ -164,7 +155,7 @@ class _LoginState extends State<Login> {
                               ),
                               onPressed: () {
                                 setState(() {
-                                  _showPassword = !_showPassword;
+                                  _hidePassword = !_hidePassword;
                                 });
                               },
                             ),
@@ -216,17 +207,13 @@ class _LoginState extends State<Login> {
                         const CircularProgressIndicator()
                       else
                         ElevatedButton(
-                          //TODO
-                          onPressed: () {
-                            _submit();
-                          },
+                          onPressed: () => _submit(),
                           style: ElevatedButton.styleFrom(
                             minimumSize: Size(
                               (size.width * .8),
                               (size.height * .05),
                             ),
                           ),
-
                           child: const Text("ENTRAR"),
                         ),
                     ],
@@ -241,7 +228,6 @@ class _LoginState extends State<Login> {
                     style: theme.textTheme.headline6,
                   ),
                   TextButton(
-                    //TODO
                     onPressed: () {
                       Navigator.of(context).pushNamed(AppRoutes.SIGN_UP);
                     },

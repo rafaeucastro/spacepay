@@ -19,16 +19,12 @@ class Auth extends Constants with ChangeNotifier {
   static const password = "password";
   bool _isADM = false;
   Admin? _admin;
-  Client? _client;
+  Client _client = Client.defaulUser;
   String? _token;
   String? _userId;
-  Map<String, String> clientLoginData = {}; //04/11/2022
 
-  Client? get client {
-    if (isClientAuth) {
-      return _client;
-    }
-    return null;
+  Client get client {
+    return _client;
   }
 
   Admin? get admin {
@@ -58,9 +54,10 @@ class Auth extends Constants with ChangeNotifier {
     return isClientAuth || isAdminAuthenticated ? _userId : null;
   }
 
+  //TODO: FAZER USUÁRIO PERMANECER LOGADO AO FECHAR O APP SEM FAZER LOGOUT
   void logout() {
     _isADM = false;
-    _client = null;
+    _client = Client.defaulUser;
     _admin = null;
     _token = null;
     _userId = null;
@@ -83,19 +80,7 @@ class Auth extends Constants with ChangeNotifier {
     }
   }
 
-  //04/11/2022
-  Future<void> loadClientLoginData() async {
-    final response =
-        await http.get(Uri.parse('${Constants.baseUrl}/clientLoginData.json)'));
-
-    if (response.body != 'null') {
-      Map<String, dynamic> data = jsonDecode(response.body);
-      print(data);
-    }
-  }
-
-  Future<void> authenticate(String cpf, String password, bool isADM) async {
-    Client? client;
+  Future<void> logIn(String cpf, String password, bool isADM) async {
     Admin? admin;
     _isADM = isADM;
 
@@ -117,7 +102,7 @@ class Auth extends Constants with ChangeNotifier {
 
     if (!isADM) {
       try {
-        client = Users.clients.firstWhere((client) => client.cpf == cpf);
+        _client = Users.clients.firstWhere((client) => client.cpf == cpf);
       } on Exception {
         return;
       } catch (error) {
@@ -142,8 +127,6 @@ class Auth extends Constants with ChangeNotifier {
         _userId = body['localId'];
         _token = body['idToken'];
       }
-
-      _client = client;
     }
 
     notifyListeners();

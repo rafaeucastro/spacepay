@@ -15,13 +15,7 @@ class _ResetPasswordState extends State<ResetPassword> {
   final _emailController = TextEditingController();
 
   void _resetPassword() async {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
-    );
+    Utils.showLoadingDialog(context);
 
     try {
       await FirebaseAuth.instance
@@ -29,7 +23,6 @@ class _ResetPasswordState extends State<ResetPassword> {
     } on FirebaseAuthException catch (error) {
       Utils.showSnackBar(AuthException.translateException(error.code), context);
       Navigator.of(context).pop();
-
       return;
     }
 

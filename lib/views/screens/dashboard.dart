@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:animations/animations.dart';
 
 import 'package:spacepay/providers/cards_requests.dart';
-import 'package:spacepay/views/components.dart/dashboard_drawer.dart';
 import 'package:spacepay/views/screens/clients_list.dart';
 import 'package:spacepay/views/screens/requests.dart';
 
@@ -52,7 +51,6 @@ class _DashBoardState extends State<DashBoard> {
           ),
         ],
       ),
-      drawer: const DashBoardDrawer(),
       backgroundColor: theme.colorScheme.background,
       body: Container(
         margin: const EdgeInsets.symmetric(vertical: 10),

@@ -18,9 +18,9 @@ class Users with ChangeNotifier {
   List<Client> _clientList = [];
   // ignore: prefer_final_fields
   List<Admin> _adminList = [];
-  final Client? _loggedClient;
+  final Client? loggedClient;
 
-  Users(this._loggedClient, this._clientList);
+  Users(this.loggedClient, this._clientList);
 
   List<Client> get getClients => [..._clientList];
   // List<Admin> get admins => [..._adminList];
@@ -183,16 +183,13 @@ class Users with ChangeNotifier {
     final String fileExtension = path.extension(storedImage.path);
     final appDir = await getApplicationDocumentsDirectory();
 
-    //find the client
-    final user =
-        _clientList.firstWhere((element) => _loggedClient!.cpf == element.cpf);
-
     //save the picture locally
-    final newProfilePicture = await storedImage
-        .copy('${appDir.path}/profile_picture-${user.cpf}$fileExtension');
+    final newProfilePicture = await storedImage.copy(
+        '${appDir.path}/profile_picture-${loggedClient!.cpf}$fileExtension');
 
-    user.setProfilePicture(newProfilePicture);
+    loggedClient!.setProfilePicture(storedImage);
 
+    notifyListeners();
     return newProfilePicture;
   }
 
@@ -200,10 +197,10 @@ class Users with ChangeNotifier {
     final appDir = await getApplicationDocumentsDirectory();
 
     final profilePicture =
-        File('${appDir.path}/profile_picture-${_loggedClient!.cpf}.jpg');
+        File('${appDir.path}/profile_picture-${loggedClient!.cpf}.jpg');
 
     if (await profilePicture.exists()) {
-      _loggedClient!.profilePicture = profilePicture;
+      loggedClient!.profilePicture = profilePicture;
       return profilePicture;
     }
 

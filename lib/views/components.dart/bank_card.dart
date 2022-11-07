@@ -8,7 +8,6 @@ class BankCardItem extends StatelessWidget {
   final String expireDate;
   final String cvc;
   final String cardFlagImage;
-  final double imageScale;
 
   const BankCardItem({
     required this.height,
@@ -17,7 +16,6 @@ class BankCardItem extends StatelessWidget {
     required this.cardholderName,
     required this.number,
     required this.expireDate,
-    required this.imageScale,
     required this.cvc,
     Key? key,
   }) : super(key: key);
@@ -96,8 +94,8 @@ class BankCardItem extends StatelessWidget {
           if (cardFlagImage.isNotEmpty)
             Positioned(
               right: 15,
-              bottom: 15,
-              child: Image.asset(cardFlagImage, scale: imageScale),
+              bottom: 5,
+              child: Image.asset(cardFlagImage, scale: 15),
             ),
         ],
       ),

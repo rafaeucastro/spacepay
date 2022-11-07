@@ -1,5 +1,6 @@
 import 'package:spacepay/models/exceptions/auth_exception.dart';
 import 'package:spacepay/models/auth.dart';
+import 'package:spacepay/util/utils.dart';
 import 'package:spacepay/util/validators.dart';
 import 'package:spacepay/views/components.dart/account_type_dropdown.dart';
 import 'package:brasil_fields/brasil_fields.dart';
@@ -22,19 +23,11 @@ class _SignUpState extends State<SignUp> {
   final Map<String, String> _formData = {};
   final _passwordController = TextEditingController();
 
-  void _showErrorDialog(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-      ),
-    );
-  }
-
   void _signUp() async {
     try {
       Auth.signUp(_formData['email']!, _formData['password']!);
     } on AuthException catch (error) {
-      _showErrorDialog(error.toString());
+      Utils.showSnackBar(error.toString(), context);
       return;
     }
   }
@@ -59,6 +52,7 @@ class _SignUpState extends State<SignUp> {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
 
+    //TODO: fazer um interface mais bonita
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
       appBar: AppBar(
@@ -203,7 +197,6 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               ElevatedButton(
-                //TODO
                 onPressed: () {
                   _submit();
                 },
@@ -220,7 +213,6 @@ class _SignUpState extends State<SignUp> {
                     style: theme.textTheme.headline6,
                   ),
                   TextButton(
-                    //TODO
                     onPressed: () {
                       Navigator.of(context).pop();
                     },

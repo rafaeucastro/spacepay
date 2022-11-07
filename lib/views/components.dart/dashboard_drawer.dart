@@ -13,16 +13,18 @@ class DashBoardDrawer extends StatelessWidget {
       child: Column(
         children: [
           AppBar(
-            title: const Text("Solicitações"),
+            title: const Text("SpacePay"),
             backgroundColor: colorScheme.onTertiary,
           ),
           ListTile(
-            title: const Text("Cartãoes Novos"),
+            title: const Text("Cadastrar Novo Cartão"),
             tileColor: colorScheme.primary,
           ),
           ListTile(
-              title: const Text("Cartões registrados"),
-              tileColor: colorScheme.primary),
+            title: const Text("Solicitações"),
+            tileColor: colorScheme.primary,
+            onTap: () {},
+          ),
         ],
       ),
     );

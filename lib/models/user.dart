@@ -44,13 +44,7 @@ abstract class User {
     return profilePicture != null;
   }
 
-  void setProfilePicture(File newProfilePicture) async {
-    if (hasProfilePicture) {
-      if (await profilePicture!.exists()) {
-        await profilePicture!.delete();
-      }
-    }
-
+  void setProfilePicture(File newProfilePicture) {
     profilePicture = newProfilePicture;
   }
 }
@@ -109,6 +103,16 @@ class Client extends User {
   void clearCardRequests() {
     _cardRequests.clear();
   }
+
+  static Client get defaulUser => Client(
+        email: "default@email.com",
+        accountType: 'Checking A',
+        phone: 0000000,
+        cpf: '999.999.999-99',
+        fullname: 'Default User',
+        address: 'Street A',
+        password: 'default',
+      );
 }
 
 class Admin extends User {

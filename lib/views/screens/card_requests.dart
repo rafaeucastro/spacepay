@@ -6,25 +6,14 @@ import 'package:spacepay/views/components.dart/new_card_info_bottom_sheet.dart';
 
 import '../../models/auth.dart';
 
-class MyCardRequests extends StatefulWidget {
+class MyCardRequests extends StatelessWidget {
   const MyCardRequests({super.key});
 
-  @override
-  State<MyCardRequests> createState() => _MyCardRequestsState();
-}
-
-class _MyCardRequestsState extends State<MyCardRequests> {
-  void _showRequestInfo(CardRequest request) {
+  void _showRequestInfo(CardRequest request, BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (context) => CardRequestInfo(request, context),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    Provider.of<Cards>(context, listen: false).loadCardRequests(context);
   }
 
   @override
@@ -37,34 +26,38 @@ class _MyCardRequestsState extends State<MyCardRequests> {
       ),
       body: SafeArea(
           child: Center(
-        child: FutureBuilder(
-          future: Provider.of<Cards>(context, listen: false)
+        child: RefreshIndicator(
+          onRefresh: () => Provider.of<Cards>(context, listen: false)
               .loadCardRequests(context),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            }
-            return Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: client!.cardRequests.length,
-                    itemBuilder: (context, index) {
-                      final request = client.cardRequests.elementAt(index);
-                      return ListTile(
-                        leading: const Icon(Icons.add_card),
-                        title: Text(request.name),
-                        subtitle: Text(
-                            "Tipo: ${request.cardType}  -  Validade: ${request.validity} anos"),
-                        trailing: Text(request.status),
-                        onTap: () => _showRequestInfo(request),
-                      );
-                    },
+          child: FutureBuilder(
+            future: Provider.of<Cards>(context, listen: false)
+                .loadCardRequests(context),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              return Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: client.cardRequests.length,
+                      itemBuilder: (context, index) {
+                        final request = client.cardRequests.elementAt(index);
+                        return ListTile(
+                          leading: const Icon(Icons.add_card),
+                          title: Text(request.name),
+                          subtitle: Text(
+                              "Tipo: ${request.cardType}  -  Validade: ${request.validity} anos"),
+                          trailing: Text(request.status),
+                          onTap: () => _showRequestInfo(request, context),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       )),
     );

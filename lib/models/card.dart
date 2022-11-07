@@ -59,41 +59,6 @@ abstract class CardFlag {
     flag.shuffle();
     return flag.first;
   }
-
-  // static CardFlag tryParse(String flag) {
-  //   if (flag == "Elo") return CardFlag.elo;
-  // }
-  static Map<String, double> switchFlagImage({
-    required String identification,
-    required String flagImage,
-    required double imageScale,
-  }) {
-    switch (identification) {
-      case CardFlag.elo:
-        flagImage = CardFlag.eloImage;
-        imageScale = 4;
-        break;
-      case CardFlag.visa:
-        flagImage = CardFlag.visaImage;
-        imageScale = 4;
-        break;
-      case CardFlag.hipercard:
-        flagImage = CardFlag.hipercardImage;
-        imageScale = 28;
-        break;
-      case CardFlag.mastercard:
-        flagImage = CardFlag.mastercardImage;
-        imageScale = 24;
-        break;
-      case CardFlag.americanExpress:
-        flagImage = CardFlag.americanExpressTextImage;
-        imageScale = 10;
-        break;
-      default:
-    }
-
-    return {flagImage: imageScale};
-  }
 }
 
 //TODO: make attributes private
@@ -105,7 +70,6 @@ class BankCard {
   final String flag;
   String? databaseID;
   String flagImage = CardFlag.eloImage;
-  double flagImageScale = 4.0;
 
   BankCard({
     required this.number,
@@ -115,7 +79,7 @@ class BankCard {
     required this.flag,
     this.databaseID,
   }) {
-    _defineCardFlagImage();
+    flagImage = defineCardFlagImage(flag);
   }
 
   // bool get isApproved {
@@ -155,29 +119,28 @@ class BankCard {
     return "$month/$year";
   }
 
-  void _defineCardFlagImage() {
-    switch (flag) {
+  static String defineCardFlagImage(String identification) {
+    String flagAsset = CardFlag.visaImage;
+
+    switch (identification) {
       case CardFlag.elo:
-        flagImage = CardFlag.eloImage;
-        flagImageScale = 4;
+        flagAsset = CardFlag.eloImage;
         break;
       case CardFlag.visa:
-        flagImage = CardFlag.visaTextImage;
-        flagImageScale = 12;
+        flagAsset = CardFlag.visaTextImage;
         break;
       case CardFlag.hipercard:
-        flagImage = CardFlag.hipercardImage;
-        flagImageScale = 30;
+        flagAsset = CardFlag.hipercardImage;
         break;
       case CardFlag.mastercard:
-        flagImage = CardFlag.mastercardImage;
-        flagImageScale = 26;
+        flagAsset = CardFlag.mastercardImage;
         break;
       case CardFlag.americanExpress:
-        flagImage = CardFlag.americanExpressImage;
-        flagImageScale = 12;
+        flagAsset = CardFlag.americanExpressImage;
         break;
       default:
     }
+
+    return flagAsset;
   }
 }
