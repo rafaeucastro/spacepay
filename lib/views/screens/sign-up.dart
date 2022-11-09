@@ -1,3 +1,4 @@
+// ignore: file_names
 import 'package:spacepay/models/exceptions/auth_exception.dart';
 import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/util/utils.dart';
@@ -22,6 +23,7 @@ class _SignUpState extends State<SignUp> {
   bool _formIsValid = false;
   final Map<String, String> _formData = {};
   final _passwordController = TextEditingController();
+  int _step = 0;
 
   void _signUp() async {
     try {
@@ -63,6 +65,14 @@ class _SignUpState extends State<SignUp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
+              SizedBox(
+                height: size.height * 0.2,
+                width: size.width * 0.75,
+                child: Image.asset(
+                  'assets/images/sign-up-form.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
               Container(
                 height: 100,
                 width: double.infinity,
@@ -73,6 +83,7 @@ class _SignUpState extends State<SignUp> {
                   style: TextStyle(
                     color: theme.colorScheme.onPrimary,
                     fontSize: 46,
+                    fontFamily: 'Eczar',
                   ),
                 ),
               ),

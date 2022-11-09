@@ -28,7 +28,7 @@ class _AccountTypeDropDownState extends State<AccountTypeDropDown> {
           value: type,
           child: Text(
             type,
-            style: TextStyle(color: colorScheme.secondary),
+            style: TextStyle(color: colorScheme.onPrimary),
           ),
         );
       }).toList(),

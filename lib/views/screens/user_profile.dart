@@ -59,9 +59,9 @@ class UserProfile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
-                child: Consumer<Auth>(
-                  builder: (context, auth, child) {
-                    final profilePicture = auth.client.profilePicture;
+                child: Consumer<Users>(
+                  builder: (context, users, child) {
+                    final profilePicture = users.loggedClient!.profilePicture;
 
                     return Column(
                       children: [
@@ -82,15 +82,31 @@ class UserProfile extends StatelessWidget {
                       ],
                     );
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
-                    child: Text(
-                      client.fullName,
-                      style: TextStyle(
-                        fontSize: textScale * 50,
-                        fontFamily: 'Eczar',
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20.0),
+                        child: Text(
+                          client.fullName,
+                          style: TextStyle(
+                            fontSize: textScale * 40,
+                            fontFamily: 'Eczar',
+                          ),
+                        ),
                       ),
-                    ),
+                      Text(
+                        client.email,
+                        style: TextStyle(
+                          fontSize: textScale * 18,
+                        ),
+                      ),
+                      Text(
+                        client.accountType,
+                        style: TextStyle(
+                          fontSize: textScale * 18,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

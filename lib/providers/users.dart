@@ -18,7 +18,7 @@ class Users with ChangeNotifier {
   List<Client> _clientList = [];
   // ignore: prefer_final_fields
   List<Admin> _adminList = [];
-  final Client? loggedClient;
+  Client? loggedClient;
 
   Users(this.loggedClient, this._clientList);
 
@@ -81,6 +81,7 @@ class Users with ChangeNotifier {
         cpf: userData[UserAttributes.cpf].toString(),
         databaseID: userID,
       );
+
       _clientList.add(newClient);
     });
 
@@ -100,9 +101,7 @@ class Users with ChangeNotifier {
       }),
     );
 
-    if (response.statusCode != 200) {
-      print(' >>> FALHA AO ENVIAR DADOS DE LOGIN DO CLIENTE AO FIREBASE');
-    }
+    if (response.statusCode != 200) {}
   }
 
   void addClient({required Map<String, String> clientData}) async {
@@ -164,8 +163,8 @@ class Users with ChangeNotifier {
     final ImagePicker picker = ImagePicker();
     XFile? imageFile = await picker.pickImage(
       source: ImageSource.camera,
-      maxHeight: 300,
-      maxWidth: 300,
+      maxHeight: 800,
+      maxWidth: 800,
     );
 
     if (imageFile == null) return null;

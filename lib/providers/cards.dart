@@ -17,6 +17,11 @@ import '../models/card_request.dart';
 class Cards with ChangeNotifier {
   List<String> _allCardNumbers = [];
   List<int> _allCVCs = [];
+  List<BankCard> _myCards = [];
+  List<CardRequest> _myRequests = [];
+
+  List<BankCard> get myCards => [..._myCards];
+  List<CardRequest> get myRequests => [..._myRequests];
 
   void addCard(Map<String, String> formData, BuildContext context) async {
     final number = formData[CardAttributes.number]!;
@@ -25,7 +30,6 @@ class Cards with ChangeNotifier {
     final expiryDate = formData[CardAttributes.expiryDate]!;
     final flag = formData[CardAttributes.flag]!;
 
-    final client = Provider.of<Auth>(context, listen: false).client;
     final clientDatabaseID =
         Provider.of<Auth>(context, listen: false).client.databaseID;
     if (clientDatabaseID == null) return;
@@ -52,7 +56,9 @@ class Cards with ChangeNotifier {
       databaseID: clientDatabaseID,
     );
 
-    client.addCard(newCard);
+    //client.addCard(newCard);
+    _myCards.add(newCard);
+
     notifyListeners();
   }
 
@@ -99,14 +105,17 @@ class Cards with ChangeNotifier {
       }),
     );
 
-    client.addCardRequest(CardRequest(
+    final newRequest = CardRequest(
       id: id,
       userID: client.databaseID!,
       cardType: cardType,
       name: name,
       validity: validity,
       status: 'Em análise',
-    ));
+    );
+
+    //client.addCardRequest(newRequest);
+    _myRequests.add(newRequest);
 
     notifyListeners();
   }
@@ -151,7 +160,6 @@ class Cards with ChangeNotifier {
 
   Future<void> removeCard(BankCard card, BuildContext context) async {
     final client = Provider.of<Auth>(context, listen: false).client;
-    if (client == null) return;
 
     final response = await http.delete(
       Uri.parse(
@@ -159,11 +167,9 @@ class Cards with ChangeNotifier {
     );
     //TOOD: retornar true para verificar se foi possível remover do firebase ou não, caso o status code for diferente de 200
     if (response.statusCode == 200) {
-      client.removeCard(card);
+      //client.removeCard(card);
+      _myCards.remove(card);
     }
-
-    // print("id: ${card.databaseID}");
-    // print("response: ${jsonDecode(response.statusCode.toString())}");
 
     notifyListeners();
   }
@@ -171,22 +177,22 @@ class Cards with ChangeNotifier {
   void removeRefusedCardRequest(
       CardRequest request, BuildContext context) async {
     final client = Provider.of<Auth>(context, listen: false).client;
-    if (client == null) return;
 
     //apagar o cartão no banco de dados do cliente
     await http.delete(Uri.parse(
         "${Constants.baseUrl}/clients/${client.databaseID}/cards/analisys/${request.id}.json"));
 
-    client.removeRequest(request);
+    //client.removeRequest(request);
+    _myRequests.remove(request);
 
     notifyListeners();
   }
 
   Future<void> loadMyCards(BuildContext context) async {
     final client = Provider.of<Auth>(context, listen: false).client;
-    if (client == null) return;
 
-    client.clearMyCards();
+    //client.clearMyCards();
+    _myCards.clear();
 
     final response = await http.get(
       Uri.parse(
@@ -207,7 +213,8 @@ class Cards with ChangeNotifier {
           databaseID: key,
         );
 
-        client.addCard(card);
+        //client.addCard(card);
+        _myCards.add(card);
         _allCardNumbers.add(cards[CardAttributes.number]);
       });
     }
@@ -218,7 +225,8 @@ class Cards with ChangeNotifier {
   Future<void> loadCardRequests(BuildContext context) async {
     final client = Provider.of<Auth>(context, listen: false).client;
 
-    client.clearCardRequests();
+    //client.clearCardRequests();
+    _myRequests.clear();
 
     final response = await http.get(
       Uri.parse(
@@ -239,7 +247,8 @@ class Cards with ChangeNotifier {
           refusalReason: request['refusalReason'],
         );
 
-        client.addCardRequest(newRequest);
+        //client.addCardRequest(newRequest);
+        _myRequests.add(newRequest);
       });
     }
 

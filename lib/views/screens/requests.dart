@@ -23,11 +23,15 @@ class ClientRequests extends StatelessWidget {
 
     return Column(
       children: [
-        const Text('Solicitações'),
         cardRequests.isEmpty
             ? const Text(
-                "Vazio",
-                style: TextStyle(color: Colors.white),
+                "Tudo certo por aqui!\nVocê não tem novas solicitações",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'Eczar',
+                  fontSize: 24,
+                ),
               )
             : Expanded(
                 child: ListView.builder(

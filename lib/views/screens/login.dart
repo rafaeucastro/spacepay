@@ -94,7 +94,7 @@ class _LoginState extends State<Login> {
             children: [
               Image.asset(
                 "assets/images/spacepay_transparent.png",
-                scale: 10,
+                scale: 8,
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 40.0),
@@ -103,6 +103,7 @@ class _LoginState extends State<Login> {
                   style: TextStyle(
                     color: theme.colorScheme.primary,
                     fontSize: 32,
+                    fontFamily: 'Eczar',
                   ),
                 ),
               ),

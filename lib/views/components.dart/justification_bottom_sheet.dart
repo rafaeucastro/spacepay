@@ -4,14 +4,25 @@ import 'package:spacepay/providers/cards_requests.dart';
 
 import '../../models/card_request.dart';
 
-class JustificationModal extends StatelessWidget {
+class JustificationModal extends StatefulWidget {
   final CardRequest card;
 
   const JustificationModal(this.card, {super.key});
 
-  void _onSubmitted(String? reason, BuildContext context) {
+  @override
+  State<JustificationModal> createState() => _JustificationModalState();
+}
+
+class _JustificationModalState extends State<JustificationModal> {
+  final GlobalKey<FormState> key = GlobalKey();
+  String reason = '';
+
+  void _onSubmitted() {
+    key.currentState!.save();
+    if (reason.isEmpty) return;
+
     Provider.of<BankCardRequests>(context, listen: false)
-        .refuseCardRequest(reason!, card, context);
+        .refuseCardRequest(reason, widget.card, context);
     Navigator.of(context).pop();
   }
 
@@ -33,19 +44,22 @@ class JustificationModal extends StatelessWidget {
         children: [
           Text(
             "Informe o motivo da recusa",
-            style: theme.textTheme.titleLarge,
+            style: theme.textTheme.titleMedium,
           ),
-          TextField(
-            decoration: const InputDecoration(labelText: "Motivo"),
-            onSubmitted: (value) => _onSubmitted(value, context),
+          Form(
+            key: key,
+            child: TextFormField(
+              decoration: const InputDecoration(labelText: "Motivo"),
+              onSaved: (newValue) {
+                reason = newValue!;
+              },
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               minimumSize: Size(size.width * 0.4, size.height * 0.051),
             ),
-            onPressed: () {
-              //Navigator.of(context).pop();
-            },
+            onPressed: _onSubmitted,
             child: const Text("ENVIAR"),
           ),
         ],

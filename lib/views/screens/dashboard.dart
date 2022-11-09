@@ -32,7 +32,7 @@ class _DashBoardState extends State<DashBoard> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
     final size = MediaQuery.of(context).size;
     final users = Provider.of<Users>(context);
     final newCardRequests = Provider.of<BankCardRequests>(context).cardRequests;
@@ -40,7 +40,7 @@ class _DashBoardState extends State<DashBoard> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: theme.colorScheme.background,
+        backgroundColor: colorScheme.background,
         title: const Center(child: Text("Dashboard")),
         actions: [
           IconButton(
@@ -51,7 +51,7 @@ class _DashBoardState extends State<DashBoard> {
           ),
         ],
       ),
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: colorScheme.background,
       body: Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
         alignment: Alignment.center,
@@ -67,11 +67,17 @@ class _DashBoardState extends State<DashBoard> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: colorScheme.background,
         currentIndex: _currentTabIndex,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Clientes"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.add_card), label: "Cartões novos"),
+            icon: Icon(Icons.person),
+            label: "Clientes",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_card),
+            label: "Solicitações",
+          ),
         ],
         onTap: (value) => setState(() {
           _currentTabIndex = value;

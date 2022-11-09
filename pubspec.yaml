@@ -42,6 +42,7 @@ dependencies:
   path_provider: ^2.0.11
   path: ^1.8.2
   animations: ^2.0.7
+  firebase_core: ^1.24.0
 
 dev_dependencies:
   flutter_test:
@@ -77,10 +78,13 @@ flutter:
     - assets/images/visa_logo.png
     - assets/images/visa_logo_text.png
     - assets/images/elo_logo.png
-    - assets/images/elo_logo_2.png
     - assets/images/spacepay_transparent.png
     - assets/images/app_logo2.jpg
+    - assets/images/app_logo2.png
     - assets/images/app_logo3.jpg
+    - assets/images/redefinir_senha.png
+    - assets/images/forgot_password.png
+    - assets/images/sign-up-form.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

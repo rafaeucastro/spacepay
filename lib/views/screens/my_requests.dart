@@ -4,8 +4,6 @@ import 'package:spacepay/models/card_request.dart';
 import 'package:spacepay/providers/cards.dart';
 import 'package:spacepay/views/components.dart/new_card_info_bottom_sheet.dart';
 
-import '../../models/auth.dart';
-
 class MyCardRequests extends StatelessWidget {
   const MyCardRequests({super.key});
 
@@ -18,8 +16,6 @@ class MyCardRequests extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final client = Provider.of<Auth>(context, listen: false).client;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Minhas Solicitações"),
@@ -36,13 +32,15 @@ class MyCardRequests extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               }
+              final myRequests = Provider.of<Cards>(context).myRequests;
+
               return Column(
                 children: [
                   Expanded(
                     child: ListView.builder(
-                      itemCount: client.cardRequests.length,
+                      itemCount: myRequests.length,
                       itemBuilder: (context, index) {
-                        final request = client.cardRequests.elementAt(index);
+                        final request = myRequests.elementAt(index);
                         return ListTile(
                           leading: const Icon(Icons.add_card),
                           title: Text(request.name),

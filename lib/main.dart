@@ -1,38 +1,34 @@
-import 'package:spacepay/providers/cards_requests.dart';
-import 'package:spacepay/views/screens/card_requests.dart';
-// ignore: depend_on_referenced_packages
 import 'package:firebase_core/firebase_core.dart';
-import 'package:spacepay/views/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/providers/cards.dart';
 import 'package:spacepay/providers/users.dart';
+import 'package:spacepay/providers/cards_requests.dart';
 
+import 'package:spacepay/views/screens/dashboard.dart';
+import 'package:spacepay/views/screens/my_requests.dart';
 import 'package:spacepay/views/screens/add_existing_card.dart';
 import 'package:spacepay/views/screens/home.dart';
 import 'package:spacepay/views/screens/login.dart';
 import 'package:spacepay/views/screens/sign-up.dart';
-
-import 'package:spacepay/util/routes.dart';
 import 'package:spacepay/views/screens/user_profile.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+import 'package:spacepay/util/routes.dart';
 
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Firebase.initializeApp();
   runApp(const SpacePay());
 }
 
 class SpacePay extends StatelessWidget {
   const SpacePay({Key? key}) : super(key: key);
 
-  void chageTheme() {}
-
   @override
   Widget build(BuildContext context) {
-    final darkTheme = ThemeData.dark();
+    ThemeData theme = ThemeData.dark();
     const Color primary = Color(0xFFFF5249);
     const Color onPrimary = Colors.white;
     const Color secondary = Color(0xFFFFDD78);
@@ -63,7 +59,7 @@ class SpacePay extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        theme: darkTheme.copyWith(
+        theme: theme.copyWith(
           canvasColor: Colors.transparent,
           inputDecorationTheme: const InputDecorationTheme().copyWith(
             border: OutlineInputBorder(
@@ -74,10 +70,10 @@ class SpacePay extends StatelessWidget {
               borderSide: BorderSide(color: secondary),
             ),
             labelStyle: const TextStyle(
-              color: secondary,
+              color: onPrimary,
             ),
           ),
-          colorScheme: darkTheme.colorScheme.copyWith(
+          colorScheme: theme.colorScheme.copyWith(
             background: background,
             primary: primary,
             onPrimary: onPrimary,
@@ -86,7 +82,7 @@ class SpacePay extends StatelessWidget {
             tertiary: tertiary,
             onTertiary: onTertiary,
           ),
-          textTheme: darkTheme.textTheme.copyWith(
+          textTheme: theme.textTheme.copyWith(
             button: const TextStyle(
               color: onTertiary,
             ),
@@ -115,7 +111,7 @@ class SpacePay extends StatelessWidget {
           )),
           snackBarTheme: const SnackBarThemeData().copyWith(
             backgroundColor: primary,
-            contentTextStyle: darkTheme.textTheme.button,
+            contentTextStyle: theme.textTheme.button,
           ),
           iconTheme: const IconThemeData().copyWith(
             color: secondary,

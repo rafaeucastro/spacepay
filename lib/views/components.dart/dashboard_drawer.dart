@@ -6,7 +6,7 @@ class DashBoardDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final size = MediaQuery.of(context).size;
+    //final size = MediaQuery.of(context).size;
 
     return Drawer(
       backgroundColor: colorScheme.background,

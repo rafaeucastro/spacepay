@@ -45,25 +45,36 @@ class _ResetPasswordState extends State<ResetPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         title: const Text("Redefinir senha"),
+        backgroundColor: Theme.of(context).colorScheme.background,
       ),
       body: SafeArea(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TextFormField(
-            decoration: const InputDecoration(
-              labelText: 'Seu E-mail',
-              border: OutlineInputBorder(),
-              helperText:
-                  "Enviaremos um link de redefinição de senha para esse e-mail",
+          Image.asset(
+            'assets/images/forgot_password.png',
+            scale: 3,
+          ),
+          const Text("Ops, parece que alguém esqueceu a senha!"),
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: 'Seu E-mail',
+                border: const OutlineInputBorder(),
+                helperText:
+                    "Enviaremos um link de redefinição de senha para esse e-mail",
+                helperStyle: Theme.of(context).textTheme.bodySmall,
+              ),
+              textInputAction: TextInputAction.send,
+              keyboardType: TextInputType.emailAddress,
+              validator: Validator.emailValidator,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              controller: _emailController,
             ),
-            textInputAction: TextInputAction.send,
-            keyboardType: TextInputType.emailAddress,
-            validator: Validator.emailValidator,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            controller: _emailController,
           ),
           ElevatedButton.icon(
             onPressed: _resetPassword,

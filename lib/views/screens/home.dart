@@ -6,7 +6,6 @@ import 'package:spacepay/models/card.dart';
 import 'package:spacepay/providers/users.dart';
 import 'package:spacepay/util/routes.dart';
 import 'package:spacepay/views/components.dart/card_info_bottom_sheet.dart';
-import 'package:spacepay/views/components.dart/dashboard_drawer.dart';
 import 'package:spacepay/views/components.dart/new_card_form.dart';
 
 import '../../providers/cards.dart';
@@ -212,23 +211,30 @@ class _HomeState extends State<Home> {
                   ),
                   _isLoading
                       ? const CircularProgressIndicator()
-                      : Expanded(
-                          child: ListView.builder(
-                            itemCount: client.myCards.length,
-                            itemBuilder: (context, index) {
-                              final BankCard card =
-                                  client.myCards.elementAt(index);
+                      : Consumer<Cards>(
+                          builder: (context, cards, child) {
+                            final myCards = cards.myCards;
 
-                              return ListTile(
-                                key: ObjectKey(card.databaseID),
-                                leading: const Icon(Icons.credit_card),
-                                title: Text(card.cardholderName),
-                                subtitle: Text("**** ${card.numberLastDigits}"),
-                                onTap: () =>
-                                    _showCardInfo(card, CardType.createdCards),
-                              );
-                            },
-                          ),
+                            return Expanded(
+                              child: ListView.builder(
+                                itemCount: myCards.length,
+                                itemBuilder: (context, index) {
+                                  final BankCard card =
+                                      myCards.elementAt(index);
+
+                                  return ListTile(
+                                    key: ObjectKey(card.databaseID),
+                                    leading: const Icon(Icons.credit_card),
+                                    title: Text(card.cardholderName),
+                                    subtitle:
+                                        Text("**** ${card.numberLastDigits}"),
+                                    onTap: () => _showCardInfo(
+                                        card, CardType.createdCards),
+                                  );
+                                },
+                              ),
+                            );
+                          },
                         ),
                 ],
               ),
