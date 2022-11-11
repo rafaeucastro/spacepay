@@ -43,7 +43,7 @@ class Users with ChangeNotifier {
       _adminList.add(Admin(
         state: admData[UserAttributes.state],
         cpf: admData[UserAttributes.cpf],
-        fullname: admData[UserAttributes.fullName],
+        fullName: admData[UserAttributes.fullName],
         address: admData[UserAttributes.address],
         password: admData[UserAttributes.password],
         databaseID: userID,
@@ -74,7 +74,7 @@ class Users with ChangeNotifier {
       final newClient = Client(
         email: userData[UserAttributes.email].toString(),
         accountType: userData[UserAttributes.accountType].toString(),
-        fullname: userData[UserAttributes.fullName].toString(),
+        fullName: userData[UserAttributes.fullName].toString(),
         address: userData[UserAttributes.address].toString(),
         password: userData[UserAttributes.password].toString(),
         phone: int.parse(userData[UserAttributes.phone] ?? '0'),
@@ -90,20 +90,6 @@ class Users with ChangeNotifier {
     notifyListeners();
   }
 
-  // 04/11/2022
-  Future<void> _sendClientLoginData(
-      String cpf, String email, String clientID) async {
-    final response = await http.patch(
-      Uri.parse('${Constants.baseUrl}/clientLoginData/$clientID.json'),
-      body: jsonEncode({
-        UserAttributes.cpf: cpf,
-        UserAttributes.email: email,
-      }),
-    );
-
-    if (response.statusCode != 200) {}
-  }
-
   void addClient({required Map<String, String> clientData}) async {
     String phone =
         UtilBrasilFields.removeCaracteres(clientData[UserAttributes.phone]!);
@@ -111,7 +97,7 @@ class Users with ChangeNotifier {
     String email = clientData[UserAttributes.email]!;
     String password = clientData[UserAttributes.password]!;
     String accountType = clientData[UserAttributes.accountType]!;
-    String fullname = clientData[UserAttributes.fullName]!;
+    String fullName = clientData[UserAttributes.fullName]!;
     String address = clientData[UserAttributes.address]!;
 
     final response = await http.post(
@@ -122,7 +108,7 @@ class Users with ChangeNotifier {
         UserAttributes.email: email,
         UserAttributes.password: password,
         UserAttributes.accountType: accountType,
-        UserAttributes.fullName: fullname,
+        UserAttributes.fullName: fullName,
         UserAttributes.address: address,
       }),
     );
@@ -133,7 +119,7 @@ class Users with ChangeNotifier {
       email: email,
       password: password,
       accountType: accountType,
-      fullname: fullname,
+      fullName: fullName,
       address: address,
       cpf: cpf,
       phone: int.parse(phone),
@@ -141,19 +127,16 @@ class Users with ChangeNotifier {
     );
 
     _clientList.add(newClient);
-
-    _sendClientLoginData(cpf, email, id);
   }
 
-  Future<void> addAdmin({required Map<String, String> clientData}) async {
-    String cpf = clientData[UserAttributes.cpf]!;
-
+  Future<void> addAdmin({required Map<String, String> userData}) async {
     final newAdmin = Admin(
-      state: clientData[UserAttributes.state]!,
-      fullname: clientData[UserAttributes.fullName]!,
-      address: clientData[UserAttributes.address]!,
-      password: clientData[UserAttributes.password]!,
-      cpf: cpf,
+      state: userData[UserAttributes.state]!,
+      fullName: userData[UserAttributes.fullName]!,
+      address: userData[UserAttributes.address]!,
+      password: userData[UserAttributes.password]!,
+      cpf: userData[UserAttributes.cpf]!,
+      databaseID: userData[UserAttributes.cpf]!,
     );
 
     _adminList.add(newAdmin);

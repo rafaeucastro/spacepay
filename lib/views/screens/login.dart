@@ -1,7 +1,6 @@
 import 'package:spacepay/models/exceptions/auth_exception.dart';
 import 'package:spacepay/models/exceptions/user_not_found_expection.dart';
 import 'package:spacepay/models/auth.dart';
-import 'package:spacepay/models/user.dart';
 import 'package:spacepay/util/routes.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:spacepay/util/utils.dart';
 import 'package:spacepay/views/screens/reset_password.dart';
+
+import '../../util/constants.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -25,14 +26,17 @@ class _LoginState extends State<Login> {
   bool _isADM = false;
   bool _hidePassword = true;
   // ignore: prefer_final_fields
-  Map<String, String> _authData = {Auth.password: '', UserAttributes.cpf: ''};
+  Map<String, String> _authData = {
+    UserAttributes.email: '',
+    UserAttributes.cpf: ''
+  };
 
   Future<void> _authenticate() async {
     final auth = Provider.of<Auth>(context, listen: false);
 
     try {
-      await auth.logIn(
-          _authData[UserAttributes.cpf]!, _authData[Auth.password]!, _isADM);
+      await auth.logIn(_authData[UserAttributes.cpf]!,
+          _authData[UserAttributes.password]!, _isADM);
     } on UserNotFoundException catch (error) {
       Utils.showSnackBar(error.toString(), context);
     } on AuthException catch (error) {
@@ -64,7 +68,7 @@ class _LoginState extends State<Login> {
         Navigator.of(context).pushReplacementNamed(AppRoutes.HOME);
       }
 
-      if (auth.isAdminAuthenticated) {
+      if (auth.isAdminAuth) {
         Navigator.of(context).pushReplacementNamed(AppRoutes.DASHBOARD);
       }
     });
@@ -93,8 +97,8 @@ class _LoginState extends State<Login> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                "assets/images/spacepay_transparent.png",
-                scale: 8,
+                "assets/images/app_logo2.png",
+                scale: 15,
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 40.0),
@@ -114,7 +118,7 @@ class _LoginState extends State<Login> {
                   child: Column(
                     children: [
                       TextFormField(
-                        //initialValue: "000.000.000-00",
+                        initialValue: "000.000.000-00",
                         decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.person,
@@ -143,6 +147,7 @@ class _LoginState extends State<Login> {
                         padding: const EdgeInsets.only(top: 25),
                         child: TextFormField(
                           //initialValue: "Rafael123\$\$",
+                          initialValue: 'Admin',
                           obscuringCharacter: '*',
                           obscureText: _hidePassword,
                           decoration: InputDecoration(

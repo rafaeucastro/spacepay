@@ -48,7 +48,7 @@ class BankCardRequests with ChangeNotifier {
   void confirmCardRequest(CardRequest newRequest, BuildContext context) {
     //TODO: Implementar melhor a solicitação de novo cartão
     final cards = Provider.of<Cards>(context, listen: false);
-    final adminID = Provider.of<Auth>(context, listen: false).userId;
+    final adminID = Provider.of<Auth>(context, listen: false).admin!.databaseID;
 
     http
         .delete(
@@ -76,7 +76,7 @@ class BankCardRequests with ChangeNotifier {
   //TODO: REFATORAR
   void refuseCardRequest(
       String reason, CardRequest request, BuildContext context) {
-    final adminID = Provider.of<Auth>(context, listen: false).userId;
+    final adminID = Provider.of<Auth>(context, listen: false).admin!.databaseID;
 
     //apagar o cartão no banco de dados do admin
     http.delete(Uri.parse(

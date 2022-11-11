@@ -13,3 +13,23 @@ abstract class Constants {
   static const clientsUrl = "$baseUrl/clients.json";
   static const adminsUrl = "$baseUrl/admins.json";
 }
+
+abstract class UserAttributes {
+  static const fullName = "fullName";
+  static const email = "email";
+  static const cpf = "cpf";
+  static const phone = "phone";
+  static const address = "address";
+  static const password = "password";
+  static const accountType = "accountType";
+  static const state = "state";
+  static const databaseID = "databaseID";
+  static const myCards = "myCards";
+  static const cardRequests = "cardRequests";
+}
+
+abstract class AccountType {
+  static const savings = "Poupança";
+  static const checking = "Corrente";
+  static const List<String> accountTypes = ["Poupança", "Corrente"];
+}

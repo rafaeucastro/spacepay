@@ -15,8 +15,6 @@ abstract class AuthMode {
 }
 
 class Auth extends Constants with ChangeNotifier {
-  static const email = "email";
-  static const password = "password";
   bool _isADM = false;
   Admin? _admin;
   Client _client = Client.defaulUser;
@@ -28,7 +26,7 @@ class Auth extends Constants with ChangeNotifier {
   }
 
   Admin? get admin {
-    if (isAdminAuthenticated) {
+    if (isAdminAuth) {
       return _admin;
     }
     return null;
@@ -38,20 +36,12 @@ class Auth extends Constants with ChangeNotifier {
     return _isADM;
   }
 
-  bool get isAdminAuthenticated {
+  bool get isAdminAuth {
     return _userId != null && isADM;
   }
 
   bool get isClientAuth {
     return _token != null && _userId != null && !_isADM;
-  }
-
-  String? get token {
-    return isClientAuth ? _token : null;
-  }
-
-  String? get userId {
-    return isClientAuth || isAdminAuthenticated ? _userId : null;
   }
 
   //TODO: FAZER USUÁRIO PERMANECER LOGADO AO FECHAR O APP SEM FAZER LOGOUT

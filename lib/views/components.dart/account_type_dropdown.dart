@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../models/user.dart';
+import '../../util/constants.dart';
 
 class AccountTypeDropDown extends StatefulWidget {
   final Map<String, String> formData;
