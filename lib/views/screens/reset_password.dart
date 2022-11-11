@@ -15,6 +15,8 @@ class _ResetPasswordState extends State<ResetPassword> {
   final _emailController = TextEditingController();
 
   void _resetPassword() async {
+    if (_emailController.text.isEmpty) return;
+
     Utils.showLoadingDialog(context);
 
     try {
