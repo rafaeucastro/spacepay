@@ -1,4 +1,6 @@
 import 'package:brasil_fields/brasil_fields.dart';
+import 'package:credit_card_validator/credit_card_validator.dart';
+import 'package:credit_card_type_detector/credit_card_type_detector.dart';
 
 class Validator {
   static String? Function(String?)? mandatoryFieldValidator = _mandatoryField;
@@ -9,6 +11,9 @@ class Validator {
   static String? Function(String?)? cardCVC = _cardCVC;
   static String? Function(String?)? sixDigitCode = _sixDigitCode;
   static String? Function(String?)? cpf = _cpf;
+
+  static final CreditCardValidator _ccValidator = CreditCardValidator();
+  static CreditCardType _cardType = CreditCardType.elo;
 
   static String? _cpf(String? userInput) {
     String cpf = userInput ?? "";
@@ -70,11 +75,17 @@ class Validator {
 
   static String? _cardNumber(String? userInput) {
     final cardNumber = userInput ?? "";
+    final ccNumResults = _ccValidator.validateCCNum(cardNumber);
+
     if (cardNumber.isEmpty) {
       return "Considere digitar algo!";
     } else if (cardNumber.length != 19) {
       return "Digite o número completo!";
+    } else if (!ccNumResults.isValid) {
+      return 'Número de cartão inválido!';
     }
+
+    _cardType = ccNumResults.ccType;
     return null;
   }
 
@@ -110,10 +121,14 @@ class Validator {
 
   static String? _cardCVC(String? userInput) {
     final cvc = userInput ?? "";
+    final cvcResults = _ccValidator.validateCVV(cvc, _cardType);
+
     if (cvc.isEmpty) {
       return "Considere digitar algo!";
     } else if (cvc.length != 3) {
       return "Digite o número completo!";
+    } else if (!cvcResults.isValid) {
+      return "Código de verificação do cartão inválido!";
     }
     return null;
   }

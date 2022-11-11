@@ -7,7 +7,6 @@ import 'package:spacepay/models/card.dart';
 import 'package:spacepay/providers/cards.dart';
 import 'package:spacepay/util/validators.dart';
 import 'package:spacepay/views/components.dart/bank_card.dart';
-import 'package:spacepay/views/components.dart/card_flag_dropdown.dart';
 
 class AddExistingCard extends StatefulWidget {
   const AddExistingCard({Key? key}) : super(key: key);
@@ -34,7 +33,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
   bool _formIsValid = false;
 
   // ignore: prefer_final_fields
-  String _dropdownValue = "Erro";
+  //String _dropdownValue = "Erro";
   String _cardFlagImage = "";
 
   void _submit() {
@@ -84,14 +83,6 @@ class _AddExistingCardState extends State<AddExistingCard> {
     );
   }
 
-  void _switchImage(Object? object) {
-    _cardFlagImage = BankCard.defineCardFlagImage(object.toString());
-
-    setState(() {
-      _formData[CardAttributes.flag] = object.toString();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -132,6 +123,12 @@ class _AddExistingCardState extends State<AddExistingCard> {
                         },
                         onSaved: (newValue) {
                           _formData[CardAttributes.number] = newValue!;
+                        },
+                        onEditingComplete: () {
+                          setState(() {
+                            _cardFlagImage = BankCard.validateCardNumber(
+                                _cardNumberController.text);
+                          });
                         },
                         validator: Validator.cardNumber,
                       ),
@@ -199,12 +196,6 @@ class _AddExistingCardState extends State<AddExistingCard> {
                             ),
                           ),
                         ],
-                      ),
-                      CardFlagDropDown(
-                        cardFlag: CardFlag.all,
-                        dropdownValue:
-                            _formData[CardAttributes.flag] ?? _dropdownValue,
-                        onChanged: (object) => _switchImage(object),
                       ),
                       Text(
                         dica,

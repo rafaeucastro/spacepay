@@ -143,4 +143,20 @@ class BankCard {
 
     return flagAsset;
   }
+
+  static String validateCardNumber(String number) {
+    switch (number.substring(0, 1)) {
+      case '2':
+        return CardFlag.mastercardImage;
+      case '3':
+        return CardFlag.americanExpressImage;
+      case '4':
+        return CardFlag.visaImage;
+      case '5':
+        return CardFlag.mastercardImage;
+      case '6':
+        return CardFlag.eloImage;
+    }
+    return '';
+  }
 }
