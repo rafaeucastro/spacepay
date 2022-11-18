@@ -45,7 +45,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
     _formKey.currentState?.save();
 
     final cards = Provider.of<Cards>(context, listen: false);
-    cards.addCard(_formData, context);
+    cards.addCard(_formData);
     _showDialog();
   }
 
@@ -130,7 +130,7 @@ class _AddExistingCardState extends State<AddExistingCard> {
                                 _cardNumberController.text);
                           });
                         },
-                        validator: Validator.cardNumber,
+                        //validator: Validator.cardNumber,
                       ),
                       TextFormField(
                         decoration: const InputDecoration(

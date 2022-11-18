@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/auth.dart';
+import '../../providers/users.dart';
 
 class UserPhotoDialog extends StatelessWidget {
   const UserPhotoDialog({
@@ -12,7 +12,7 @@ class UserPhotoDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final client = Provider.of<Auth>(context, listen: false).client;
+    final client = Provider.of<Users>(context).currentClient!;
 
     return Dialog(
       backgroundColor: theme.colorScheme.primary,

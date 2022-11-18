@@ -8,6 +8,9 @@ class AuthException implements Exception {
     'INVALID_PASSWORD': 'Senha informada não confere.',
     'USER_DISABLED': 'A conta do usuário foi desabilitada.',
     'user-not-found': 'Não existe nenhum usuário cadastrado com esse e-mail',
+    'NO_ELEMENT': 'CPF não encontrado!',
+    'Bad state: No element': 'Usuário não encontrado!',
+    'ERRO': 'Hum... isto não funcionou!',
   };
 
   final String key;

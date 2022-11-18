@@ -68,7 +68,7 @@ class BankCard {
   final String expiryDate;
   final int cvc;
   final String flag;
-  String? databaseID;
+  String? userID;
   String flagImage = CardFlag.eloImage;
 
   BankCard({
@@ -77,7 +77,7 @@ class BankCard {
     required this.expiryDate,
     required this.cvc,
     required this.flag,
-    this.databaseID,
+    this.userID,
   }) {
     flagImage = defineCardFlagImage(flag);
   }

@@ -59,7 +59,7 @@ class _CardInfoState extends State<CardInfo> {
                       Navigator.of(context).pop();
                       //TODO: se não der certo excluir, notificar usuário
                       Provider.of<Cards>(context, listen: false)
-                          .removeCard(widget.card, context);
+                          .removeCard(widget.card);
                     },
                     icon: Icon(Icons.delete, color: theme.primary),
                   ),

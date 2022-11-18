@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/providers/cards.dart';
 import 'package:spacepay/providers/users.dart';
 import 'package:spacepay/providers/cards_requests.dart';
@@ -13,6 +12,7 @@ import 'package:spacepay/views/screens/add_existing_card.dart';
 import 'package:spacepay/views/screens/home.dart';
 import 'package:spacepay/views/screens/login.dart';
 import 'package:spacepay/views/screens/sign-up.dart';
+import 'package:spacepay/views/screens/splash_screen.dart';
 import 'package:spacepay/views/screens/user_profile.dart';
 
 import 'package:spacepay/util/routes.dart';
@@ -39,17 +39,8 @@ class SpacePay extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (context) => Auth(),
-        ),
-        ChangeNotifierProxyProvider<Auth, Users>(
-          create: (context) => Users(null, []),
-          update: (context, auth, previous) {
-            return Users(
-              auth.client,
-              previous!.getClients,
-            );
-          },
+        ChangeNotifierProvider<Users>(
+          create: (context) => Users(),
         ),
         ChangeNotifierProvider(
           create: (context) => Cards(),
@@ -131,66 +122,6 @@ class SpacePay extends StatelessWidget {
           AppRoutes.ADD_EXISTING_CARD: (context) => const AddExistingCard(),
           AppRoutes.CARD_REQUESTS: (context) => const MyCardRequests(),
         },
-      ),
-    );
-  }
-}
-
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
-
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _navigateToHome();
-  }
-
-  _navigateToHome() async {
-    await Provider.of<Users>(context, listen: false).loadClients();
-    await Provider.of<Users>(context, listen: false).loadAdmins();
-
-    Future.delayed(const Duration(seconds: 0)).then((value) {
-      Provider.of<Auth>(context, listen: false).isClientAuth
-          ? Navigator.of(context).pushReplacementNamed(AppRoutes.HOME)
-          : Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: theme.colorScheme.background,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.rocket_launch,
-              color: theme.colorScheme.primary,
-              size: 45.0,
-            ),
-            const Padding(
-              padding: EdgeInsets.only(bottom: 8.0),
-              child: Text(
-                "SpacePay",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 32,
-                ),
-              ),
-            ),
-            CircularProgressIndicator(
-              color: theme.colorScheme.primary,
-            ),
-          ],
-        ),
       ),
     );
   }

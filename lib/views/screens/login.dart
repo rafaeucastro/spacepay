@@ -1,11 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:spacepay/models/auth_service.dart';
 import 'package:spacepay/models/exceptions/auth_exception.dart';
-import 'package:spacepay/models/exceptions/user_not_found_expection.dart';
-import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/util/routes.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:spacepay/util/utils.dart';
 import 'package:spacepay/views/screens/reset_password.dart';
 
@@ -27,25 +26,25 @@ class _LoginState extends State<Login> {
   bool _hidePassword = true;
   // ignore: prefer_final_fields
   Map<String, String> _authData = {
-    UserAttributes.email: '',
-    UserAttributes.cpf: ''
+    UserAttributes.cpf: '',
+    UserAttributes.password: '',
   };
 
-  Future<void> _authenticate() async {
-    final auth = Provider.of<Auth>(context, listen: false);
-
+  Future<void> _logIn() async {
     try {
-      await auth.logIn(_authData[UserAttributes.cpf]!,
+      await AuthFirebaseService().signIn(_authData[UserAttributes.cpf]!,
           _authData[UserAttributes.password]!, _isADM);
-    } on UserNotFoundException catch (error) {
+    } on FirebaseAuthException catch (error) {
       Utils.showSnackBar(error.toString(), context);
+      return;
     } on AuthException catch (error) {
       Utils.showSnackBar(error.toString(), context);
+      return;
     }
 
-    setState(() {
-      _isLoading = false;
-    });
+    String initialScreen = _isADM ? AppRoutes.DASHBOARD : AppRoutes.HOME;
+
+    Navigator.of(context).pushReplacementNamed(initialScreen);
   }
 
   void _submit() {
@@ -61,16 +60,10 @@ class _LoginState extends State<Login> {
 
     _formKey.currentState?.save();
 
-    final auth = Provider.of<Auth>(context, listen: false);
+    _logIn();
 
-    _authenticate().then((value) {
-      if (auth.isClientAuth) {
-        Navigator.of(context).pushReplacementNamed(AppRoutes.HOME);
-      }
-
-      if (auth.isAdminAuth) {
-        Navigator.of(context).pushReplacementNamed(AppRoutes.DASHBOARD);
-      }
+    setState(() {
+      _isLoading = false;
     });
   }
 
@@ -118,7 +111,7 @@ class _LoginState extends State<Login> {
                   child: Column(
                     children: [
                       TextFormField(
-                        initialValue: "000.000.000-00",
+                        //initialValue: "000.000.000-00",
                         decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.person,
@@ -147,7 +140,7 @@ class _LoginState extends State<Login> {
                         padding: const EdgeInsets.only(top: 25),
                         child: TextFormField(
                           //initialValue: "Rafael123\$\$",
-                          initialValue: 'Admin',
+                          //initialValue: 'Admin',
                           obscuringCharacter: '*',
                           obscureText: _hidePassword,
                           decoration: InputDecoration(

@@ -23,7 +23,7 @@ abstract class UserAttributes {
   static const password = "password";
   static const accountType = "accountType";
   static const state = "state";
-  static const databaseID = "databaseID";
+  static const id = "id";
   static const myCards = "myCards";
   static const cardRequests = "cardRequests";
 }

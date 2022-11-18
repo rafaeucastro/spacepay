@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:spacepay/models/auth.dart';
 import 'package:spacepay/models/card.dart';
 import 'package:spacepay/providers/users.dart';
 import 'package:spacepay/util/routes.dart';
 import 'package:spacepay/views/components.dart/card_info_bottom_sheet.dart';
 import 'package:spacepay/views/components.dart/new_card_form.dart';
 
+import '../../models/auth_service.dart';
 import '../../providers/cards.dart';
 import '../components.dart/user_photo_dialog.dart';
 
@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
   }
 
   void _logout() {
-    Provider.of<Auth>(context, listen: false).logout();
+    AuthFirebaseService().logout();
     Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
   }
 
@@ -51,9 +51,7 @@ class _HomeState extends State<Home> {
   }
 
   void loadData() {
-    Provider.of<Cards>(context, listen: false)
-        .loadMyCards(context)
-        .then((value) {
+    Provider.of<Cards>(context, listen: false).loadMyCards().then((value) {
       setState(() {
         _isLoading = false;
       });
@@ -66,9 +64,8 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final client = Provider.of<Auth>(context, listen: false).client;
-    final profilePicture =
-        Provider.of<Users>(context).loggedClient!.profilePicture;
+    final client = Provider.of<Users>(context).currentClient!;
+    final profilePicture = client.profilePicture;
 
     return Scaffold(
       appBar: AppBar(
@@ -119,7 +116,7 @@ class _HomeState extends State<Home> {
       backgroundColor: theme.colorScheme.background,
       body: RefreshIndicator(
         onRefresh: () =>
-            Provider.of<Cards>(context, listen: false).loadMyCards(context),
+            Provider.of<Cards>(context, listen: false).loadMyCards(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -223,7 +220,7 @@ class _HomeState extends State<Home> {
                                       myCards.elementAt(index);
 
                                   return ListTile(
-                                    key: ObjectKey(card.databaseID),
+                                    key: ObjectKey(card.number),
                                     leading: const Icon(Icons.credit_card),
                                     title: Text(card.cardholderName),
                                     subtitle:

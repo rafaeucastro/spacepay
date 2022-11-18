@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:spacepay/models/auth.dart';
+import 'package:spacepay/models/auth_service.dart';
 
 import '../../models/exceptions/auth_exception.dart';
 import '../../providers/users.dart';
@@ -23,7 +23,7 @@ class UserProfile extends StatelessWidget {
   void _changePassword(BuildContext context) {
     Utils.showLoadingDialog(context);
 
-    final email = Provider.of<Auth>(context, listen: false).client.email;
+    final email = AuthFirebaseService().currentClient!.email;
 
     try {
       FirebaseAuth.instance.sendPasswordResetEmail(email: email).then((value) {
@@ -43,7 +43,7 @@ class UserProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final client = Provider.of<Auth>(context, listen: false).client;
+    final client = Provider.of<Users>(context).currentClient!;
     final textScale = MediaQuery.of(context).textScaleFactor;
     final size = MediaQuery.of(context).size;
 
@@ -61,7 +61,7 @@ class UserProfile extends StatelessWidget {
               Expanded(
                 child: Consumer<Users>(
                   builder: (context, users, child) {
-                    final profilePicture = users.loggedClient!.profilePicture;
+                    final profilePicture = users.currentClient!.profilePicture;
 
                     return Column(
                       children: [
@@ -134,7 +134,7 @@ class UserProfile extends StatelessWidget {
                         minimumSize: const Size(200, 50),
                       ),
                       onPressed: () {
-                        Provider.of<Auth>(context, listen: false).logout();
+                        AuthFirebaseService().logout();
                         Navigator.of(context)
                             .pushReplacementNamed(AppRoutes.LOGIN);
                       },

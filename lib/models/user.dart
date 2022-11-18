@@ -1,9 +1,10 @@
 import 'dart:io';
 
-abstract class User {
-  late final String databaseID;
+abstract class MyUser {
+  late final String id;
   late final String cpf;
   late final String fullName;
+  late final String email;
   String address = '';
   String password = '';
   File? profilePicture;
@@ -15,29 +16,37 @@ abstract class User {
   void setProfilePicture(File newProfilePicture) {
     profilePicture = newProfilePicture;
   }
+
+  static String removeCaracteres(String cpf) {
+    return cpf.replaceAll(RegExp('[/.-]'), '');
+  }
+
+  String get cpfNotFormatted {
+    return removeCaracteres(cpf);
+  }
 }
 
-class Client extends User {
-  final String email;
+class Client extends MyUser {
   final String accountType;
   int phone;
 
   Client({
-    required this.email,
     required this.accountType,
     required this.phone,
     required String cpf,
     required String fullName,
     required String address,
     required String password,
-    required final String databaseID,
+    required final String email,
+    required final String id,
     File? profilePicture,
   }) {
     super.cpf = cpf;
     super.fullName = fullName;
     super.address = address;
     super.password = password;
-    super.databaseID = databaseID;
+    super.email = email;
+    super.id = id;
     super.profilePicture = profilePicture;
   }
 
@@ -49,11 +58,11 @@ class Client extends User {
         fullName: 'Default User',
         address: 'Street A',
         password: 'default',
-        databaseID: '',
+        id: '',
       );
 }
 
-class Admin extends User {
+class Admin extends MyUser {
   String state;
 
   Admin({
@@ -62,12 +71,14 @@ class Admin extends User {
     required String fullName,
     required String address,
     required String password,
-    required final String databaseID,
+    required String id,
+    String email = 'admin@admin.com',
   }) {
     super.cpf = cpf;
     super.fullName = fullName;
     super.address = address;
     super.password = password;
-    super.databaseID = databaseID;
+    super.id = id;
+    super.email = email;
   }
 }

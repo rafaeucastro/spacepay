@@ -23,11 +23,11 @@ class MyCardRequests extends StatelessWidget {
       body: SafeArea(
           child: Center(
         child: RefreshIndicator(
-          onRefresh: () => Provider.of<Cards>(context, listen: false)
-              .loadCardRequests(context),
+          onRefresh: () =>
+              Provider.of<Cards>(context, listen: false).loadCardRequests(),
           child: FutureBuilder(
-            future: Provider.of<Cards>(context, listen: false)
-                .loadCardRequests(context),
+            future:
+                Provider.of<Cards>(context, listen: false).loadCardRequests(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();

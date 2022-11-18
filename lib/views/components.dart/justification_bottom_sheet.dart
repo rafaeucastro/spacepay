@@ -22,7 +22,7 @@ class _JustificationModalState extends State<JustificationModal> {
     if (reason.isEmpty) return;
 
     Provider.of<BankCardRequests>(context, listen: false)
-        .refuseCardRequest(reason, widget.card, context);
+        .refuseCardRequest(reason, widget.card);
     Navigator.of(context).pop();
   }
 

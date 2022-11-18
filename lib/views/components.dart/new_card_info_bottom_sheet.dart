@@ -12,7 +12,7 @@ class CardRequestInfo extends StatelessWidget {
   void _onTap(CardRequest request, BuildContext context) {
     if (request.status == 'Negado') {
       Provider.of<Cards>(context, listen: false)
-          .removeRefusedCardRequest(request, context);
+          .removeRefusedCardRequest(request);
     }
 
     Navigator.of(context).pop();
