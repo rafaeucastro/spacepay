@@ -64,7 +64,8 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final client = Provider.of<Users>(context).currentClient!;
+    final client = AuthFirebaseService().currentClient!;
+
     final profilePicture = client.profilePicture;
 
     return Scaffold(
@@ -123,7 +124,7 @@ class _HomeState extends State<Home> {
             Padding(
               padding: const EdgeInsets.only(top: 9.0),
               child: SizedBox(
-                height: size.height * 0.1,
+                height: size.height * 0.15,
                 child: Row(
                   children: [
                     Expanded(

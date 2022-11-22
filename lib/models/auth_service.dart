@@ -1,3 +1,4 @@
+import 'package:spacepay/models/exceptions/auth_exception.dart';
 import 'package:spacepay/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -23,19 +24,25 @@ class AuthFirebaseService {
 
   Future<UserCredential> signIn(String cpf, String password, bool isADM) async {
     String email = '';
+    String databaseID = MyUser.removeCaracteres(cpf);
 
     if (isADM) {
-      final adm = await Users.getAdmFromDB(cpf);
+      final adm = await Users.getAdmFromDB(databaseID);
       email = adm.email;
       _currentADM = adm;
     } else {
-      final client = await Users.getClientFromDB(cpf);
+      final client = await Users.getClientFromDB(databaseID);
       email = client.email;
       _currentClient = client;
     }
 
-    final userCredential = await FirebaseAuth.instance
-        .signInWithEmailAndPassword(email: email, password: password);
+    UserCredential userCredential;
+    try {
+      userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (error) {
+      throw AuthException(error.code);
+    }
 
     return userCredential;
   }
@@ -60,9 +67,6 @@ class AuthFirebaseService {
 
     //atualiza os atributos do usuário
     await credential.user?.updateDisplayName(name);
-
-    //fazer login
-    await signIn(email, password, false);
 
     return credential.user!.uid;
   }

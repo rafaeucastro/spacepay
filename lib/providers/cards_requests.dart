@@ -54,7 +54,7 @@ class BankCardRequests with ChangeNotifier {
     http
         .delete(
       Uri.parse(
-          "${Constants.baseUrl}/clients/$databaseID/analisys/${newRequest.id}.json"),
+          "${Constants.baseUrl}/clients/$databaseID/cards/analisys/${newRequest.id}.json"),
     )
         .then((value) {
       notifyListeners();

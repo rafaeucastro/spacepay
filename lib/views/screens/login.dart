@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:spacepay/models/auth_service.dart';
 import 'package:spacepay/models/exceptions/auth_exception.dart';
 import 'package:spacepay/util/routes.dart';
@@ -34,9 +33,6 @@ class _LoginState extends State<Login> {
     try {
       await AuthFirebaseService().signIn(_authData[UserAttributes.cpf]!,
           _authData[UserAttributes.password]!, _isADM);
-    } on FirebaseAuthException catch (error) {
-      Utils.showSnackBar(error.toString(), context);
-      return;
     } on AuthException catch (error) {
       Utils.showSnackBar(error.toString(), context);
       return;
@@ -60,11 +56,9 @@ class _LoginState extends State<Login> {
 
     _formKey.currentState?.save();
 
-    _logIn();
-
-    setState(() {
-      _isLoading = false;
-    });
+    _logIn().then((value) => setState(() {
+          _isLoading = false;
+        }));
   }
 
   @override
@@ -228,7 +222,8 @@ class _LoginState extends State<Login> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).pushNamed(AppRoutes.SIGN_UP);
+                      Navigator.of(context)
+                          .pushReplacementNamed(AppRoutes.SIGN_UP);
                     },
                     child: Text(
                       "INSCREVA-SE",

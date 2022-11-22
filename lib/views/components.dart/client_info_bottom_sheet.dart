@@ -61,7 +61,7 @@ class ClientInfo extends StatelessWidget {
             children: [
               const Text("Telefone"),
               Text(
-                client.phone.toString(),
+                client.phone,
                 style: TextStyle(
                   color: Colors.blue.shade600,
                 ),

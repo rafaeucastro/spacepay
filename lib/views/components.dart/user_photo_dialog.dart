@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../providers/users.dart';
+import '../../models/auth_service.dart';
 
 class UserPhotoDialog extends StatelessWidget {
   const UserPhotoDialog({
@@ -12,7 +11,7 @@ class UserPhotoDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    final client = Provider.of<Users>(context).currentClient!;
+    final client = AuthFirebaseService().currentClient!;
 
     return Dialog(
       backgroundColor: theme.colorScheme.primary,

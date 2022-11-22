@@ -1,6 +1,5 @@
 // ignore: file_names
 import 'package:animations/animations.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:spacepay/models/exceptions/auth_exception.dart';
 import 'package:spacepay/util/routes.dart';
 import 'package:spacepay/util/utils.dart';
@@ -12,7 +11,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/users.dart';
-import '../../util/constants.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -28,15 +26,12 @@ class _SignUpState extends State<SignUp> {
   final _passwordController = TextEditingController();
   int _step = 1;
 
-  void _signUp() {
+  void _signUp() async {
     final provider = Provider.of<Users>(context, listen: false);
 
     try {
-      provider.addClient(clientData: _formData);
+      await provider.signUp(clientData: _formData);
     } on AuthException catch (error) {
-      Utils.showSnackBar(error.toString(), context);
-      return;
-    } on FirebaseAuthException catch (error) {
       Utils.showSnackBar(error.toString(), context);
       return;
     }
@@ -55,7 +50,7 @@ class _SignUpState extends State<SignUp> {
     });
   }
 
-  void _submit() {
+  void _submit() async {
     _formIsValid = _formKey.currentState?.validate() ?? false;
     if (!_formIsValid) return;
 
@@ -103,8 +98,7 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.only(left: 20, right: 20, bottom: 180),
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
                 child: Form(
                   key: _formKey,
                   child: PageTransitionSwitcher(
@@ -223,38 +217,38 @@ class _SignUpState extends State<SignUp> {
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: TextFormField(
-                                  initialValue: _formData['password'],
+                                  //initialValue: _formData['password'],
                                   decoration: const InputDecoration(
                                     labelText: 'Senha',
                                   ),
                                   textInputAction: TextInputAction.next,
                                   validator: Validator.alfaNumericValidator,
-                                  //controller: _passwordController,
+                                  controller: _passwordController,
                                   onSaved: (newValue) {
                                     _formData['password'] = newValue ?? "";
                                   },
                                 ),
                               ),
-                              // Padding(
-                              //   padding: const EdgeInsets.only(bottom: 8.0),
-                              //   child: TextFormField(
-                              //     initialValue: _formData['password'],
-                              //     decoration: const InputDecoration(
-                              //       labelText: 'Confirmar Senha',
-                              //     ),
-                              //     textInputAction: TextInputAction.done,
-                              //     autovalidateMode:
-                              //         AutovalidateMode.onUserInteraction,
-                              //     validator: (newPassword) {
-                              //       bool isEqual =
-                              //           newPassword == _passwordController.text;
-                              //       if (!isEqual) {
-                              //         return "As senhas não coincidem";
-                              //       }
-                              //       return null;
-                              //     },
-                              //   ),
-                              // ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: TextFormField(
+                                  //initialValue: _formData['password'],
+                                  decoration: const InputDecoration(
+                                    labelText: 'Confirmar Senha',
+                                  ),
+                                  textInputAction: TextInputAction.done,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  validator: (newPassword) {
+                                    bool isEqual =
+                                        newPassword == _passwordController.text;
+                                    if (!isEqual) {
+                                      return "As senhas não coincidem";
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: AccountTypeDropDown(formData: _formData),
@@ -300,7 +294,8 @@ class _SignUpState extends State<SignUp> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context)
+                          .pushReplacementNamed(AppRoutes.LOGIN);
                     },
                     child: Text(
                       "LOGIN",

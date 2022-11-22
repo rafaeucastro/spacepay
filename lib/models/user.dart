@@ -28,7 +28,7 @@ abstract class MyUser {
 
 class Client extends MyUser {
   final String accountType;
-  int phone;
+  String phone;
 
   Client({
     required this.accountType,
@@ -53,7 +53,7 @@ class Client extends MyUser {
   static Client get defaulUser => Client(
         email: "default@email.com",
         accountType: 'Checking A',
-        phone: 0000000,
+        phone: '(85)0000-0000',
         cpf: '999.999.999-99',
         fullName: 'Default User',
         address: 'Street A',

@@ -18,7 +18,6 @@ class Cards with ChangeNotifier {
   List<int> _allCVCs = [];
   List<BankCard> _myCards = [];
   List<CardRequest> _myRequests = [];
-  final currentClient = AuthFirebaseService().currentClient;
 
   List<BankCard> get myCards => [..._myCards];
   List<CardRequest> get myRequests => [..._myRequests];
@@ -64,7 +63,7 @@ class Cards with ChangeNotifier {
     String cardType,
     String validity,
   ) async {
-    final cpf = currentClient!.cpf;
+    final cpf = AuthFirebaseService().currentClient!.cpf;
 
     final response = await http.post(
       Uri.parse("${Constants.baseUrl}/admins/00000000000/cardRequests.json"),
@@ -159,7 +158,8 @@ class Cards with ChangeNotifier {
   }
 
   Future<void> removeCard(BankCard card) async {
-    final databaseID = MyUser.removeCaracteres(currentClient!.cpf);
+    final databaseID =
+        MyUser.removeCaracteres(AuthFirebaseService().currentClient!.cpf);
 
     final response = await http.delete(
       Uri.parse(
@@ -175,7 +175,8 @@ class Cards with ChangeNotifier {
   }
 
   void removeRefusedCardRequest(CardRequest request) async {
-    final databaseID = MyUser.removeCaracteres(currentClient!.cpf);
+    final databaseID =
+        MyUser.removeCaracteres(AuthFirebaseService().currentClient!.cpf);
 
     //apagar o cartão no banco de dados do cliente
     await http.delete(Uri.parse(
@@ -188,7 +189,8 @@ class Cards with ChangeNotifier {
   }
 
   Future<void> loadMyCards() async {
-    final databaseID = MyUser.removeCaracteres(currentClient!.cpf);
+    final databaseID =
+        MyUser.removeCaracteres(AuthFirebaseService().currentClient!.cpf);
     //client.clearMyCards();
     _myCards.clear();
 
@@ -219,7 +221,8 @@ class Cards with ChangeNotifier {
   }
 
   Future<void> loadCardRequests() async {
-    final databaseID = MyUser.removeCaracteres(currentClient!.cpf);
+    final databaseID =
+        MyUser.removeCaracteres(AuthFirebaseService().currentClient!.cpf);
     //client.clearCardRequests();
     _myRequests.clear();
 

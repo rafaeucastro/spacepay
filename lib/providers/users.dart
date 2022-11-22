@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,9 +16,6 @@ import 'package:spacepay/models/user.dart';
 class Users with ChangeNotifier {
   //static late final List<Client> clients;
   //static late final List<Admin> admins;
-  final _currentClient = AuthFirebaseService().currentClient;
-
-  Client? get currentClient => _currentClient;
 
   final List<Admin> _adminList = [];
   final List<Client> _clientList = [];
@@ -72,13 +70,13 @@ class Users with ChangeNotifier {
 
     data.forEach((databaseID, userData) {
       final newClient = Client(
-        email: userData[UserAttributes.email].toString(),
-        accountType: userData[UserAttributes.accountType].toString(),
-        fullName: userData[UserAttributes.fullName].toString(),
-        address: userData[UserAttributes.address].toString(),
-        password: userData[UserAttributes.password].toString(),
-        phone: int.parse(userData[UserAttributes.phone] ?? '0'),
-        cpf: userData[UserAttributes.cpf].toString(),
+        email: userData[UserAttributes.email],
+        accountType: userData[UserAttributes.accountType],
+        fullName: userData[UserAttributes.fullName],
+        address: userData[UserAttributes.address],
+        password: userData[UserAttributes.password],
+        phone: userData[UserAttributes.phone],
+        cpf: userData[UserAttributes.cpf],
         id: userData[UserAttributes.id],
       );
 
@@ -102,13 +100,13 @@ class Users with ChangeNotifier {
     final Map<String, dynamic> userData = jsonDecode(response.body);
 
     final client = Client(
-      email: userData[UserAttributes.email].toString(),
-      accountType: userData[UserAttributes.accountType].toString(),
-      fullName: userData[UserAttributes.fullName].toString(),
-      address: userData[UserAttributes.address].toString(),
-      password: userData[UserAttributes.password].toString(),
-      phone: int.parse(userData[UserAttributes.phone] ?? '0'),
-      cpf: userData[UserAttributes.cpf].toString(),
+      email: userData[UserAttributes.email],
+      accountType: userData[UserAttributes.accountType],
+      fullName: userData[UserAttributes.fullName],
+      address: userData[UserAttributes.address],
+      password: userData[UserAttributes.password],
+      phone: userData[UserAttributes.phone],
+      cpf: userData[UserAttributes.cpf],
       id: userData[UserAttributes.id],
     );
 
@@ -128,19 +126,36 @@ class Users with ChangeNotifier {
 
     final admin = Admin(
       state: userData[UserAttributes.state],
-      email: userData[UserAttributes.email].toString(),
-      fullName: userData[UserAttributes.fullName].toString(),
-      address: userData[UserAttributes.address].toString(),
-      password: userData[UserAttributes.password].toString(),
-      cpf: userData[UserAttributes.cpf].toString(),
+      email: userData[UserAttributes.email],
+      fullName: userData[UserAttributes.fullName],
+      address: userData[UserAttributes.address],
+      password: userData[UserAttributes.password],
+      cpf: userData[UserAttributes.cpf],
       id: userData[UserAttributes.id],
     );
 
     return admin;
   }
 
-  void addClient({required Map<String, String> clientData}) async {
-    String phone = MyUser.removeCaracteres(clientData[UserAttributes.phone]!);
+  void saveClientInDatabase(Client client) async {
+    //TODO: Tratar resposta
+    final response = await http.patch(
+      Uri.parse('${Constants.baseUrl}/clients/${client.cpfNotFormatted}.json'),
+      body: jsonEncode({
+        UserAttributes.phone: client.phone,
+        UserAttributes.cpf: client.cpf,
+        UserAttributes.email: client.email,
+        UserAttributes.password: client.password,
+        UserAttributes.accountType: client.accountType,
+        UserAttributes.fullName: client.fullName,
+        UserAttributes.address: client.address,
+        UserAttributes.id: client.id,
+      }),
+    );
+  }
+
+  Future<void> signUp({required Map<String, String> clientData}) async {
+    String phone = clientData[UserAttributes.phone]!;
     String cpf = clientData[UserAttributes.cpf]!;
     String email = clientData[UserAttributes.email]!;
     String password = clientData[UserAttributes.password]!;
@@ -148,28 +163,15 @@ class Users with ChangeNotifier {
     String fullName = clientData[UserAttributes.fullName]!;
     String address = clientData[UserAttributes.address]!;
 
-    final userID =
-        await AuthFirebaseService().signUp(fullName, email, password);
+    String userID = '';
+
+    try {
+      userID = await AuthFirebaseService().signUp(fullName, email, password);
+    } on FirebaseAuthException catch (error) {
+      throw AuthException(error.code);
+    }
 
     if (userID.isEmpty) throw AuthException('');
-
-    String databaseID =
-        MyUser.removeCaracteres(clientData[UserAttributes.cpf]!);
-
-    //TODO: Tratar resposta
-    final response = await http.patch(
-      Uri.parse('${Constants.baseUrl}/clients/$cpf.json'),
-      body: jsonEncode({
-        UserAttributes.phone: phone,
-        UserAttributes.cpf: cpf,
-        UserAttributes.email: email,
-        UserAttributes.password: password,
-        UserAttributes.accountType: accountType,
-        UserAttributes.fullName: fullName,
-        UserAttributes.address: address,
-        UserAttributes.id: userID,
-      }),
-    );
 
     final newClient = Client(
       email: email,
@@ -178,11 +180,16 @@ class Users with ChangeNotifier {
       fullName: fullName,
       address: address,
       cpf: cpf,
-      phone: int.parse(phone),
+      phone: phone,
       id: userID,
     );
 
+    saveClientInDatabase(newClient);
+
     _clientList.add(newClient);
+
+    //fazer login
+    await AuthFirebaseService().signIn(cpf, password, false);
   }
 
   //TODO: verificar adição de ADM
@@ -250,9 +257,9 @@ class Users with ChangeNotifier {
 
     //save the picture locally
     final newProfilePicture = await storedImage.copy(
-        '${appDir.path}/profile_picture-${_currentClient!.cpf}$fileExtension');
+        '${appDir.path}/profile_picture-${AuthFirebaseService().currentClient!.cpf}$fileExtension');
 
-    _currentClient!.setProfilePicture(storedImage);
+    AuthFirebaseService().currentClient!.setProfilePicture(storedImage);
 
     notifyListeners();
     return newProfilePicture;
@@ -261,11 +268,11 @@ class Users with ChangeNotifier {
   Future<File?> loadProfilePicture() async {
     final appDir = await getApplicationDocumentsDirectory();
 
-    final profilePicture =
-        File('${appDir.path}/profile_picture-${_currentClient!.cpf}.jpg');
+    final profilePicture = File(
+        '${appDir.path}/profile_picture-${AuthFirebaseService().currentClient!.cpf}.jpg');
 
     if (await profilePicture.exists()) {
-      _currentClient!.profilePicture = profilePicture;
+      AuthFirebaseService().currentClient!.profilePicture = profilePicture;
       return profilePicture;
     }
 

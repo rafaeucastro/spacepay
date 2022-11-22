@@ -28,6 +28,7 @@ class _DashBoardState extends State<DashBoard> {
   void initState() {
     super.initState();
     Provider.of<BankCardRequests>(context, listen: false).loadRequests(context);
+    Provider.of<Users>(context, listen: false).loadClients();
   }
 
   @override

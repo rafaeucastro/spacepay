@@ -43,7 +43,7 @@ class UserProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final client = Provider.of<Users>(context).currentClient!;
+    final client = AuthFirebaseService().currentClient!;
     final textScale = MediaQuery.of(context).textScaleFactor;
     final size = MediaQuery.of(context).size;
 
@@ -61,7 +61,7 @@ class UserProfile extends StatelessWidget {
               Expanded(
                 child: Consumer<Users>(
                   builder: (context, users, child) {
-                    final profilePicture = users.currentClient!.profilePicture;
+                    final profilePicture = client.profilePicture;
 
                     return Column(
                       children: [
