@@ -44,6 +44,7 @@ dependencies:
   animations: ^2.0.7
   firebase_core: ^1.24.0
   credit_card_validator: ^2.0.1
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:

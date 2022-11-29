@@ -8,11 +8,11 @@ abstract class Tema {
   static const Color yellow = Color(0xffFDDA48);
   static const Color red = Color(0xffE9163D);
 
-  static ThemeData light = ThemeData.light().copyWith(
+  static final ThemeData light = ThemeData.light().copyWith(
     colorScheme: light.colorScheme.copyWith(),
   );
 
-  static ThemeData dark = ThemeData.dark().copyWith();
+  static final ThemeData dark = ThemeData.dark().copyWith();
 
   ThemeData get theme {
     if (_isLightThemed) return light;

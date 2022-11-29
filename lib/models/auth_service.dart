@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spacepay/models/exceptions/auth_exception.dart';
 import 'package:spacepay/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,10 +31,12 @@ class AuthFirebaseService {
       final adm = await Users.getAdmFromDB(databaseID);
       email = adm.email;
       _currentADM = adm;
+      _saveUser(databaseID, isADM);
     } else {
       final client = await Users.getClientFromDB(databaseID);
       email = client.email;
       _currentClient = client;
+      _saveUser(databaseID, isADM);
     }
 
     UserCredential userCredential;
@@ -73,6 +76,40 @@ class AuthFirebaseService {
 
   Future<void> logout() async {
     FirebaseAuth.instance.signOut();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
+  Future<void> _saveUser(String databaseID, bool isADM) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('databaseID', databaseID);
+    prefs.setBool('isADM', isADM);
+  }
+
+  static Future<Map<String, dynamic>?> _getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final String? databaseID = prefs.getString('databaseID');
+    final bool? isADM = prefs.getBool('isADM');
+
+    if (databaseID == null || isADM == null) return null;
+    return {'databaseID': databaseID, 'isADM': isADM};
+  }
+
+  static Future<bool?> loadUser() async {
+    final data = await _getUser();
+    if (data == null) return null;
+
+    final String databaseID = data['databaseID'];
+    final bool isADM = data['isADM'];
+
+    if (isADM) {
+      _currentADM = await Users.getAdmFromDB(databaseID);
+    } else {
+      _currentClient = await Users.getClientFromDB(databaseID);
+    }
+
+    return isADM;
   }
 
   // static Client _toClient(User user) {

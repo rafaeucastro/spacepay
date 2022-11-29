@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spacepay/models/auth_service.dart';
 import 'package:spacepay/util/routes.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,9 +17,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToHome() async {
-    Future.delayed(const Duration(seconds: 0)).then((value) {
-      Navigator.of(context).pushReplacementNamed(AppRoutes.LOGIN);
-    });
+    final bool? isADM = await AuthFirebaseService.loadUser();
+    String rota = '';
+    if (isADM == null) {
+      rota = AppRoutes.LOGIN;
+    } else if (isADM) {
+      rota = AppRoutes.DASHBOARD;
+    } else {
+      rota = AppRoutes.HOME;
+    }
+    Navigator.of(context).pushReplacementNamed(rota);
   }
 
   @override
